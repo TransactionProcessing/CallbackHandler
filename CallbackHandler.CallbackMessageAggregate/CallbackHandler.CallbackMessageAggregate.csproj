@@ -5,7 +5,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\CallbackHandler.CallbackMessageAggregate.DomainEvents\CallbackHandler.CallbackMessage.DomainEvents.csproj" />
+		<ProjectReference Include="..\CallbackHandler.CallbackMessage.DomainEvents\CallbackHandler.CallbackMessage.DomainEvents.csproj" />
 		<ProjectReference Include="..\CallbackHandlers.Models\CallbackHandlers.Models.csproj" />
 	</ItemGroup>
 	<ItemGroup>

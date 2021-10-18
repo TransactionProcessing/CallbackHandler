@@ -46,5 +46,5 @@ jobs:
       run: |
         dotnet pack "CallbackHandler.DataTransferObjects\CallbackHandler.DataTransferObjects.csproj" /p:PackageVersion=${{ steps.next_version.outputs.VERSION }} --output Nugets -c Release            
         dotnet nuget push Nugets/CallbackHandler.DataTransferObjects.${{ steps.next_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package
-        dotnet pack "CallbackHandler.CallbackMessageAggregate.DomainEvents\CallbackHandler.CallbackMessageAggregate.DomainEvents.csproj" /p:PackageVersion=${{ steps.next_version.outputs.VERSION }} --output Nugets -c Release
-        dotnet nuget push Nugets/CallbackHandler.CallbackMessageAggregate.DomainEvents.${{ steps.next_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package
+        dotnet pack "CallbackHandler.CallbackMessage.DomainEvents\CallbackHandler.CallbackMessage.DomainEvents.csproj" /p:PackageVersion=${{ steps.next_version.outputs.VERSION }} --output Nugets -c Release
+        dotnet nuget push Nugets/CallbackHandler.CallbackMessage.DomainEvents.${{ steps.next_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package

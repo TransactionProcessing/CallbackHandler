@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CallbackHander.Testing\CallbackHander.Testing.csproj" />
-    <ProjectReference Include="..\CallbackHandler.CallbackMessageAggregate.DomainEvents\CallbackHandler.CallbackMessage.DomainEvents.csproj" />
+    <ProjectReference Include="..\CallbackHandler.CallbackMessage.DomainEvents\CallbackHandler.CallbackMessage.DomainEvents.csproj" />
     <ProjectReference Include="..\CallbackHandler.CallbackMessageAggregate\CallbackHandler.CallbackMessageAggregate.csproj" />
   </ItemGroup>
 

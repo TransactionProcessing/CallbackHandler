@@ -9,7 +9,7 @@ COPY ["CallbackHandler/CallbackHandler.csproj", "CallbackHandler/"]
 COPY ["CallbackHandler.BusinessLogic/CallbackHandler.BusinessLogic.csproj", "CallbackHandler.BusinessLogic/"]
 COPY ["CallbackHandler.CallbackMessageAggregate/CallbackHandler.CallbackMessageAggregate.csproj", "CallbackHandler.CallbackMessageAggregate/"]
 COPY ["CallbackHandlers.Models/CallbackHandlers.Models.csproj", "CallbackHandlers.Models/"]
-COPY ["CallbackHandler.CallbackMessageAggregate.DomainEvents/CallbackHandler.CallbackMessageAggregate.DomainEvents.csproj", "CallbackHandler.CallbackMessageAggregate.DomainEvents/"]
+COPY ["CallbackHandler.CallbackMessage.DomainEvents/CallbackHandler.CallbackMessage.DomainEvents.csproj", "CallbackHandler.CallbackMessage.DomainEvents/"]
 COPY ["CallbackHandler.DataTransferObjects/CallbackHandler.DataTransferObjects.csproj", "CallbackHandler.DataTransferObjects/"]
 RUN dotnet restore "CallbackHandler/CallbackHandler.csproj"
 COPY . .
