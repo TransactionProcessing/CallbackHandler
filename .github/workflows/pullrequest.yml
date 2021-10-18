@@ -1,0 +1,29 @@
+name: Build and Test Pull Requests
+
+on:
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    name: "Build and Test Pull Requests"
+    env:
+        ASPNETCORE_ENVIRONMENT: "Production"
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2.3.4
+
+    - name: Restore Nuget Packages
+      run: dotnet restore CallbackHandler.sln --source https://api.nuget.org/v3/index.json --source https://www.myget.org/F/transactionprocessing/api/v3/index.json
+
+    - name: Build Code
+      run: dotnet build CallbackHandler.sln --configuration Release
+
+    - name: Run Unit Tests
+      run: |
+        echo "ASPNETCORE_ENVIRONMENT are > ${ASPNETCORE_ENVIRONMENT}"
+        dotnet test "CallbackHandler.BusinessLogic.Tests\CallbackHandler.BusinessLogic.Tests.csproj"
+        dotnet test "CallbackHandler.CallbackMessageAggregate.Tests\CallbackHandler.CallbackMessageAggregate.Tests.csproj"
