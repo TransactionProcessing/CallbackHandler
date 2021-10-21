@@ -56,7 +56,7 @@ jobs:
         octo pack
         --outFolder /home/runner/work/CallbackHandler/CallbackHandler
         --basePath /home/runner/work/CallbackHandler/CallbackHandler/publishOutput
-        --id EstateManagement
+        --id CallbackHandler
         --version ${{ steps.get_version.outputs.VERSION }}
         --format zip
         --verbose
