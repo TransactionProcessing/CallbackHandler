@@ -12,7 +12,8 @@ namespace CallbackHandler.BusinessLogic.Tests.Requests
         public void RecordCallbackRequest_CanBeCreated_IsCreated()
         {
             RecordCallbackRequest recordCallbackRequest = RecordCallbackRequest.Create(TestData.CallbackId, TestData.MessageFormat, TestData.TypeString,
-                                                                                       TestData.CallbackMessage, TestData.Destinations);
+                                                                                       TestData.CallbackMessage, TestData.Reference,
+                                                                                       TestData.Destinations);
 
             recordCallbackRequest.ShouldNotBeNull();
             recordCallbackRequest.ShouldSatisfyAllConditions(
@@ -20,6 +21,7 @@ namespace CallbackHandler.BusinessLogic.Tests.Requests
                                                              () => recordCallbackRequest.MessageFormat.ShouldBe((MessageFormat)TestData.MessageFormat),
                                                              () => recordCallbackRequest.TypeString.ShouldBe(TestData.TypeString),
                                                              () => recordCallbackRequest.CallbackMessage.ShouldBe(TestData.CallbackMessage),
+                                                             () => recordCallbackRequest.Reference.ShouldBe(TestData.Reference),
                                                              () => recordCallbackRequest.Destinations.ShouldBe(TestData.Destinations)
                                                             );
         }

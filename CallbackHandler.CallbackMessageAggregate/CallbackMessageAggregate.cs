@@ -47,6 +47,8 @@
 
         public String TypeString { get; private set; }
 
+        public String Reference { get; private set; }
+
         #endregion
 
         #region Methods
@@ -74,11 +76,12 @@
         public void RecordCallback(String typeString,
                                    MessageFormat messageFormat,
                                    String callbackMessage,
+                                   String reference,
                                    String[] destinations)
         {
             foreach (String destination in destinations)
             {
-                CallbackReceivedEvent callbackReceivedEvent = new CallbackReceivedEvent(this.AggregateId, typeString, (Int32)messageFormat, callbackMessage, destination);
+                CallbackReceivedEvent callbackReceivedEvent = new CallbackReceivedEvent(this.AggregateId, typeString, (Int32)messageFormat, callbackMessage, reference, destination);
                 this.ApplyAndAppend(callbackReceivedEvent);
             }
         }
@@ -95,6 +98,7 @@
             this.MessageFormat = (MessageFormat)domainEvent.MessageFormat;
             this.TypeString = domainEvent.TypeString;
             this.Destinations.Add(domainEvent.Destination);
+            this.Reference = domainEvent.Reference;
         }
 
         #endregion
