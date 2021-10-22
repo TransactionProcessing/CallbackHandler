@@ -56,7 +56,7 @@ jobs:
         octo pack
         --outFolder /home/runner/work/CallbackHandler/CallbackHandler
         --basePath /home/runner/work/CallbackHandler/CallbackHandler/publishOutput
-        --id EstateManagement
+        --id CallbackHandler
         --version ${{ steps.get_version.outputs.VERSION }}
         --format zip
         --verbose
@@ -74,7 +74,7 @@ jobs:
       id: getrelease
       uses: octokit/request-action@v2.0.17
       with:
-          route: GET /repos/StuartFerguson/CallbackHandler/releases/tags/${{ steps.get_version.outputs.VERSION }}
+          route: GET /repos/TransactionProcessing/CallbackHandler/releases/tags/${{ steps.get_version.outputs.VERSION }}
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -103,4 +103,4 @@ jobs:
         dotnet pack "CallbackHandler.DataTransferObjects\CallbackHandler.DataTransferObjects.csproj" /p:PackageVersion=${{ steps.get_version.outputs.VERSION }} --output Nugets -c Release            
         dotnet nuget push Nugets/CallbackHandler.DataTransferObjects.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package
         dotnet pack "CallbackHandler.CallbackMessage.DomainEvents\CallbackHandler.CallbackMessage.DomainEvents.csproj" /p:PackageVersion=${{ steps.get_version.outputs.VERSION }} --output Nugets -c Release
-        dotnet nuget push Nugets/CallbackHandler.CallbackMessagemain.DomainEvents.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package
+        dotnet nuget push Nugets/CallbackHandler.CallbackMessage.DomainEvents.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.MYGET_APIKEY }} --source https://www.myget.org/F/transactionprocessing/api/v2/package
