@@ -41,6 +41,7 @@
                                                                          1, // JSON
                                                                          depositCallback.GetType().ToString(),
                                                                          JsonConvert.SerializeObject(depositCallback),
+                                                                         depositCallback.Reference,
                                                                          new[] {"EstateManagement"});
 
             await this.Mediator.Send(request, cancellationToken);

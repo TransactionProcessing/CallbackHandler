@@ -20,11 +20,12 @@ namespace CallbackHandler.CallbackMessageAggregate.Tests
         {
             CallbackMessageAggregate aggregate = CallbackMessageAggregate.Create(TestData.CallbackId);
 
-            aggregate.RecordCallback(TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Destinations);
+            aggregate.RecordCallback(TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations);
 
             aggregate.ShouldSatisfyAllConditions(() => aggregate.CallbackMessage.ShouldBe(TestData.CallbackMessage),
                                                  () => aggregate.TypeString.ShouldBe(TestData.TypeString),
                                                  () => aggregate.MessageFormat.ShouldBe(MessageFormat.JSON),
+                                                 () => aggregate.Reference.ShouldBe(TestData.Reference),
                                                  () => aggregate.GetDestinations().ShouldNotBeEmpty(),
                                                  () => aggregate.GetDestinations().Length.ShouldBe(TestData.Destinations.Length));
         }

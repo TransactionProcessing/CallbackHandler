@@ -12,6 +12,7 @@
                                       Int32 messageFormat,
                                       String typeString,
                                       String callbackMessage,
+                                      String reference,
                                       String[] destinations)
         {
             this.CallbackId = callbackId;
@@ -19,6 +20,7 @@
             this.TypeString = typeString;
             this.CallbackMessage = callbackMessage;
             this.Destinations = destinations;
+            this.Reference = reference;
         }
 
         #endregion
@@ -35,6 +37,8 @@
 
         public String TypeString { get; }
 
+        public String Reference { get; }
+
         #endregion
 
         #region Methods
@@ -43,9 +47,10 @@
                                                    Int32 messageFormat,
                                                    String typeString,
                                                    String callbackMessage,
+                                                   String reference,
                                                    String[] destinations)
         {
-            return new RecordCallbackRequest(callbackId, messageFormat, typeString, callbackMessage, destinations);
+            return new RecordCallbackRequest(callbackId, messageFormat, typeString, callbackMessage, reference, destinations);
         }
 
         #endregion

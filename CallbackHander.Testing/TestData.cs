@@ -18,9 +18,11 @@ namespace CallbackHander.Testing
 
         public static String[] Destinations = new[] {"A", "B"};
 
+        public static String Reference = "TestRef";
+
         public static RecordCallbackRequest RecordCallbackRequest =>
             RecordCallbackRequest.Create(TestData.CallbackId, TestData.MessageFormat, TestData.TypeString,
-                                         TestData.CallbackMessage, TestData.Destinations);
+                                         TestData.CallbackMessage, TestData.Reference, TestData.Destinations);
 
         public static CallbackMessageAggregate EmptyCallbackMessageAggregate()
         {
