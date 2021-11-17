@@ -49,6 +49,6 @@ jobs:
          github_token: ${{ secrets.github_token }}
          title: Investigate Nightly Build Failure
          body: |
-            https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+            https://github.com/${{ GITHUB_REPOSITORY }}/actions/runs/${{ GITHUB_RUN_ID }}
          labels: |
            nightlybuild
