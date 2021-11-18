@@ -50,4 +50,4 @@ jobs:
         title: Investigate Nightly Build Failure
         token: ${{secrets.GITHUB_TOKEN}}
         labels: nightlybuild
-        body: Url is ${ACTION_URL}
+        body: Url is ${{env.ACTION_URL}}
