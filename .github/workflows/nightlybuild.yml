@@ -10,6 +10,7 @@ jobs:
     name: "Nightly Build"
     env:
         ASPNETCORE_ENVIRONMENT: "Production"
+        ACTIONURL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
     runs-on: ubuntu-latest
 
@@ -49,4 +50,4 @@ jobs:
         title: Investigate Nightly Build Failure
         token: ${{secrets.GITHUB_TOKEN}}
         labels: nightlybuild
-        body: https://github.com/${{env.github.GITHUB_REPOSITORY}}/actions/runs/${{env.github.GITHUB_RUN_ID}}
+        body: Url is ${ACTION_URL}
