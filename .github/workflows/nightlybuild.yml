@@ -43,6 +43,7 @@ jobs:
           path-to-lcov: lcov.info              
     
     - uses: nashmaniac/create-issue-action@v1.1
+      if: ${{ failure() }}
       name: Create an issue on build failure
       with:
         title: Investigate Nightly Build Failure
