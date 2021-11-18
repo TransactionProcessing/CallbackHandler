@@ -10,13 +10,15 @@ jobs:
     name: "Nightly Build"
     env:
         ASPNETCORE_ENVIRONMENT: "Production"
-        ACTION_URL: ${{env.GITHUB_SERVER_URL}}/${{env.GITHUB_REPOSITORY}}/actions/runs/${{env.GITHUB_RUN_ID}}
-
+        
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2.3.4
 
+    - name: Set Up Variables
+      run: echo "::set-env name=ACTION_URL::$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      
     - name: Restore Nuget Packages
       run: dotnet restore CallbackHandler.sln --source https://api.nuget.org/v3/index.json --source https://www.myget.org/F/transactionprocessing/api/v3/index.json
 
