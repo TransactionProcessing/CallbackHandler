@@ -10,7 +10,7 @@ jobs:
     name: "Nightly Build"
     env:
         ASPNETCORE_ENVIRONMENT: "Production"
-        ACTION_URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+        ACTION_URL: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
     runs-on: ubuntu-latest
 
