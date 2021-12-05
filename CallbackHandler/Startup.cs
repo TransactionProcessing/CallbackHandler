@@ -91,7 +91,8 @@ namespace CallbackHandler
             settings.ConnectivitySettings = new EventStoreClientConnectivitySettings
                                             {
                                                 Address = new Uri(Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString")),
-                                            };
+                                                Insecure = Startup.Configuration.GetValue<Boolean>("EventStoreSettings:Insecure")
+            };
 
             settings.DefaultCredentials = new UserCredentials(Startup.Configuration.GetValue<String>("EventStoreSettings:UserName"),
                                                               Startup.Configuration.GetValue<String>("EventStoreSettings:Password"));
