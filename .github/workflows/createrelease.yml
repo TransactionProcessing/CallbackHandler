@@ -30,6 +30,7 @@ jobs:
         echo "ASPNETCORE_ENVIRONMENT are > ${ASPNETCORE_ENVIRONMENT}"
         dotnet test "CallbackHandler.BusinessLogic.Tests\CallbackHandler.BusinessLogic.Tests.csproj"
         dotnet test "CallbackHandler.CallbackMessageAggregate.Tests\CallbackHandler.CallbackMessageAggregate.Tests.csproj"
+        dotnet test "CallbackHandler.Tests\CallbackHandler.Tests.csproj"
 
     - name: Build Docker Images 
       run: |

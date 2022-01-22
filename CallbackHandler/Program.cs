@@ -11,6 +11,7 @@ namespace CallbackHandler
 {
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using Lamar.Microsoft.DependencyInjection;
 
     [ExcludeFromCodeCoverage]
     public class Program
@@ -31,6 +32,7 @@ namespace CallbackHandler
                                                                   .AddEnvironmentVariables().Build();
 
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args);
+            hostBuilder.UseLamar();
             hostBuilder.ConfigureLogging(logging =>
                                          {
                                              logging.AddConsole();
