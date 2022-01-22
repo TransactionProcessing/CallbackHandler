@@ -9,6 +9,7 @@
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
     using Newtonsoft.Json;
+    using Swashbuckle.AspNetCore.Annotations;
 
     [ExcludeFromCodeCoverage]
     [Route(CallbackController.ControllerRoute)]
@@ -32,6 +33,8 @@
 
         #region Methods
 
+        [HttpPost]
+        [SwaggerResponse(200, "OK")]
         public async Task<IActionResult> RecordCallback(Deposit depositCallback,
                                                         CancellationToken cancellationToken)
         {
