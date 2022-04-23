@@ -23,7 +23,7 @@
 
             CallbackMessageAggregate aggregate = await this.AggregateRepository.GetLatestVersion(request.CallbackId, cancellationToken);
 
-            aggregate.RecordCallback(request.TypeString, request.MessageFormat, request.CallbackMessage, request.Reference, request.Destinations);
+            aggregate.RecordCallback(request.CallbackId,request.TypeString, request.MessageFormat, request.CallbackMessage, request.Reference, request.Destinations);
 
             await this.AggregateRepository.SaveChanges(aggregate,cancellationToken);
             

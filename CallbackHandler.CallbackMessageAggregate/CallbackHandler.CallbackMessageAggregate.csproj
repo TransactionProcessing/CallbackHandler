@@ -9,8 +9,8 @@
 		<ProjectReference Include="..\CallbackHandlers.Models\CallbackHandlers.Models.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Shared" Version="1.1.0" />
-		<PackageReference Include="Shared.DomainDrivenDesign" Version="1.1.0" />
-		<PackageReference Include="Shared.EventStore" Version="1.1.0" />
+		<PackageReference Include="Shared" Version="1.1.9" />
+		<PackageReference Include="Shared.DomainDrivenDesign" Version="1.1.9" />
+		<PackageReference Include="Shared.EventStore" Version="1.1.9" />
 	</ItemGroup>
 </Project>
