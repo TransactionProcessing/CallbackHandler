@@ -3,7 +3,7 @@
     using System;
     using Shared.DomainDrivenDesign.EventSourcing;
 
-    public record CallbackReceivedEvent : DomainEventRecord.DomainEvent
+    public record CallbackReceivedEvent : DomainEvent
     {
         public CallbackReceivedEvent(Guid aggregateId, String typeString,
                                      Int32 messageFormat,

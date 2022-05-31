@@ -9,6 +9,7 @@ namespace CallbackHandler.Tests
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Moq;
 
     [Collection("TestCollection")]
@@ -61,6 +62,7 @@ namespace CallbackHandler.Tests
             services.AddSingleton<DiagnosticSource>(diagnosticSource);
             services.AddSingleton<DiagnosticListener>(diagnosticSource);
             services.AddSingleton<IWebHostEnvironment>(hostingEnvironment);
+            services.AddSingleton<IHostEnvironment>(hostingEnvironment);
         }
     }
 }
