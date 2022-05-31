@@ -10,9 +10,9 @@
 
     public class CallbackHandlerRequestHandler : IRequestHandler<RecordCallbackRequest>
     {
-        private readonly IAggregateRepository<CallbackMessageAggregate, DomainEventRecord.DomainEvent> AggregateRepository;
+        private readonly IAggregateRepository<CallbackMessageAggregate, DomainEvent> AggregateRepository;
 
-        public CallbackHandlerRequestHandler(IAggregateRepository<CallbackMessageAggregate,DomainEventRecord.DomainEvent> aggregateRepository)
+        public CallbackHandlerRequestHandler(IAggregateRepository<CallbackMessageAggregate,DomainEvent> aggregateRepository)
         {
             this.AggregateRepository = aggregateRepository;
         }

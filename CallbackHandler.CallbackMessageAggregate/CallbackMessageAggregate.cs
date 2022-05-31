@@ -59,14 +59,14 @@ namespace CallbackHandler.CallbackMessageAggregate
         {
             foreach (String destination in destinations)
             {
-                DomainEventRecord.DomainEvent callbackReceivedEvent = CreateCallbackReceivedEvent(aggregate,aggregateId, typeString,
+                DomainEvent callbackReceivedEvent = CreateCallbackReceivedEvent(aggregate,aggregateId, typeString,
                     messageFormat, callbackMessage, reference, destination);
 
                 aggregate.ApplyAndAppend(callbackReceivedEvent);
             }
         }
 
-        internal static DomainEventRecord.DomainEvent CreateCallbackReceivedEvent(this CallbackMessageAggregate aggregate,
+        internal static DomainEvent CreateCallbackReceivedEvent(this CallbackMessageAggregate aggregate,
             Guid aggregateId,
             String typeString,
             MessageFormat messageFormat,

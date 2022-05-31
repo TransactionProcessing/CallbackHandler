@@ -17,8 +17,8 @@ namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
         [Fact]
         public void CallbackHandlerRequestHandlerTests_RecordCallbackRequest_IsHandled()
         {
-            Mock<IAggregateRepository<CallbackMessageAggregate, DomainEventRecord.DomainEvent>> aggregateRepository =
-                new Mock<IAggregateRepository<CallbackMessageAggregate, DomainEventRecord.DomainEvent>>();
+            Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository =
+                new Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>>();
             aggregateRepository.Setup(a => a.GetLatestVersion(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(TestData.EmptyCallbackMessageAggregate);
             CallbackHandlerRequestHandler handler = new CallbackHandlerRequestHandler(aggregateRepository.Object);
             

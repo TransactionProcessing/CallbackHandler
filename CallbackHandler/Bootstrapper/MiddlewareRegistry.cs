@@ -94,7 +94,7 @@
         public RepositoryRegistry()
         {
             this.AddTransient<IEventStoreContext, EventStoreContext>();
-            this.AddSingleton<IAggregateRepository<CallbackMessageAggregate.CallbackMessageAggregate, DomainEventRecord.DomainEvent>, AggregateRepository<CallbackMessageAggregate.CallbackMessageAggregate, DomainEventRecord.DomainEvent>>();
+            this.AddSingleton<IAggregateRepository<CallbackMessageAggregate.CallbackMessageAggregate, DomainEvent>, AggregateRepository<CallbackMessageAggregate.CallbackMessageAggregate, DomainEvent>>();
             this.AddEventStoreClient(Startup.ConfigureEventStoreSettings);
             this.AddEventStoreProjectionManagerClient(Startup.ConfigureEventStoreSettings);
         }
