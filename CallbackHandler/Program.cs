@@ -12,6 +12,9 @@ namespace CallbackHandler
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using Lamar.Microsoft.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection;
+    using Shared.DomainDrivenDesign.EventSourcing;
+    using Shared.EventStore.Aggregate;
 
     [ExcludeFromCodeCoverage]
     public class Program
