@@ -5,6 +5,7 @@
     using System.Reflection;
     using BusinessLogic.RequestHandler;
     using BusinessLogic.Requests;
+    using CallbackMessageAggregate;
     using Common;
     using Lamar;
     using MediatR;
@@ -85,7 +86,7 @@
                                                   return t => context.GetService(t);
                                               });
 
-            this.AddSingleton<IRequestHandler<RecordCallbackRequest, Unit>, CallbackHandlerRequestHandler>();
+            this.AddSingleton<IRequestHandler<RecordCallbackRequest>, CallbackHandlerRequestHandler>();
         }
     }
 
@@ -94,7 +95,7 @@
         public RepositoryRegistry()
         {
             this.AddTransient<IEventStoreContext, EventStoreContext>();
-            this.AddSingleton<IAggregateRepository<CallbackMessageAggregate.CallbackMessageAggregate, DomainEvent>, AggregateRepository<CallbackMessageAggregate.CallbackMessageAggregate, DomainEvent>>();
+            this.AddSingleton<IAggregateRepository<CallbackMessageAggregate, DomainEvent>, AggregateRepository<CallbackMessageAggregate, DomainEvent>>();
             this.AddEventStoreClient(Startup.ConfigureEventStoreSettings);
             this.AddEventStoreProjectionManagerClient(Startup.ConfigureEventStoreSettings);
         }
