@@ -2,6 +2,8 @@
 {
     using System;
     using System.IO;
+    using System.Net.Http;
+    using System.Net.Security;
     using System.Reflection;
     using BusinessLogic.RequestHandler;
     using BusinessLogic.Requests;
@@ -9,6 +11,7 @@
     using Common;
     using Lamar;
     using MediatR;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.OpenApi.Models;
@@ -96,8 +99,34 @@
         {
             this.AddTransient<IEventStoreContext, EventStoreContext>();
             this.AddSingleton<IAggregateRepository<CallbackMessageAggregate, DomainEvent>, AggregateRepository<CallbackMessageAggregate, DomainEvent>>();
-            this.AddEventStoreClient(Startup.ConfigureEventStoreSettings);
+            
+            Boolean insecureES = Startup.Configuration.GetValue<Boolean>("EventStoreSettings:Insecure");
+
+            Func<SocketsHttpHandler> CreateHttpMessageHandler = () => new SocketsHttpHandler
+                                                                      {
+
+                                                                          SslOptions = new SslClientAuthenticationOptions
+                                                                                       {
+                                                                                           RemoteCertificateValidationCallback = (sender,
+                                                                                               certificate,
+                                                                                               chain,
+                                                                                               errors) => {
+
+                                                                                               return true;
+                                                                                           }
+                                                                                       }
+                                                                      };
+
             this.AddEventStoreProjectionManagerClient(Startup.ConfigureEventStoreSettings);
+
+            if (insecureES)
+            {
+                this.AddInSecureEventStoreClient(Startup.EventStoreClientSettings.ConnectivitySettings.Address, CreateHttpMessageHandler);
+            }
+            else
+            {
+                this.AddEventStoreClient(Startup.EventStoreClientSettings.ConnectivitySettings.Address, CreateHttpMessageHandler);
+            }
         }
     }
 }
