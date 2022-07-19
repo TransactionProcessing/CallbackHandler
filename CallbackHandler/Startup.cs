@@ -72,28 +72,12 @@ namespace CallbackHandler
 
         internal static EventStoreClientSettings EventStoreClientSettings;
 
-        internal static void ConfigureEventStoreSettings(EventStoreClientSettings settings = null)
+        internal static void ConfigureEventStoreSettings(EventStoreClientSettings settings)
         {
-            if (settings == null)
-            {
-                settings = new EventStoreClientSettings();
-            }
-
-            settings.CreateHttpMessageHandler = () => new SocketsHttpHandler
-                                                      {
-                                                          SslOptions =
-                                                          {
-                                                              RemoteCertificateValidationCallback = (sender,
-                                                                                                     certificate,
-                                                                                                     chain,
-                                                                                                     errors) => true,
-                                                          }
-                                                      };
-            settings.ConnectionName = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionName");
             settings.ConnectivitySettings = EventStoreClientConnectivitySettings.Default;
             settings.ConnectivitySettings.Address = new Uri(Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString"));
             settings.ConnectivitySettings.Insecure = Startup.Configuration.GetValue<Boolean>("EventStoreSettings:Insecure");
-
+            
             settings.DefaultCredentials = new UserCredentials(Startup.Configuration.GetValue<String>("EventStoreSettings:UserName"),
                                                               Startup.Configuration.GetValue<String>("EventStoreSettings:Password"));
             Startup.EventStoreClientSettings = settings;
@@ -105,12 +89,10 @@ namespace CallbackHandler
         {
             ConfigurationReader.Initialise(Startup.Configuration);
 
-            Startup.ConfigureEventStoreSettings();
-            
-            services.IncludeRegistry<MiddlewareRegistry>();
             services.IncludeRegistry<MediatorRegistry>();
             services.IncludeRegistry<RepositoryRegistry>();
-            
+            services.IncludeRegistry<MiddlewareRegistry>();
+
             // TODO: Create one domain event from each assembly here
             TypeProvider.LoadDomainEventsTypeDynamically();
 
