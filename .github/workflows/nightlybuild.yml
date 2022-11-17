@@ -37,27 +37,27 @@ jobs:
         dotnet test "CallbackHandler.CallbackMessageAggregate.Tests\CallbackHandler.CallbackMessageAggregate.Tests.csproj" /p:CollectCoverage=true /p:Exclude="[xunit*]*" /p:ExcludeByAttribute="Obsolete" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="CompilerGeneratedAttribute" /p:ExcludeByAttribute="ExcludeFromCodeCoverageAttribute" /p:CoverletOutput="../lcov2.info" /maxcpucount:1 /p:CoverletOutputFormat="lcov"
         dotnet test "CallbackHandler.Tests\CallbackHandler.Tests.csproj" /p:CollectCoverage=true /p:Exclude="[xunit*]*" /p:ExcludeByAttribute="Obsolete" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="CompilerGeneratedAttribute" /p:ExcludeByAttribute="ExcludeFromCodeCoverageAttribute" /p:CoverletOutput="../lcov3.info" /maxcpucount:1 /p:CoverletOutputFormat="lcov"
 
-    - name: Setup Node.js for use with actions
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
+    #- name: Setup Node.js for use with actions
+    #  uses: actions/setup-node@v3
+    #  with:
+    #    node-version: 16
     
-    - name: Combine Coverage
-      run: |
-        npm i lcov-result-merger
-        ./node_modules/lcov-result-merger/bin/lcov-result-merger.js '*.info' 'lcov.info' 
+    #- name: Combine Coverage
+    #  run: |
+    #    npm i lcov-result-merger
+    #    ./node_modules/lcov-result-merger/bin/lcov-result-merger.js '*.info' 'lcov.info' 
 
-    - name: Upload Code Coverage
-      uses: coverallsapp/github-action@master
-      with:
-          github-token: ${{ secrets.github_token }}
-          path-to-lcov: lcov.info              
+    #- name: Upload Code Coverage
+    #  uses: coverallsapp/github-action@master
+    #  with:
+    #      github-token: ${{ secrets.github_token }}
+    #      path-to-lcov: lcov.info              
     
-    - uses: nashmaniac/create-issue-action@v1.1
-      if: ${{ failure() }}
-      name: Create an issue on build failure
-      with:
-        title: Investigate Nightly Build Failure
-        token: ${{secrets.GITHUB_TOKEN}}
-        labels: nightlybuild
-        body: Url is ${{env.action_url}}
+    #- uses: nashmaniac/create-issue-action@v1.1
+    #  if: ${{ failure() }}
+    #  name: Create an issue on build failure
+    #  with:
+    #    title: Investigate Nightly Build Failure
+    #    token: ${{secrets.GITHUB_TOKEN}}
+    #    labels: nightlybuild
+    #    body: Url is ${{env.action_url}}
