@@ -38,7 +38,7 @@ jobs:
         dotnet test "CallbackHandler.Tests\CallbackHandler.Tests.csproj" /p:CollectCoverage=true /p:Exclude="[xunit*]*" /p:ExcludeByAttribute="Obsolete" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="CompilerGeneratedAttribute" /p:ExcludeByAttribute="ExcludeFromCodeCoverageAttribute" /p:CoverletOutput="../lcov3.info" /maxcpucount:1 /p:CoverletOutputFormat="lcov"
 
     - name: Setup Node.js for use with actions
-    - uses: actions/setup-node@v3
+      uses: actions/setup-node@v3
       with:
         node-version: 16
     
