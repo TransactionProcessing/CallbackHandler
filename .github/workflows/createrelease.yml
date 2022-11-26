@@ -141,12 +141,12 @@ jobs:
     - name: Publish Images to Docker Hub - Pre Release
       if: ${{ github.event.release.prerelease == true }} 
       run: |
-        docker build . --file EstateManagement/Dockerfilewindows --tag stuartferguson/callbackhandler:dev
+        docker build . --file CallbackHandler/Dockerfilewindows --tag stuartferguson/callbackhandler:dev
         docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }}
         docker push stuartferguson/callbackhandler:dev
     - name: Publish Images to Docker Hub - Formal Release
       if: ${{ github.event.release.prerelease == false }} 
       run: |
-        docker build . --file EstateManagement/Dockerfilewindows --tag stuartferguson/callbackhandler:latest
+        docker build . --file CallbackHandler/Dockerfilewindows --tag stuartferguson/callbackhandler:latest
         docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }}
         docker push stuartferguson/callbackhandler:latest
