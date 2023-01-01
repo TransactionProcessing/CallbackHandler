@@ -14,9 +14,7 @@ using Xunit;
 
 namespace CallbackHandler.BusinessLogic.Tests.Mediator
 {
-    using System.Threading;
     using BusinessLogic.Services;
-    using CallbackHandlers.Models;
     using Lamar;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -100,19 +98,6 @@ namespace CallbackHandler.BusinessLogic.Tests.Mediator
             services.AddSingleton<IConfiguration>(Startup.Configuration);
 
             services.OverrideServices(s => { s.AddSingleton<ICallbackDomainService, DummyCallbackDomainService>(); });
-        }
-    }
-
-    public class DummyCallbackDomainService : ICallbackDomainService
-    {
-        public async Task RecordCallback(Guid callbackId,
-                                         String typeString,
-                                         MessageFormat messageFormat,
-                                         String callbackMessage,
-                                         String reference,
-                                         String[] destinations,
-                                         CancellationToken cancellationToken) {
-            
         }
     }
 }
