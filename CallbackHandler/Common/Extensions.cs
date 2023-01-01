@@ -1,10 +1,12 @@
 ﻿namespace CallbackHandler.Common;
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using EventStore.Client;
 using Microsoft.Extensions.DependencyInjection;
 
+[ExcludeFromCodeCoverage]
 public static class Extensions
 {
     public static IServiceCollection AddInSecureEventStoreClient(this IServiceCollection services,

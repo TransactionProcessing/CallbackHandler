@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace CallbackHandler
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net.Http;
     using System.Reflection;
@@ -39,6 +40,7 @@ namespace CallbackHandler
     using Swashbuckle.AspNetCore.Filters;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IWebHostEnvironment webHostEnvironment)
