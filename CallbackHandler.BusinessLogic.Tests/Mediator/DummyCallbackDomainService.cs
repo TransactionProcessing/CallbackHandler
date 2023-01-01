@@ -15,6 +15,5 @@ public class DummyCallbackDomainService : ICallbackDomainService
                                      String reference,
                                      String[] destinations,
                                      CancellationToken cancellationToken) {
-            
     }
 }
