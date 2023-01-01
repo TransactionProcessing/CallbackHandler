@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CallbackHander.Testing\CallbackHander.Testing.csproj" />
     <ProjectReference Include="..\CallbackHandler.BusinessLogic\CallbackHandler.BusinessLogic.csproj" />
+    <ProjectReference Include="..\CallbackHandler\CallbackHandler.csproj" />
   </ItemGroup>
 
 </Project>
