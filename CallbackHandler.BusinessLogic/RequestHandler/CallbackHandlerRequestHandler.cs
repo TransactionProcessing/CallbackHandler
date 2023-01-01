@@ -2,6 +2,7 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using CallbackHandler.BusinessLogic.Services;
     using CallbackMessageAggregate;
     using MediatR;
     using Requests;
@@ -10,22 +11,22 @@
 
     public class CallbackHandlerRequestHandler : IRequestHandler<RecordCallbackRequest>
     {
-        private readonly IAggregateRepository<CallbackMessageAggregate, DomainEvent> AggregateRepository;
-
-        public CallbackHandlerRequestHandler(IAggregateRepository<CallbackMessageAggregate,DomainEvent> aggregateRepository)
-        {
-            this.AggregateRepository = aggregateRepository;
+        private readonly ICallbackDomainService CallbackDomainService;
+        
+        public CallbackHandlerRequestHandler(ICallbackDomainService callbackDomainService) {
+            this.CallbackDomainService = callbackDomainService;
         }
 
         public async Task<Unit> Handle(RecordCallbackRequest request,
-                                       CancellationToken cancellationToken)
-        {
+                                       CancellationToken cancellationToken) {
 
-            CallbackMessageAggregate aggregate = await this.AggregateRepository.GetLatestVersion(request.CallbackId, cancellationToken);
-
-            aggregate.RecordCallback(request.CallbackId,request.TypeString, request.MessageFormat, request.CallbackMessage, request.Reference, request.Destinations);
-
-            await this.AggregateRepository.SaveChanges(aggregate,cancellationToken);
+            await this.CallbackDomainService.RecordCallback(request.CallbackId,
+                                                            request.TypeString,
+                                                            request.MessageFormat,
+                                                            request.CallbackMessage,
+                                                            request.Reference,
+                                                            request.Destinations,
+                                                            cancellationToken);
             
             return new Unit();
         }
