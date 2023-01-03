@@ -6,12 +6,22 @@ on:
   repository_dispatch:
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - id: nightly-check
+        name: Check for changes since last nightly
+        uses: lukecarr/nightly-check@v0.1.0
+
   build:
     name: "Nightly Build"
     env:
         ASPNETCORE_ENVIRONMENT: "Production"
         
     runs-on: ubuntu-latest
+
+    needs: check
+    if: ${{ needs.check.outputs.changes != 'false' }}
 
     steps:
     - uses: actions/checkout@v2.3.4
