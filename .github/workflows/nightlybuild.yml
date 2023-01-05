@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      commitcount: ${{ steps.commitswithintime.outputs.has-new-commits-within-time }}
+      commitcount: ${{ steps.commitswithintime.outputs.number-of-commits-within-time }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -21,6 +21,12 @@ jobs:
         id: commitswithintime
         with:
           hours: 24
+          
+      - name: Get the output from CommitsWithinTime
+        run: |
+          echo "The 'has-new-commits-within-time' value is ${{ steps.commitswithintime.outputs.has-new-commits-within-time }}"
+          echo "The 'number-of-commits-within-time' value is ${{ steps.commitswithintime.outputs.number-of-commits-within-time }}"
+          echo "The 'total-commits' value is ${{ steps.commitswithintime.outputs.total-commits }}"          
 
   build:
     name: "Nightly Build"
