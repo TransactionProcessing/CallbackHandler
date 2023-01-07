@@ -13,7 +13,7 @@ jobs:
       commitcount: ${{ steps.commitswithintime.outputs.number-of-commits-within-time }}
     steps:
       - uses: actions/checkout@v2
-        with:
+        #with:
           #fetch-depth: 0
 
       - name: Check for commits within time 
