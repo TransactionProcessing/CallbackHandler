@@ -33,3 +33,4 @@ jobs:
         dotnet test "CallbackHandler.BusinessLogic.Tests\CallbackHandler.BusinessLogic.Tests.csproj"
         dotnet test "CallbackHandler.CallbackMessageAggregate.Tests\CallbackHandler.CallbackMessageAggregate.Tests.csproj"
         dotnet test "CallbackHandler.Tests\CallbackHandler.Tests.csproj"
+
