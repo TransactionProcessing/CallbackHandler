@@ -54,7 +54,7 @@ jobs:
 
     - name: Publish API
       if: ${{ github.event.release.prerelease == false }} 
-      run: dotnet publish "CallbackHandler\CallbackHandler.csproj" --configuration Release --output publishOutput
+      run: dotnet publish "CallbackHandler\CallbackHandler.csproj" --configuration Release --output publishOutput -r win-x64 --self-contained
 
     - name: Install Octopus CLI
       if: ${{ github.event.release.prerelease == false }} 
