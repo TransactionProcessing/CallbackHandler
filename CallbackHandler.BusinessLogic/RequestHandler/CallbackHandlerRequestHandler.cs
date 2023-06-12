@@ -17,7 +17,7 @@
             this.CallbackDomainService = callbackDomainService;
         }
 
-        public async Task<Unit> Handle(RecordCallbackRequest request,
+        public async Task Handle(RecordCallbackRequest request,
                                        CancellationToken cancellationToken) {
 
             await this.CallbackDomainService.RecordCallback(request.CallbackId,
@@ -27,8 +27,6 @@
                                                             request.Reference,
                                                             request.Destinations,
                                                             cancellationToken);
-            
-            return new Unit();
         }
     }
 }
