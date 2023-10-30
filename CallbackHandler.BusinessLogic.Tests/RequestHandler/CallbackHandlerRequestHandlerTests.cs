@@ -1,7 +1,6 @@
 namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
 {
     using System;
-    using System.ServiceModel.Channels;
     using System.Threading;
     using BusinessLogic.RequestHandler;
     using BusinessLogic.Requests;

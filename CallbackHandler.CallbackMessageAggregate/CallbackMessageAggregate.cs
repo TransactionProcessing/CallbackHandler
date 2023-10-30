@@ -11,7 +11,7 @@ namespace CallbackHandler.CallbackMessageAggregate
     using Shared.EventStore.Aggregate;
     using Shared.General;
     
-    public class CallbackMessageAggregate : Aggregate
+    public record CallbackMessageAggregate : Aggregate
     {
         public CallbackMessageAggregate()
         {
