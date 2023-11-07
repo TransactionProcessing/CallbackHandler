@@ -63,6 +63,8 @@ jobs:
     - name: Push a package to Octopus Deploy 🐙
       uses: OctopusDeploy/push-package-action@v3
       with:
+        api_key: ${{ secrets.OCTOPUS_APIKEY }}
+        server: ${{ secrets.OCTOPUS_URL }}
         packages: ${{ steps.package.outputs.package_file_path }}
     
     - name: Get Release
@@ -86,6 +88,8 @@ jobs:
       uses: OctopusDeploy/create-release-action@v3
       id: "create_release"
       with:
+        api_key: ${{ secrets.OCTOPUS_APIKEY }}
+        server: ${{ secrets.OCTOPUS_URL }}
         project: "Callback Handler"
         package_version: ${{ steps.build.outputs.version }}
         releasenotes: "${{ steps.buildreleasenotes.outputs.releasenote }}" 
@@ -97,6 +101,8 @@ jobs:
       uses: OctopusDeploy/deploy-release-action@v3
       id: "deploy_release"
       with:
+        api_key: ${{ secrets.OCTOPUS_APIKEY }}
+        server: ${{ secrets.OCTOPUS_URL }}
         project: 'Callback Handler'
         release_number: ${{steps.create_releease.outputs.release_number}}
         environments: |
@@ -105,6 +111,8 @@ jobs:
     - name: Await task in Octopus Deploy 🐙
       uses: OctopusDeploy/await-task-action@v3
       with:
+        api_key: ${{ secrets.OCTOPUS_APIKEY }}
+        server: ${{ secrets.OCTOPUS_URL }}
         timeout_after: 300
         polling_interval: 30
         server_task_id: ${{ fromJson(steps.deploy_release.outputs.server_tasks)[0].serverTaskId }}
