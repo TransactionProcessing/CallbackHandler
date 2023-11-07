@@ -1,4 +1,4 @@
-name: Release
+﻿name: Release
 
 on:
   release:
@@ -50,34 +50,20 @@ jobs:
       if: ${{ github.event.release.prerelease == false }} 
       run: dotnet publish "CallbackHandler\CallbackHandler.csproj" --configuration Release --output publishOutput -r win-x64 --self-contained
 
-    - name: Install Octopus CLI
-      if: ${{ github.event.release.prerelease == false }} 
-      run: |
-        sudo apt update && sudo apt install --no-install-recommends gnupg curl ca-certificates apt-transport-https && \
-        curl -sSfL https://apt.octopus.com/public.key | sudo apt-key add - && \
-        sudo sh -c "echo deb https://apt.octopus.com/ stable main > /etc/apt/sources.list.d/octopus.com.list" && \
-        sudo apt update && sudo apt install octopuscli
+    - name: Create Zip package 🐙
+      id: package
+      uses: OctopusDeploy/create-zip-package-action@v3
+      with:
+        package_id: CallbackHandler
+        version: ${{ steps.get_version.outputs.VERSION }}
+        base_path: /home/runner/work/CallbackHandler/CallbackHandler/publishOutput
+        files: "**/*"
+        output_folder: /home/runner/work/CallbackHandler/CallbackHandler
 
-    - name: Pack Files for Octopus
-      if: ${{ github.event.release.prerelease == false }} 
-      run: >-
-        octo pack
-        --outFolder /home/runner/work/CallbackHandler/CallbackHandler
-        --basePath /home/runner/work/CallbackHandler/CallbackHandler/publishOutput
-        --id CallbackHandler
-        --version ${{ steps.get_version.outputs.VERSION }}
-        --format zip
-        --verbose
-        --logLevel=verbose
-
-    - name: Push Package to Octopus
-      if: ${{ github.event.release.prerelease == false }} 
-      run: >-
-        octo push
-        --server ${{ secrets.OCTOPUS_URL }}
-        --apiKey ${{ secrets.OCTOPUS_APIKEY }}
-        --package /home/runner/work/CallbackHandler/CallbackHandler/CallbackHandler.${{ steps.get_version.outputs.VERSION }}.zip
-        --overwrite-mode IgnoreIfExists
+    - name: Push a package to Octopus Deploy 🐙
+      uses: OctopusDeploy/push-package-action@v3
+      with:
+        packages: ${{ steps.package.outputs.package_file_path }}
     
     - name: Get Release
       if: ${{ github.event.release.prerelease == false }} 
@@ -96,20 +82,33 @@ jobs:
           json: ${{ steps.getrelease.outputs.data }}
           releasenote: "body"
     
-    - name: Create & Deploy Release in Octopus
-      if: ${{ github.event.release.prerelease == false }} 
-      run: >-
-        octo  create-release
-        --server ${{ secrets.OCTOPUS_URL }}
-        --apiKey ${{ secrets.OCTOPUS_APIKEY }}
-        --project "Callback Handler"
-        --version ${{ steps.get_version.outputs.VERSION }}
-        --channel Default
-        --deployTo Staging
-        --waitfordeployment
-        --deploymenttimeout 00:05:00
-        --releasenotes "${{ steps.buildreleasenotes.outputs.releasenote }}" 
-        
+    - name: Create a release in Octopus Deploy 🐙
+      uses: OctopusDeploy/create-release-action@v3
+      id: "create_release"
+      with:
+        project: "Callback Handler"
+        package_version: ${{ steps.build.outputs.version }}
+        releasenotes: "${{ steps.buildreleasenotes.outputs.releasenote }}" 
+        release_number: "${{ steps.build.outputs.version }}"
+        ignore_existing: true
+        channel: "Default"
+
+    - name: Deploy a release in Octopus Deploy 🐙
+      uses: OctopusDeploy/deploy-release-action@v3
+      id: "deploy_release"
+      with:
+        project: 'Callback Handler'
+        release_number: ${{steps.create_releease.outputs.release_number}}
+        environments: |
+            Staging      
+            
+    - name: Await task in Octopus Deploy 🐙
+      uses: OctopusDeploy/await-task-action@v3
+      with:
+        timeout_after: 300
+        polling_interval: 30
+        server_task_id: ${{ fromJson(steps.deploy_release.outputs.server_tasks)[0].serverTaskId }}
+
     - name: Build and Publish Nuget Packages
       if: ${{ github.event.release.prerelease == false }} 
       run: |
