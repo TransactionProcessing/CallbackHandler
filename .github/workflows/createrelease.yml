@@ -65,6 +65,7 @@ jobs:
       with:
         api_key: ${{ secrets.OCTOPUS_APIKEY }}
         server: ${{ secrets.OCTOPUS_URL }}
+        space: ${{ secrets.OCTOPUS_SPACE }}
         packages: ${{ steps.package.outputs.package_file_path }}
     
     - name: Get Release
@@ -90,6 +91,7 @@ jobs:
       with:
         api_key: ${{ secrets.OCTOPUS_APIKEY }}
         server: ${{ secrets.OCTOPUS_URL }}
+        space: ${{ secrets.OCTOPUS_SPACE }}
         project: "Callback Handler"
         package_version: ${{ steps.build.outputs.version }}
         releasenotes: "${{ steps.buildreleasenotes.outputs.releasenote }}" 
@@ -113,6 +115,7 @@ jobs:
       with:
         api_key: ${{ secrets.OCTOPUS_APIKEY }}
         server: ${{ secrets.OCTOPUS_URL }}
+        space: ${{ secrets.OCTOPUS_SPACE }}
         timeout_after: 300
         polling_interval: 30
         server_task_id: ${{ fromJson(steps.deploy_release.outputs.server_tasks)[0].serverTaskId }}
