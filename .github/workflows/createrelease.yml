@@ -106,7 +106,7 @@ jobs:
         api_key: ${{ secrets.OCTOPUS_APIKEY }}
         server: ${{ secrets.OCTOPUS_URL }}
         project: 'Callback Handler'
-        release_number: ${{steps.create_releease.outputs.release_number}}
+        release_number: ${{steps.create_release.outputs.release_number}}
         environments: |
             Staging      
             
