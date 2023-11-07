@@ -93,9 +93,9 @@ jobs:
         server: ${{ secrets.OCTOPUS_URL }}
         space: ${{ secrets.OCTOPUS_SPACE }}
         project: "Callback Handler"
-        package_version: ${{ steps.build.outputs.version }}
-        releasenotes: "${{ steps.buildreleasenotes.outputs.releasenote }}" 
-        release_number: "${{ steps.build.outputs.version }}"
+        package_version: ${{ steps.get_version.outputs.VERSION }}
+        release_notes: ${{ steps.buildreleasenotes.outputs.releasenote }}
+        release_number: ${{ steps.get_version.outputs.VERSION }}
         ignore_existing: true
         channel: "Default"
 
