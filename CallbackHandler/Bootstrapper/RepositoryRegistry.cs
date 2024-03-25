@@ -37,7 +37,7 @@ public class RepositoryRegistry : ServiceRegistry
                                                                                    }
                                                                   };
 
-        this.AddEventStoreProjectionManagerClient(Startup.ConfigureEventStoreSettings);
+        this.AddEventStoreProjectionManagementClient(Startup.ConfigureEventStoreSettings);
 
         if (insecureES)
         {
