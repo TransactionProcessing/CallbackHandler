@@ -21,31 +21,12 @@ public class RepositoryRegistry : ServiceRegistry
     {
         this.AddTransient<IEventStoreContext, EventStoreContext>();
         this.AddSingleton<IAggregateRepository<CallbackMessageAggregate, DomainEvent>, AggregateRepository<CallbackMessageAggregate, DomainEvent>>();
-            
-        Boolean insecureES = Startup.Configuration.GetValue<Boolean>("EventStoreSettings:Insecure");
 
-        Func<SocketsHttpHandler> CreateHttpMessageHandler = () => new SocketsHttpHandler
-                                                                  {
-                                                                      SslOptions = new SslClientAuthenticationOptions
-                                                                                   {
-                                                                                       RemoteCertificateValidationCallback = (sender,
-                                                                                           certificate,
-                                                                                           chain,
-                                                                                           errors) => {
-                                                                                           return true;
-                                                                                       }
-                                                                                   }
-                                                                  };
+        String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
 
-        this.AddEventStoreProjectionManagementClient(Startup.ConfigureEventStoreSettings);
+        this.AddEventStoreProjectionManagementClient(connectionString);
+        this.AddEventStorePersistentSubscriptionsClient(connectionString);
 
-        if (insecureES)
-        {
-            this.AddInSecureEventStoreClient(Startup.EventStoreClientSettings.ConnectivitySettings.Address, CreateHttpMessageHandler);
-        }
-        else
-        {
-            this.AddEventStoreClient(Startup.EventStoreClientSettings.ConnectivitySettings.Address, CreateHttpMessageHandler);
-        }
+        this.AddEventStoreClient(connectionString);
     }
 }

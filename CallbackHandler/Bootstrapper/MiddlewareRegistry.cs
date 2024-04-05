@@ -5,7 +5,9 @@
     using System.IO;
     using System.Reflection;
     using Common;
+    using EventStore.Client;
     using Lamar;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.OpenApi.Models;
@@ -19,11 +21,14 @@
     {
         public MiddlewareRegistry()
         {
-            this.AddHealthChecks().AddEventStore(Startup.EventStoreClientSettings,
-                                                     userCredentials: Startup.EventStoreClientSettings.DefaultCredentials,
-                                                     name: "Eventstore",
-                                                     failureStatus: HealthStatus.Unhealthy,
-                                                     tags: new string[] { "db", "eventstore" });
+            String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
+            EventStoreClientSettings eventStoreSettings = EventStoreClientSettings.Create(connectionString);
+
+            this.AddHealthChecks().AddEventStore(eventStoreSettings,
+                                                 userCredentials: eventStoreSettings.DefaultCredentials,
+                                                 name: "Eventstore",
+                                                 failureStatus: HealthStatus.Unhealthy,
+                                                 tags: new string[] { "db", "eventstore" });
 
             this.AddSwaggerGen(c =>
                                {
