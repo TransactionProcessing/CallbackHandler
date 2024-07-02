@@ -96,7 +96,11 @@ namespace CallbackHandler
 
             if (env.IsDevelopment())
             {
-                nlogConfigFilename = $"nlog.{env.EnvironmentName}.config";
+                var developmentNlogConfigFilename = "nlog.development.config";
+                if (File.Exists(Path.Combine(env.ContentRootPath, developmentNlogConfigFilename)))
+                {
+                    nlogConfigFilename = developmentNlogConfigFilename;
+                }
                 app.UseDeveloperExceptionPage();
             }
 
@@ -106,12 +110,7 @@ namespace CallbackHandler
             ILogger logger = loggerFactory.CreateLogger("CallbackHandler");
 
             Logger.Initialise(logger);
-
-            Action<String> loggerAction = message =>
-            {
-                Logger.LogInformation(message);
-            };
-            Startup.Configuration.LogConfiguration(loggerAction);
+            Startup.Configuration.LogConfiguration(Logger.LogWarning);
 
             ConfigurationReader.Initialise(Startup.Configuration);
 
