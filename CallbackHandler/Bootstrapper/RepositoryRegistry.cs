@@ -28,5 +28,7 @@ public class RepositoryRegistry : ServiceRegistry
         this.AddEventStorePersistentSubscriptionsClient(connectionString);
 
         this.AddEventStoreClient(connectionString);
+
+        this.AddSingleton<IDomainEventFactory<IDomainEvent>, DomainEventFactory>();
     }
 }
