@@ -1,9 +1,12 @@
-﻿namespace CallbackHandler.Controllers
+﻿using CallbackHandlers.Models;
+
+namespace CallbackHandler.Controllers
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Threading.Tasks;
+    using Azure.Core;
     using BusinessLogic.Requests;
     using DataTransferObjects;
     using MediatR;
@@ -40,16 +43,35 @@
         {
             Guid callbackId = Guid.NewGuid();
 
-            RecordCallbackRequest request = RecordCallbackRequest.Create(callbackId,
-                                                                         1, // JSON
-                                                                         depositCallback.GetType().ToString(),
-                                                                         JsonConvert.SerializeObject(depositCallback),
-                                                                         depositCallback.Reference,
-                                                                         new[] {"EstateManagement"});
+            CallbackCommands.RecordCallbackRequest request = new CallbackCommands.RecordCallbackRequest(callbackId,
+                JsonConvert.SerializeObject(depositCallback),
+                new[] { "EstateManagement" },
+                MessageFormat.JSON,
+                depositCallback.GetType().ToString(),
+                depositCallback.Reference);
 
             await this.Mediator.Send(request, cancellationToken);
 
-            return this.Ok();
+            return this.Ok(callbackId);
+        }
+
+        [HttpGet]
+        [Route("{callbackId}")]
+        [SwaggerResponse(200, "OK")]
+        public async Task<IActionResult> GetCallback([FromRoute ]Guid callbackId, CancellationToken cancellationToken)
+        {
+            CallbackQueries.GetCallbackQuery query = new CallbackQueries.GetCallbackQuery(callbackId);
+
+            var message = await this.Mediator.Send(query, cancellationToken);
+
+            var response = new CallbackMessage
+            {
+                Reference = message.Reference,
+                TypeString = message.TypeString,
+                Message = message.Message
+            };
+
+            return this.Ok(response);
         }
 
         #endregion

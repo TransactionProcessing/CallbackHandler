@@ -1,4 +1,5 @@
 using System;
+using CallbackHandlers.Models;
 using Xunit;
 
 namespace CallbackHander.Testing
@@ -20,13 +21,29 @@ namespace CallbackHander.Testing
 
         public static String Reference = "TestRef";
 
-        public static RecordCallbackRequest RecordCallbackRequest =>
-            RecordCallbackRequest.Create(TestData.CallbackId, TestData.MessageFormat, TestData.TypeString,
-                                         TestData.CallbackMessage, TestData.Reference, TestData.Destinations);
+        public static CallbackCommands.RecordCallbackRequest RecordCallbackRequest =>
+            new CallbackCommands.RecordCallbackRequest(TestData.CallbackId,
+                TestData.CallbackMessage,
+                TestData.Destinations,
+                (MessageFormat)TestData.MessageFormat,
+                TestData.TypeString,
+                TestData.Reference);
+
+        public static CallbackQueries.GetCallbackQuery GetCallbackQuery =>
+            new CallbackQueries.GetCallbackQuery(TestData.CallbackId);
 
         public static CallbackMessageAggregate EmptyCallbackMessageAggregate()
         {
             return new CallbackMessageAggregate();
+        }
+
+        public static CallbackMessageAggregate RecordedCallbackMessageAggregate()
+        {
+            CallbackMessageAggregate aggregate = new CallbackMessageAggregate();
+            aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, (MessageFormat)TestData.MessageFormat,
+                TestData.CallbackMessage, TestData.Reference, TestData.Destinations);
+
+            return aggregate;
         }
     }
 }

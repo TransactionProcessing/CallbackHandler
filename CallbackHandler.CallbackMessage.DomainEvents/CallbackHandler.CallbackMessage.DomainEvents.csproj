@@ -2,9 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
+		<DebugType>None</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Shared" Version="2024.7.1" />
-		<PackageReference Include="Shared.DomainDrivenDesign" Version="2024.7.1" />
+		<PackageReference Include="Shared" Version="2024.7.2" />
+		<PackageReference Include="Shared.DomainDrivenDesign" Version="2024.7.2" />
 	</ItemGroup>
 </Project>

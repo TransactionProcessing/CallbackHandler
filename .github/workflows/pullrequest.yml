@@ -29,3 +29,6 @@ jobs:
         dotnet test "CallbackHandler.CallbackMessageAggregate.Tests\CallbackHandler.CallbackMessageAggregate.Tests.csproj"
         dotnet test "CallbackHandler.Tests\CallbackHandler.Tests.csproj"
 
+    - name: Run Integration Tests
+      run: dotnet test "CallbackHandler.IntegrationTests\CallbackHandler.IntegrationTests.csproj"
+
