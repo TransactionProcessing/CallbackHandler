@@ -84,5 +84,17 @@ namespace CallbackHandler.CallbackMessageAggregate
         {
             return aggregate.Destinations.ToArray();
         }
+
+        public static CallbackMessage GetCallbackMessage(this CallbackMessageAggregate aggregate)
+        {
+            return new CallbackMessage
+            {
+                Reference = aggregate.Reference,
+                Destinations = aggregate.Destinations,
+                Message = aggregate.CallbackMessage,
+                MessageFormat = aggregate.MessageFormat,
+                TypeString = aggregate.TypeString
+            };
+        }
     }
 }

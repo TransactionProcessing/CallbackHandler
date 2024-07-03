@@ -30,14 +30,46 @@ namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
                                                       It.IsAny<String>(),
                                                       It.IsAny<String[]>(),
                                                       It.IsAny<CancellationToken>()));
-            CallbackHandlerRequestHandler handler = new CallbackHandlerRequestHandler(domainService.Object);
+            Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository =
+                new Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>>();
+
+            CallbackHandlerRequestHandler handler = new CallbackHandlerRequestHandler(domainService.Object, aggregateRepository.Object);
             
-            RecordCallbackRequest request = TestData.RecordCallbackRequest;
+            CallbackCommands.RecordCallbackRequest request = TestData.RecordCallbackRequest;
 
             Should.NotThrow(async () =>
                             {
                                 await handler.Handle(request, CancellationToken.None);
                             });
+        }
+
+        [Fact]
+        public void CallbackHandlerRequestHandlerTests_GetCallbackQuery_IsHandled()
+        {
+            Mock<ICallbackDomainService> domainService =
+                new Mock<ICallbackDomainService>();
+            domainService.Setup(a => a.RecordCallback(It.IsAny<Guid>(),
+                It.IsAny<String>(),
+                It.IsAny<MessageFormat>(),
+                It.IsAny<String>(),
+                It.IsAny<String>(),
+                It.IsAny<String[]>(),
+                It.IsAny<CancellationToken>()));
+            Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository =
+                new Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>>();
+
+            aggregateRepository.Setup(a => a.GetLatestVersion(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(TestData.RecordedCallbackMessageAggregate());
+
+            CallbackHandlerRequestHandler handler = new CallbackHandlerRequestHandler(domainService.Object, aggregateRepository.Object);
+
+            CallbackQueries.GetCallbackQuery query = TestData.GetCallbackQuery;
+
+            Should.NotThrow(async () =>
+            {
+                var callback = await handler.Handle(query, CancellationToken.None);
+                callback.Reference.ShouldBe(TestData.RecordedCallbackMessageAggregate().Reference);
+            });
         }
     }
 }

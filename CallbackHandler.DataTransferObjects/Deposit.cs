@@ -1,8 +1,10 @@
 ﻿namespace CallbackHandler.DataTransferObjects
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using Newtonsoft.Json;
 
+    [ExcludeFromCodeCoverage]
     public class Deposit
     {
         #region Properties
