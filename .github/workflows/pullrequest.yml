@@ -29,6 +29,9 @@ jobs:
         dotnet test "CallbackHandler.CallbackMessageAggregate.Tests\CallbackHandler.CallbackMessageAggregate.Tests.csproj"
         dotnet test "CallbackHandler.Tests\CallbackHandler.Tests.csproj"
 
+    - name: Build Docker Image
+      run: docker build . --file CallbackHandler/Dockerfile --tag callbackhandler:latest
+
     - name: Run Integration Tests
       run: dotnet test "CallbackHandler.IntegrationTests\CallbackHandler.IntegrationTests.csproj"
 
