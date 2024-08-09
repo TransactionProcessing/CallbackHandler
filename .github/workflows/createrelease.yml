@@ -52,7 +52,7 @@ jobs:
 
     - name: Build Release Package
       run: |
-         cd ./home/runner/work/CallbackHandler/CallbackHandler/publishOutput
+         cd /home/runner/work/CallbackHandler/CallbackHandler/publishOutput
          zip -r ../callbackhandler.zip ./*
 
     - name: Upload the artifact
