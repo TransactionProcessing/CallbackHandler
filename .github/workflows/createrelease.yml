@@ -71,7 +71,7 @@ jobs:
 
   deploystaging:
     runs-on: stagingserver
-    needs: build
+    needs: buildlinux
     environment: staging
     name: "Deploy to Staging"
     
@@ -100,7 +100,7 @@ jobs:
 
   deployproduction:
     runs-on: productionserver
-    needs: [build, deploystaging]
+    needs: [buildlinux, deploystaging]
     environment: production
     name: "Deploy to Production"
     
