@@ -65,9 +65,9 @@ jobs:
       if: ${{ github.event.release.prerelease == false }} 
       run: |
         dotnet pack "CallbackHandler.DataTransferObjects\CallbackHandler.DataTransferObjects.csproj" /p:PackageVersion=${{ steps.get_version.outputs.VERSION }} --output Nugets -c Release            
-        dotnet nuget push Nugets/CallbackHandler.DataTransferObjects.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.PRIVATEFEED_APIKEY }} --source ${{ secrets.PRIVATEFEED_URL }}
+        dotnet nuget push Nugets/CallbackHandler.DataTransferObjects.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.PRIVATEFEED_APIKEY }} --source ${{ secrets.PRIVATEFEED_URL }} --skip-duplicate
         dotnet pack "CallbackHandler.CallbackMessage.DomainEvents\CallbackHandler.CallbackMessage.DomainEvents.csproj" /p:PackageVersion=${{ steps.get_version.outputs.VERSION }} --output Nugets -c Release
-        dotnet nuget push Nugets/CallbackHandler.CallbackMessage.DomainEvents.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.PRIVATEFEED_APIKEY }} --source ${{ secrets.PRIVATEFEED_URL }}
+        dotnet nuget push Nugets/CallbackHandler.CallbackMessage.DomainEvents.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.PRIVATEFEED_APIKEY }} --source ${{ secrets.PRIVATEFEED_URL }} --skip-duplicate
 
   deploystaging:
     runs-on: stagingserver
