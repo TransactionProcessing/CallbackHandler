@@ -1,4 +1,6 @@
-﻿namespace CallbackHandler.BusinessLogic.Tests.Mediator;
+﻿using SimpleResults;
+
+namespace CallbackHandler.BusinessLogic.Tests.Mediator;
 
 using System;
 using System.Threading;
@@ -8,12 +10,11 @@ using CallbackHandlers.Models;
 
 public class DummyCallbackDomainService : ICallbackDomainService
 {
-    public async Task RecordCallback(Guid callbackId,
-                                     String typeString,
-                                     MessageFormat messageFormat,
-                                     String callbackMessage,
-                                     String reference,
-                                     String[] destinations,
-                                     CancellationToken cancellationToken) {
-    }
+    public async Task<Result> RecordCallback(Guid callbackId,
+                                             String typeString,
+                                             MessageFormat messageFormat,
+                                             String callbackMessage,
+                                             String reference,
+                                             String[] destinations,
+                                             CancellationToken cancellationToken) => Result.Success();
 }

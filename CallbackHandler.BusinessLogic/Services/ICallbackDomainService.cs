@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SimpleResults;
 
 namespace CallbackHandler.BusinessLogic.Services
 {
     public interface ICallbackDomainService
     {
-        Task RecordCallback(Guid callbackId,
+        Task<Result> RecordCallback(Guid callbackId,
                             String typeString,
                             MessageFormat messageFormat,
                             String callbackMessage,

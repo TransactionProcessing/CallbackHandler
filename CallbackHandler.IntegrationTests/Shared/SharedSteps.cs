@@ -52,9 +52,11 @@ namespace CallbackHandler.IntegrationTests.Shared
                     MediaTypeHeaderValue.Parse("application/json"));
                 var response = await client.SendAsync(msg);
                 response.StatusCode.ShouldBe(HttpStatusCode.OK);
-                var x = JsonConvert.DeserializeObject<Guid>( await response.Content.ReadAsStringAsync());
+                var content = await response.Content.ReadAsStringAsync();
+                ResponseData<Guid> responseData =
+                    JsonConvert.DeserializeObject<ResponseData<Guid>>(content);
 
-                this.TestingContext.SentCallbacks.Add(x, payload);
+                this.TestingContext.SentCallbacks.Add(responseData.Data, payload);
             }
         }
 
@@ -72,9 +74,13 @@ namespace CallbackHandler.IntegrationTests.Shared
 
                 var originalDeposit = JsonConvert.DeserializeObject<Deposit>(sentCallback.Value);
 
-                var x = JsonConvert.DeserializeObject<CallbackMessage>(await response.Content.ReadAsStringAsync());
-                x.Reference.ShouldBe(originalDeposit.Reference);
-                var callbackDeposit = JsonConvert.DeserializeObject<Deposit>(x.Message);
+                var content = await response.Content.ReadAsStringAsync();
+                ResponseData<CallbackMessage> responseData =
+                    JsonConvert.DeserializeObject<ResponseData<CallbackMessage>>(content);
+
+
+                responseData.Data.Reference.ShouldBe(originalDeposit.Reference);
+                var callbackDeposit = JsonConvert.DeserializeObject<Deposit>(responseData.Data.Message);
                 callbackDeposit.AccountNumber.ShouldBe(originalDeposit.AccountNumber);
             }
         }
@@ -102,5 +108,10 @@ namespace CallbackHandler.IntegrationTests.Shared
 
             return requests;
         }
+    }
+
+    internal class ResponseData<T>
+    {
+        public T Data { get; set; }
     }
 }

@@ -1,8 +1,6 @@
 ﻿@base @shared
 Feature: BankDepositCallback
 
-A short summary of the feature
-
 Scenario: Process a Bank Deposit Callback
 	Given I have the following Bank Deposit Callbacks
 	| Amount | DateTime | DepositId                            | HostIdentifier                       | Reference | SortCode | AccountNumber |

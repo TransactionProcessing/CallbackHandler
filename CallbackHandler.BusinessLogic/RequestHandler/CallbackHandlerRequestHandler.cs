@@ -1,4 +1,6 @@
-﻿namespace CallbackHandler.BusinessLogic.RequestHandler
+﻿using SimpleResults;
+
+namespace CallbackHandler.BusinessLogic.RequestHandler
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,8 +11,8 @@
     using Shared.DomainDrivenDesign.EventSourcing;
     using Shared.EventStore.Aggregate;
 
-    public class CallbackHandlerRequestHandler : IRequestHandler<CallbackCommands.RecordCallbackRequest>,
-                                                 IRequestHandler<CallbackQueries.GetCallbackQuery, CallbackHandlers.Models.CallbackMessage>
+    public class CallbackHandlerRequestHandler : IRequestHandler<CallbackCommands.RecordCallbackRequest, Result>,
+                                                 IRequestHandler<CallbackQueries.GetCallbackQuery, Result<CallbackHandlers.Models.CallbackMessage>>
     {
         private readonly ICallbackDomainService CallbackDomainService;
         private readonly IAggregateRepository<CallbackMessageAggregate, DomainEvent> CallbackAggregateRepository;
@@ -22,10 +24,10 @@
             CallbackAggregateRepository = callbackAggregateRepository;
         }
 
-        public async Task Handle(CallbackCommands.RecordCallbackRequest request,
-                                       CancellationToken cancellationToken) {
+        public async Task<Result> Handle(CallbackCommands.RecordCallbackRequest request,
+                                         CancellationToken cancellationToken) {
 
-            await this.CallbackDomainService.RecordCallback(request.CallbackId,
+            return await this.CallbackDomainService.RecordCallback(request.CallbackId,
                                                             request.TypeString,
                                                             request.MessageFormat,
                                                             request.CallbackMessage,
@@ -34,12 +36,14 @@
                                                             cancellationToken);
         }
 
-        public async Task<CallbackHandlers.Models.CallbackMessage> Handle(CallbackQueries.GetCallbackQuery request, CancellationToken cancellationToken)
+        public async Task<Result<CallbackHandlers.Models.CallbackMessage>> Handle(CallbackQueries.GetCallbackQuery request, CancellationToken cancellationToken)
         {
-            var callbackAggregate =
+            Result<CallbackMessageAggregate> callbackAggregate =
                 await this.CallbackAggregateRepository.GetLatestVersion(request.CallbackId, cancellationToken);
+            if (callbackAggregate.IsFailed)
+                return ResultHelpers.CreateFailure(callbackAggregate);
 
-            return callbackAggregate.GetCallbackMessage();
+            return Result.Success(callbackAggregate.Data.GetCallbackMessage());
         }
     }
 }
