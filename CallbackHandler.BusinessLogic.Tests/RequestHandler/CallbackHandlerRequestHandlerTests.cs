@@ -1,3 +1,5 @@
+using SimpleResults;
+
 namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
 {
     using System;
@@ -67,8 +69,9 @@ namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
 
             Should.NotThrow(async () =>
             {
-                var callback = await handler.Handle(query, CancellationToken.None);
-                callback.Reference.ShouldBe(TestData.RecordedCallbackMessageAggregate().Reference);
+                Result<CallbackMessage> callback = await handler.Handle(query, CancellationToken.None);
+                callback.IsSuccess.ShouldBeTrue();
+                callback.Data.Reference.ShouldBe(TestData.RecordedCallbackMessageAggregate().Reference);
             });
         }
     }

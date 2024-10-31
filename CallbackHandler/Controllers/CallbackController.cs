@@ -1,4 +1,6 @@
 ﻿using CallbackHandlers.Models;
+using Shared.EventStore.Aggregate;
+using SimpleResults;
 
 namespace CallbackHandler.Controllers
 {
@@ -38,7 +40,7 @@ namespace CallbackHandler.Controllers
 
         [HttpPost]
         [SwaggerResponse(200, "OK")]
-        public async Task<IActionResult> RecordCallback(Deposit depositCallback,
+        public async Task<ActionResult<Result<Guid>>> RecordCallback(Deposit depositCallback,
                                                         CancellationToken cancellationToken)
         {
             Guid callbackId = Guid.NewGuid();
@@ -50,28 +52,35 @@ namespace CallbackHandler.Controllers
                 depositCallback.GetType().ToString(),
                 depositCallback.Reference);
 
-            await this.Mediator.Send(request, cancellationToken);
+            Result result = await this.Mediator.Send(request, cancellationToken);
 
-            return this.Ok(callbackId);
+            if (result.IsFailed)
+                ResultHelpers.CreateFailure(result);
+            return Result.Success(callbackId);
         }
 
         [HttpGet]
         [Route("{callbackId}")]
         [SwaggerResponse(200, "OK")]
-        public async Task<IActionResult> GetCallback([FromRoute ]Guid callbackId, CancellationToken cancellationToken)
+        public async Task<ActionResult<Result<CallbackMessage>>> GetCallback([FromRoute ]Guid callbackId, CancellationToken cancellationToken)
         {
             CallbackQueries.GetCallbackQuery query = new CallbackQueries.GetCallbackQuery(callbackId);
 
-            var message = await this.Mediator.Send(query, cancellationToken);
+            Result<CallbackHandlers.Models.CallbackMessage> getResult = await this.Mediator.Send(query, cancellationToken);
 
-            var response = new CallbackMessage
+            if (getResult.IsFailed)
+                ResultHelpers.CreateFailure(getResult).ToActionResult();
+
+            
+            Result<CallbackMessage> result = Result.Success(
+            new CallbackMessage
             {
-                Reference = message.Reference,
-                TypeString = message.TypeString,
-                Message = message.Message
-            };
+                Reference = getResult.Data.Reference,
+                TypeString = getResult.Data.TypeString,
+                Message = getResult.Data.Message
+            });
 
-            return this.Ok(response);
+            return result.ToActionResult();
         }
 
         #endregion

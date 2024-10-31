@@ -1,4 +1,6 @@
-﻿namespace CallbackHandler.Bootstrapper;
+﻿using SimpleResults;
+
+namespace CallbackHandler.Bootstrapper;
 
 using BusinessLogic.RequestHandler;
 using BusinessLogic.Requests;
@@ -16,8 +18,8 @@ public class MediatorRegistry : ServiceRegistry
         this.AddTransient<IMediator, Mediator>();
         
         // request & notification handlers
-        this.AddSingleton<IRequestHandler<CallbackCommands.RecordCallbackRequest>, CallbackHandlerRequestHandler>();
-        this.AddSingleton<IRequestHandler<CallbackQueries.GetCallbackQuery, CallbackHandlers.Models.CallbackMessage>, CallbackHandlerRequestHandler>();
+        this.AddSingleton<IRequestHandler<CallbackCommands.RecordCallbackRequest, Result>, CallbackHandlerRequestHandler>();
+        this.AddSingleton<IRequestHandler<CallbackQueries.GetCallbackQuery, Result<CallbackHandlers.Models.CallbackMessage>>, CallbackHandlerRequestHandler>();
         this.AddSingleton<ICallbackDomainService, CallbackDomainService>();
     }
 }

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using CallbackHandlers.Models;
 using MediatR;
+using SimpleResults;
 
 namespace CallbackHandler.BusinessLogic.Requests;
 
@@ -14,5 +15,5 @@ public class CallbackCommands
         String[] Destinations,
         MessageFormat MessageFormat,
         String TypeString,
-        String Reference) : IRequest;
+        String Reference) : IRequest<Result>;
 }

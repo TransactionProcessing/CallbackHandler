@@ -39,7 +39,7 @@ namespace CallbackHandler.IntegrationTests.Features
         public virtual async System.Threading.Tasks.Task FeatureSetupAsync()
         {
             testRunner = Reqnroll.TestRunnerManager.GetTestRunnerForAssembly(null, NUnit.Framework.TestContext.CurrentContext.WorkerId);
-            Reqnroll.FeatureInfo featureInfo = new Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "BankDepositCallback", "A short summary of the feature", ProgrammingLanguage.CSharp, featureTags);
+            Reqnroll.FeatureInfo featureInfo = new Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "BankDepositCallback", null, ProgrammingLanguage.CSharp, featureTags);
             await testRunner.OnFeatureStartAsync(featureInfo);
         }
         
@@ -84,7 +84,7 @@ namespace CallbackHandler.IntegrationTests.Features
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             Reqnroll.ScenarioInfo scenarioInfo = new Reqnroll.ScenarioInfo("Process a Bank Deposit Callback", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 6
+#line 4
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -110,13 +110,13 @@ this.ScenarioInitialize(scenarioInfo);
                             "Deposit1",
                             "11-22-33",
                             "12345678"});
-#line 7
+#line 5
  await testRunner.GivenAsync("I have the following Bank Deposit Callbacks", ((string)(null)), table1, "Given ");
 #line hidden
-#line 10
+#line 8
  await testRunner.WhenAsync("I send the requests to the callback handler for deposits", ((string)(null)), ((Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 11
+#line 9
  await testRunner.ThenAsync("the deposit records are recorded", ((string)(null)), ((Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
