@@ -47,7 +47,7 @@ namespace CallbackHandler.Controllers
 
             CallbackCommands.RecordCallbackRequest request = new CallbackCommands.RecordCallbackRequest(callbackId,
                 JsonConvert.SerializeObject(depositCallback),
-                new[] { "EstateManagement" },
+                new[] { "TransactionProcessor" },
                 MessageFormat.JSON,
                 depositCallback.GetType().ToString(),
                 depositCallback.Reference);
