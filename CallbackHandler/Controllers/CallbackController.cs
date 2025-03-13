@@ -1,5 +1,6 @@
 ﻿using CallbackHandlers.Models;
 using Shared.EventStore.Aggregate;
+using Shared.Results;
 using SimpleResults;
 
 namespace CallbackHandler.Controllers
