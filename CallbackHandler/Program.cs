@@ -6,15 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NLog.Extensions.Logging;
+using Shared.Logger;
+using Shared.Middleware;
 
 namespace CallbackHandler
 {
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
     using Lamar.Microsoft.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
+    using NLog;
     using Shared.DomainDrivenDesign.EventSourcing;
     using Shared.EventStore.Aggregate;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
 
     [ExcludeFromCodeCoverage]
     public class Program
@@ -34,12 +38,28 @@ namespace CallbackHandler
                                                                   .AddJsonFile("hosting.development.json", optional: true)
                                                                   .AddEnvironmentVariables().Build();
 
+            String contentRoot = Directory.GetCurrentDirectory();
+            String nlogConfigPath = Path.Combine(contentRoot, "nlog.config");
+
+            LogManager.Setup(b =>
+            {
+                b.SetupLogFactory(setup =>
+                {
+                    setup.AddCallSiteHiddenAssembly(typeof(NlogLogger).Assembly);
+                    setup.AddCallSiteHiddenAssembly(typeof(Shared.Logger.Logger).Assembly);
+                    setup.AddCallSiteHiddenAssembly(typeof(TenantMiddleware).Assembly);
+                });
+                b.LoadConfigurationFromFile(nlogConfigPath);
+            });
+
+
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args);
             hostBuilder.UseWindowsService();
             hostBuilder.UseLamar();
             hostBuilder.ConfigureLogging(logging =>
                                          {
                                              logging.AddConsole();
+                                             logging.AddNLog();
 
                                          });
             hostBuilder.ConfigureWebHostDefaults(webBuilder =>
