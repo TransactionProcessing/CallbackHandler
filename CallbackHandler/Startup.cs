@@ -10,10 +10,6 @@ using System.Threading.Tasks;
 
 namespace CallbackHandler
 {
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Net.Http;
-    using System.Reflection;
     using Bootstrapper;
     using BusinessLogic.Common;
     using BusinessLogic.RequestHandler;
@@ -37,7 +33,12 @@ namespace CallbackHandler
     using Shared.Extensions;
     using Shared.General;
     using Shared.Logger;
+    using Shared.Middleware;
     using Swashbuckle.AspNetCore.Filters;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Net.Http;
+    using System.Reflection;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     [ExcludeFromCodeCoverage]
@@ -92,28 +93,18 @@ namespace CallbackHandler
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            String nlogConfigFilename = "nlog.config";
-
             if (env.IsDevelopment())
             {
-                var developmentNlogConfigFilename = "nlog.development.config";
-                if (File.Exists(Path.Combine(env.ContentRootPath, developmentNlogConfigFilename)))
-                {
-                    nlogConfigFilename = developmentNlogConfigFilename;
-                }
                 app.UseDeveloperExceptionPage();
             }
-
-            loggerFactory.ConfigureNLog(Path.Combine(env.ContentRootPath, nlogConfigFilename));
-            loggerFactory.AddNLog();
-
+            
             ILogger logger = loggerFactory.CreateLogger("CallbackHandler");
 
             Logger.Initialise(logger);
             Startup.Configuration.LogConfiguration(Logger.LogWarning);
 
             ConfigurationReader.Initialise(Startup.Configuration);
-
+            app.UseMiddleware<TenantMiddleware>();
             app.AddRequestLogging();
             app.AddResponseLogging();
             app.AddExceptionHandler();
