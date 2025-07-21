@@ -55,12 +55,14 @@ namespace CallbackHandler.CallbackMessageAggregate
             MessageFormat messageFormat,
             String callbackMessage,
             String reference,
-            String[] destinations)
+            String[] destinations,
+            Guid estateId,Guid merchantId)
         {
             foreach (String destination in destinations)
             {
                 DomainEvent callbackReceivedEvent = CreateCallbackReceivedEvent(aggregate,aggregateId, typeString,
-                    messageFormat, callbackMessage, reference, destination);
+                    messageFormat, callbackMessage, reference, destination,
+                    estateId, merchantId);
 
                 aggregate.ApplyAndAppend(callbackReceivedEvent);
             }
@@ -72,12 +74,13 @@ namespace CallbackHandler.CallbackMessageAggregate
             MessageFormat messageFormat,
             String callbackMessage,
             String reference,
-            String destination)
+            String destination,
+            Guid estateId, Guid merchantId)
         {
             return new CallbackReceivedEvent(aggregateId, typeString, (Int32) messageFormat,
                 callbackMessage,
                 reference,
-                destination);
+                destination, estateId, merchantId);
         }
 
         public static String[] GetDestinations(this CallbackMessageAggregate aggregate)
