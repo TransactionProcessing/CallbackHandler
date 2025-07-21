@@ -19,7 +19,9 @@ namespace CallbackHander.Testing
 
         public static String[] Destinations = new[] {"A", "B"};
 
-        public static String Reference = "TestRef";
+        public static String Reference = "640E863C23E244BDB9717C92733FFD4C-9D20A3961CF645EDAA7BDD436318BA29";
+        public static Guid EstateReference = Guid.Parse("640E863C-23E2-44BD-B971-7C92733FFD4C");
+        public static Guid MerchantReference = Guid.Parse("9D20A396-1CF6-45ED-AA7B-DD436318BA29");
 
         public static CallbackCommands.RecordCallbackRequest RecordCallbackRequest =>
             new CallbackCommands.RecordCallbackRequest(TestData.CallbackId,
@@ -41,7 +43,7 @@ namespace CallbackHander.Testing
         {
             CallbackMessageAggregate aggregate = new CallbackMessageAggregate();
             aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, (MessageFormat)TestData.MessageFormat,
-                TestData.CallbackMessage, TestData.Reference, TestData.Destinations);
+                TestData.CallbackMessage, TestData.Reference, TestData.Destinations, EstateReference, MerchantReference);
 
             return aggregate;
         }

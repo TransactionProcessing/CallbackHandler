@@ -20,7 +20,8 @@ namespace CallbackHandler.CallbackMessageAggregate.Tests
         {
             CallbackMessageAggregate aggregate = new CallbackMessageAggregate();
 
-            aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations);
+            aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations,
+                TestData.EstateReference, TestData.MerchantReference);
 
             aggregate.ShouldSatisfyAllConditions(() => aggregate.CallbackMessage.ShouldBe(TestData.CallbackMessage),
                                                  () => aggregate.TypeString.ShouldBe(TestData.TypeString),

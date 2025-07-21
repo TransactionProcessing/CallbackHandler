@@ -26,12 +26,26 @@ public class CallbackDomainService : ICallbackDomainService
                                              String reference,
                                              String[] destinations,
                                              CancellationToken cancellationToken) {
-        var getResult = await this.AggregateRepository.GetLatestVersion(callbackId, cancellationToken);
+
+        // split the reference string into an array of strings
+        String[] referenceData = reference?.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+        if (referenceData.Length == 0)
+        {
+            return Result.Failure("Reference cannot be empty.");
+        }
+        // Element 0 is estate reference, Element 1 is merchant reference
+        String estateReference = referenceData[0];
+        String merchantReference = referenceData[1];
+
+        // TODO: Validate the reference data
+        
+        Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(callbackId, cancellationToken);
         Result<CallbackMessageAggregate> callbackMessageAggregateResult =
             DomainServiceHelper.HandleGetAggregateResult(getResult, callbackId, false);
 
         CallbackMessageAggregate aggregate = callbackMessageAggregateResult.Data;
-        aggregate.RecordCallback(callbackId, typeString, messageFormat, callbackMessage, reference, destinations);
+        aggregate.RecordCallback(callbackId, typeString, messageFormat, callbackMessage, reference, destinations,
+            Guid.Parse(estateReference), Guid.Parse(merchantReference));
 
         return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
     }
