@@ -33,7 +33,7 @@ namespace CallbackHandler.Bootstrapper
                                                  userCredentials: eventStoreSettings.DefaultCredentials,
                                                  name: "Eventstore",
                                                  failureStatus: HealthStatus.Unhealthy,
-                                                 tags: new string[] { "db", "eventstore" });
+                                                 tags: new[] { "db", "eventstore" });
 
             this.AddSwaggerGen(c =>
                                {
