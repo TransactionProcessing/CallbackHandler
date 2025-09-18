@@ -19,9 +19,9 @@ namespace CallbackHandler.BusinessLogic.Tests.Services
 
     public class CallbackDomainServiceTests
     {
-        private ICallbackDomainService DomainService;
+        private readonly ICallbackDomainService DomainService;
 
-        private Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> AggregateRepository;
+        private readonly Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> AggregateRepository;
         public CallbackDomainServiceTests() {
             this.AggregateRepository = new Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>>();
             this.DomainService = new CallbackDomainService(this.AggregateRepository.Object);
