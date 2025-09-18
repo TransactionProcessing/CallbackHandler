@@ -20,7 +20,7 @@ namespace CallbackHandler.BusinessLogic.Tests.Mediator
 
     public class MediatorTests
     {
-        private List<IBaseRequest> Requests = new List<IBaseRequest>();
+        private readonly List<IBaseRequest> Requests = new List<IBaseRequest>();
 
         public MediatorTests()
         {
