@@ -1,56 +1,56 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace CallbackHandler.Bootstrapper
+namespace CallbackHandler.Bootstrapper;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Reflection;
+using Common;
+using EventStore.Client;
+using Lamar;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Shared.EventStore.Extensions;
+using Shared.General;
+using Shared.Middleware;
+using Swashbuckle.AspNetCore.Filters;
+
+[ExcludeFromCodeCoverage]
+public class MiddlewareRegistry :ServiceRegistry
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Reflection;
-    using Common;
-    using EventStore.Client;
-    using Lamar;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Diagnostics.HealthChecks;
-    using Microsoft.OpenApi.Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
-    using Shared.EventStore.Extensions;
-    using Shared.General;
-    using Shared.Middleware;
-    using Swashbuckle.AspNetCore.Filters;
-
-    [ExcludeFromCodeCoverage]
-    public class MiddlewareRegistry :ServiceRegistry
+    public MiddlewareRegistry()
     {
-        public MiddlewareRegistry()
-        {
-            String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
-            EventStoreClientSettings eventStoreSettings = EventStoreClientSettings.Create(connectionString);
+        String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
+        EventStoreClientSettings eventStoreSettings = EventStoreClientSettings.Create(connectionString);
 
-            this.AddHealthChecks().AddEventStore(eventStoreSettings,
-                                                 userCredentials: eventStoreSettings.DefaultCredentials,
-                                                 name: "Eventstore",
-                                                 failureStatus: HealthStatus.Unhealthy,
-                                                 tags: new[] { "db", "eventstore" });
+        this.AddHealthChecks().AddEventStore(eventStoreSettings,
+                                             userCredentials: eventStoreSettings.DefaultCredentials,
+                                             name: "Eventstore",
+                                             failureStatus: HealthStatus.Unhealthy,
+                                             tags: new[] { "db", "eventstore" });
 
-            this.AddSwaggerGen(c =>
-                               {
-                                   c.SwaggerDoc("v1", new OpenApiInfo
-                                                      {
-                                                          Title = "Callback Handler API",
-                                                          Version = "1.0",
-                                                          Description = "A REST Api to handle callback requests from external parties API's.",
-                                                          Contact = new OpenApiContact
-                                                                    {
-                                                                        Name = "Stuart Ferguson",
-                                                                        Email = "golfhandicapping@btinternet.com"
-                                                                    }
-                                                      });
-                                   // add a custom operation filter which sets default values
-                                   c.OperationFilter<SwaggerDefaultValues>();
-                                   c.ExampleFilters();
+        this.AddSwaggerGen(c =>
+                           {
+                               c.SwaggerDoc("v1", new OpenApiInfo
+                                                  {
+                                                      Title = "Callback Handler API",
+                                                      Version = "1.0",
+                                                      Description = "A REST Api to handle callback requests from external parties API's.",
+                                                      Contact = new OpenApiContact
+                                                                {
+                                                                    Name = "Stuart Ferguson",
+                                                                    Email = "golfhandicapping@btinternet.com"
+                                                                }
+                                                  });
+                               // add a custom operation filter which sets default values
+                               c.OperationFilter<SwaggerDefaultValues>();
+                               c.ExampleFilters();
 
                                    //Locate the XML files being generated by ASP.NET...
                                    DirectoryInfo directory = new(AppContext.BaseDirectory);
@@ -86,5 +86,4 @@ namespace CallbackHandler.Bootstrapper
 
             this.AddSingleton(config);
         }
-    }
 }
