@@ -32,7 +32,7 @@ namespace CallbackHandler
         {
             //At this stage, we only need our hosting file for ip and ports
 
-            FileInfo fi = new(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            FileInfo fi = new(typeof(Program).Assembly.Location);
 
             IConfigurationRoot config = new ConfigurationBuilder().SetBasePath(fi.Directory.FullName)
                                                                   .AddJsonFile("hosting.json", optional: true)
