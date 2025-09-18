@@ -57,7 +57,7 @@ namespace CallbackHandler.BusinessLogic.Tests.Mediator
                 }
             }
 
-            if (errors.Any() == true)
+            if (errors.Any())
             {
                 String errorMessage = String.Join(Environment.NewLine, errors);
                 throw new Exception(errorMessage);

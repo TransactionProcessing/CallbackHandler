@@ -37,10 +37,7 @@ namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
             
             CallbackCommands.RecordCallbackRequest request = TestData.RecordCallbackRequest;
 
-            Should.NotThrow(async () =>
-                            {
-                                await handler.Handle(request, CancellationToken.None);
-                            });
+            Should.NotThrow(async () => await handler.Handle(request, CancellationToken.None));
         }
 
         [Fact]
