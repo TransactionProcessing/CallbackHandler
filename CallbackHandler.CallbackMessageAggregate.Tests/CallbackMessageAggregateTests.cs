@@ -20,7 +20,7 @@ namespace CallbackHandler.CallbackMessageAggregate.Tests
         [Fact]
         public void CallbackMessageAggregate_RecordCallback_CallbackIsRecorded()
         {
-            CallbackMessageAggregate aggregate = new CallbackMessageAggregate();
+            CallbackMessageAggregate aggregate = new();
 
             Result result = aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations,
                 TestData.EstateReference, TestData.MerchantReference);

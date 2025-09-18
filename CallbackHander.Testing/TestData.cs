@@ -41,7 +41,7 @@ namespace CallbackHander.Testing
 
         public static CallbackMessageAggregate RecordedCallbackMessageAggregate()
         {
-            CallbackMessageAggregate aggregate = new CallbackMessageAggregate();
+            CallbackMessageAggregate aggregate = new();
             aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, (MessageFormat)TestData.MessageFormat,
                 TestData.CallbackMessage, TestData.Reference, TestData.Destinations, EstateReference, MerchantReference);
 

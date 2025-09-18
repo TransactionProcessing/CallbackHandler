@@ -40,12 +40,12 @@ namespace CallbackHandler.IntegrationTests.Shared
         [When(@"I send the requests to the callback handler for deposits")]
         public async Task WhenISendTheRequestsToTheCallbackHandlerForDeposits()
         {
-            using HttpClient client = new HttpClient();
+            using HttpClient client = new();
             foreach (var testingContextDeposit in this.TestingContext.Deposits)
             {
                 String requestUri =
                     $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/callbacks";
-                HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, requestUri);
+                HttpRequestMessage msg = new(HttpMethod.Post, requestUri);
                 var payload = JsonConvert.SerializeObject(testingContextDeposit);
 
                 msg.Content = new StringContent(payload, Encoding.UTF8,
@@ -63,12 +63,12 @@ namespace CallbackHandler.IntegrationTests.Shared
         [Then("the deposit records are recorded")]
         public async Task ThenTheDepositRecordsAreRecorded()
         {
-            using HttpClient client = new HttpClient();
+            using HttpClient client = new();
             foreach (var sentCallback in this.TestingContext.SentCallbacks)
             {
                 String requestUri =
                     $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/callbacks/{sentCallback.Key}";
-                HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
+                HttpRequestMessage msg = new(HttpMethod.Get, requestUri);
                 var response = await client.SendAsync(msg);
                 response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -90,10 +90,10 @@ namespace CallbackHandler.IntegrationTests.Shared
     {
         public static List<Deposit> ToDepositRequests(this DataTableRows tableRows)
         {
-            List<Deposit> requests = new List<Deposit>();
+            List<Deposit> requests = new();
             foreach (DataTableRow tableRow in tableRows)
             {
-                Deposit depositCallback = new Deposit
+                Deposit depositCallback = new()
                 {
                     AccountNumber = ReqnrollTableHelper.GetStringRowValue(tableRow, "AccountNumber"),
                     Amount = ReqnrollTableHelper.GetDecimalValue(tableRow, "Amount"),
