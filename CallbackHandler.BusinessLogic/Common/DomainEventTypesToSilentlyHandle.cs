@@ -42,9 +42,9 @@
         public Boolean HandleSilently(String handlerName,
                                       DomainEvent domainEvent)
         {
-            if (this.HandlerEventTypesToSilentlyHandle.ContainsKey(handlerName))
+            if (this.HandlerEventTypesToSilentlyHandle.TryGetValue(handlerName, out var eventTypes))
             {
-                if (this.HandlerEventTypesToSilentlyHandle[handlerName].Contains(domainEvent.GetType().FullName))
+                if (eventTypes.Contains(domainEvent.GetType().FullName))
                 {
                     return true;
                 }
