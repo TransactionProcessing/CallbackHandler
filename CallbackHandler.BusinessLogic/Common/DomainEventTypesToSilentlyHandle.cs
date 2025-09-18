@@ -42,12 +42,10 @@
         public Boolean HandleSilently(String handlerName,
                                       DomainEvent domainEvent)
         {
-            if (this.HandlerEventTypesToSilentlyHandle.ContainsKey(handlerName))
+            if (this.HandlerEventTypesToSilentlyHandle.TryGetValue(handlerName, out var eventTypes)
+                && eventTypes.Contains(domainEvent.GetType().FullName))
             {
-                if (this.HandlerEventTypesToSilentlyHandle[handlerName].Contains(domainEvent.GetType().FullName))
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
