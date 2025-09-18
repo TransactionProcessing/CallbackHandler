@@ -18,13 +18,13 @@ namespace CallbackHandler.Tests
         [Fact]
         public void VerifyBootstrapperIsValid()
         {
-            Mock<IWebHostEnvironment> hostingEnvironment = new Mock<IWebHostEnvironment>();
+            Mock<IWebHostEnvironment> hostingEnvironment = new();
             hostingEnvironment.Setup(he => he.EnvironmentName).Returns("Development");
             hostingEnvironment.Setup(he => he.ContentRootPath).Returns("/home");
             hostingEnvironment.Setup(he => he.ApplicationName).Returns("Test Application");
 
-            ServiceRegistry services = new ServiceRegistry();
-            Startup s = new Startup(hostingEnvironment.Object);
+            ServiceRegistry services = new();
+            Startup s = new(hostingEnvironment.Object);
             Startup.Configuration = this.SetupMemoryConfiguration();
 
             this.AddTestRegistrations(services, hostingEnvironment.Object);
@@ -58,7 +58,7 @@ namespace CallbackHandler.Tests
                                                         IWebHostEnvironment hostingEnvironment)
         {
             services.AddLogging();
-            DiagnosticListener diagnosticSource = new DiagnosticListener(hostingEnvironment.ApplicationName);
+            DiagnosticListener diagnosticSource = new(hostingEnvironment.ApplicationName);
             services.AddSingleton<DiagnosticSource>(diagnosticSource);
             services.AddSingleton<DiagnosticListener>(diagnosticSource);
             services.AddSingleton<IWebHostEnvironment>(hostingEnvironment);
