@@ -86,5 +86,4 @@ public class MiddlewareRegistry :ServiceRegistry
 
             this.AddSingleton(config);
         }
-    }
 }

@@ -52,5 +52,4 @@ public class DomainEventTypesToSilentlyHandle : IDomainEventTypesToSilentlyHandl
         }
 
         #endregion
-    }
 }
