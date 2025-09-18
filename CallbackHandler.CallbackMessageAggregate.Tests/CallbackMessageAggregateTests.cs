@@ -1,3 +1,5 @@
+using SimpleResults;
+
 namespace CallbackHandler.CallbackMessageAggregate.Tests
 {
     using CallbackHander.Testing;
@@ -20,8 +22,9 @@ namespace CallbackHandler.CallbackMessageAggregate.Tests
         {
             CallbackMessageAggregate aggregate = new CallbackMessageAggregate();
 
-            aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations,
+            Result result = aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations,
                 TestData.EstateReference, TestData.MerchantReference);
+            result.IsSuccess.ShouldBeTrue();
 
             aggregate.ShouldSatisfyAllConditions(() => aggregate.CallbackMessage.ShouldBe(TestData.CallbackMessage),
                                                  () => aggregate.TypeString.ShouldBe(TestData.TypeString),

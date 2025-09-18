@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using SimpleResults;
 
 namespace CallbackHandler.CallbackMessageAggregate
 {
@@ -49,7 +50,7 @@ namespace CallbackHandler.CallbackMessageAggregate
             aggregate.Destinations.Add(domainEvent.Destination);
         }
 
-        public static void RecordCallback(this CallbackMessageAggregate aggregate,
+        public static Result RecordCallback(this CallbackMessageAggregate aggregate,
             Guid aggregateId,
             String typeString,
             MessageFormat messageFormat,
@@ -66,6 +67,8 @@ namespace CallbackHandler.CallbackMessageAggregate
 
                 aggregate.ApplyAndAppend(callbackReceivedEvent);
             }
+
+            return Result.Success();
         }
 
         internal static DomainEvent CreateCallbackReceivedEvent(this CallbackMessageAggregate aggregate,
