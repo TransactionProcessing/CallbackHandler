@@ -17,7 +17,7 @@ public class TestData
 
     public static String CallbackMessage = "Callback message";
 
-    public static String[] Destinations = new[] {"A", "B"};
+    public static String[] Destinations = {"A", "B"};
 
     public static String Reference = "640E863C23E244BDB9717C92733FFD4C-9D20A3961CF645EDAA7BDD436318BA29";
     public static Guid EstateReference = Guid.Parse("640E863C-23E2-44BD-B971-7C92733FFD4C");
