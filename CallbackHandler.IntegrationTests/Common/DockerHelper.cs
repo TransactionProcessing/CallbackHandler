@@ -1,4 +1,4 @@
-﻿using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Services;
 using NLog;
 using Reqnroll;
 using Shared.IntegrationTesting;
@@ -19,13 +19,16 @@ namespace CallbackHandler.IntegrationTests.Common
     public class CallbackHandlerDockerHelper : global::Shared.IntegrationTesting.DockerHelper
     {
         public override async Task CreateSubscriptions()
-        {    
+        {
             // Nothing to do here
         }
 
         public Int32 GetCallbackHandlerPort()
         {
             return this.CallbackHandlerPort;
+        }
+    }
+}
         }
     }
 
