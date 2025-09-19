@@ -63,7 +63,6 @@ public class MediatorTests
             throw new Exception(errorMessage);
         }
     }
-}
 
         private IConfigurationRoot SetupMemoryConfiguration()
         {
@@ -101,4 +100,3 @@ public class MediatorTests
             services.OverrideServices(s => { s.AddSingleton<ICallbackDomainService, DummyCallbackDomainService>(); });
         }
     }
-}

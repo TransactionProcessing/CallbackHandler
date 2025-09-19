@@ -50,6 +50,7 @@ public class CallbackHandlerRequestHandlerTests
             It.IsAny<MessageFormat>(),
             It.IsAny<String>(),
             It.IsAny<String>(),
+            It.IsAny<String[]>(),
                 It.IsAny<CancellationToken>()));
             Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository =
                 new();
@@ -69,4 +70,3 @@ public class CallbackHandlerRequestHandlerTests
             });
         }
     }
-}

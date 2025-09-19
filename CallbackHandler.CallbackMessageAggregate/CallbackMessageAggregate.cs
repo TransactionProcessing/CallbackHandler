@@ -38,69 +38,58 @@ public record CallbackMessageAggregate : Aggregate
     public override void PlayEvent(IDomainEvent domainEvent) => CallbackMessageAggregateExtensions.PlayEvent(this, (dynamic)domainEvent);
 }
 
-public static class CallbackMessageAggregateExtensions
-{
-    public static void PlayEvent(this CallbackMessageAggregate aggregate, CallbackReceivedEvent domainEvent)
-    {
+public static class CallbackMessageAggregateExtensions {
+    public static void PlayEvent(this CallbackMessageAggregate aggregate,
+                                 CallbackReceivedEvent domainEvent) {
         // Mutate the state here based on the event
         aggregate.CallbackMessage = domainEvent.CallbackMessage;
-        aggregate.MessageFormat = (MessageFormat) domainEvent.MessageFormat;
+        aggregate.MessageFormat = (MessageFormat)domainEvent.MessageFormat;
         aggregate.TypeString = domainEvent.TypeString;
         aggregate.Reference = domainEvent.Reference;
         aggregate.Destinations.Add(domainEvent.Destination);
     }
 
     public static Result RecordCallback(this CallbackMessageAggregate aggregate,
-        Guid aggregateId,
-            String typeString,
-            MessageFormat messageFormat,
-            String callbackMessage,
-            String reference,
-            String[] destinations,
-            Guid estateId,Guid merchantId)
-        {
-            foreach (String destination in destinations)
-            {
-                DomainEvent callbackReceivedEvent = CreateCallbackReceivedEvent(aggregate,aggregateId, typeString,
-                    messageFormat, callbackMessage, reference, destination,
-                    estateId, merchantId);
+                                        Guid aggregateId,
+                                        String typeString,
+                                        MessageFormat messageFormat,
+                                        String callbackMessage,
+                                        String reference,
+                                        String[] destinations,
+                                        Guid estateId,
+                                        Guid merchantId) {
+        foreach (String destination in destinations) {
+            DomainEvent callbackReceivedEvent = CreateCallbackReceivedEvent(aggregate, aggregateId, typeString, messageFormat, callbackMessage, reference, destination, estateId, merchantId);
 
-                aggregate.ApplyAndAppend(callbackReceivedEvent);
-            }
-
-            return Result.Success();
+            aggregate.ApplyAndAppend(callbackReceivedEvent);
         }
 
-        internal static DomainEvent CreateCallbackReceivedEvent(this CallbackMessageAggregate aggregate,
-            Guid aggregateId,
-            String typeString,
-            MessageFormat messageFormat,
-            String callbackMessage,
-            String reference,
-            String destination,
-            Guid estateId, Guid merchantId)
-        {
-            return new CallbackReceivedEvent(aggregateId, typeString, (Int32) messageFormat,
-                callbackMessage,
-                reference,
-                destination, estateId, merchantId);
-        }
+        return Result.Success();
+    }
 
-        public static String[] GetDestinations(this CallbackMessageAggregate aggregate)
-        {
-            return aggregate.Destinations.ToArray();
-        }
+    internal static DomainEvent CreateCallbackReceivedEvent(this CallbackMessageAggregate aggregate,
+                                                            Guid aggregateId,
+                                                            String typeString,
+                                                            MessageFormat messageFormat,
+                                                            String callbackMessage,
+                                                            String reference,
+                                                            String destination,
+                                                            Guid estateId,
+                                                            Guid merchantId) {
+        return new CallbackReceivedEvent(aggregateId, typeString, (Int32)messageFormat, callbackMessage, reference, destination, estateId, merchantId);
+    }
 
-        public static CallbackMessage GetCallbackMessage(this CallbackMessageAggregate aggregate)
-        {
-            return new CallbackMessage
-            {
-                Reference = aggregate.Reference,
-                Destinations = aggregate.Destinations,
-                Message = aggregate.CallbackMessage,
-                MessageFormat = aggregate.MessageFormat,
-                TypeString = aggregate.TypeString
-            };
-        }
+    public static String[] GetDestinations(this CallbackMessageAggregate aggregate) {
+        return aggregate.Destinations.ToArray();
+    }
+
+    public static CallbackMessage GetCallbackMessage(this CallbackMessageAggregate aggregate) {
+        return new CallbackMessage {
+            Reference = aggregate.Reference,
+            Destinations = aggregate.Destinations,
+            Message = aggregate.CallbackMessage,
+            MessageFormat = aggregate.MessageFormat,
+            TypeString = aggregate.TypeString
+        };
     }
 }
