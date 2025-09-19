@@ -16,7 +16,7 @@ using Newtonsoft.Json.Bson;
 
 namespace CallbackHandler.IntegrationTests.Common
 {
-    public class DockerHelper : global::Shared.IntegrationTesting.DockerHelper
+    public class CallbackHandlerDockerHelper : global::Shared.IntegrationTesting.DockerHelper
     {
         public override async Task CreateSubscriptions()
         {    
@@ -55,7 +55,7 @@ namespace CallbackHandler.IntegrationTests.Common
 
             DockerServices dockerServices = DockerServices.CallbackHandler | DockerServices.EventStore | DockerServices.SqlServer;
 
-            this.TestingContext.DockerHelper = new DockerHelper();
+            this.TestingContext.DockerHelper = new CallbackHandlerDockerHelper();
             this.TestingContext.DockerHelper.Logger = logger;
             this.TestingContext.Logger = logger;
             this.TestingContext.DockerHelper.RequiredDockerServices = dockerServices;
@@ -92,7 +92,7 @@ namespace CallbackHandler.IntegrationTests.Common
 
     public class TestingContext
     {
-        public DockerHelper DockerHelper { get; set; }
+        public CallbackHandlerDockerHelper DockerHelper { get; set; }
         public NlogLogger Logger { get; set; }
 
         public List<Deposit> Deposits { get; set; }
