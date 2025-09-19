@@ -1,37 +1,36 @@
 using SimpleResults;
 
-namespace CallbackHandler.CallbackMessageAggregate.Tests
+namespace CallbackHandler.CallbackMessageAggregate.Tests;
+
+using CallbackHander.Testing;
+using CallbackHandlers.Models;
+using Shouldly;
+using Xunit;
+
+public class CallbackMessageAggregateTests
 {
-    using CallbackHander.Testing;
-    using CallbackHandlers.Models;
-    using Shouldly;
-    using Xunit;
+    //[Fact]
+    //public void CallbackMessageAggregate_CanBeCreated_IsCreated()
+    //{
+    //    CallbackMessageAggregate aggregate = CallbackMessageAggregate.Create(TestData.CallbackId);
 
-    public class CallbackMessageAggregateTests
+    //    aggregate.AggregateId.ShouldBe(TestData.CallbackId);
+    //}
+
+    [Fact]
+    public void CallbackMessageAggregate_RecordCallback_CallbackIsRecorded()
     {
-        //[Fact]
-        //public void CallbackMessageAggregate_CanBeCreated_IsCreated()
-        //{
-        //    CallbackMessageAggregate aggregate = CallbackMessageAggregate.Create(TestData.CallbackId);
+        CallbackMessageAggregate aggregate = new();
 
-        //    aggregate.AggregateId.ShouldBe(TestData.CallbackId);
-        //}
+        Result result = aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations,
+            TestData.EstateReference, TestData.MerchantReference);
+        result.IsSuccess.ShouldBeTrue();
 
-        [Fact]
-        public void CallbackMessageAggregate_RecordCallback_CallbackIsRecorded()
-        {
-            CallbackMessageAggregate aggregate = new();
-
-            Result result = aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations,
-                TestData.EstateReference, TestData.MerchantReference);
-            result.IsSuccess.ShouldBeTrue();
-
-            aggregate.ShouldSatisfyAllConditions(() => aggregate.CallbackMessage.ShouldBe(TestData.CallbackMessage),
-                                                 () => aggregate.TypeString.ShouldBe(TestData.TypeString),
-                                                 () => aggregate.MessageFormat.ShouldBe(MessageFormat.JSON),
-                                                 () => aggregate.Reference.ShouldBe(TestData.Reference),
-                                                 () => aggregate.GetDestinations().ShouldNotBeEmpty(),
-                                                 () => aggregate.GetDestinations().Length.ShouldBe(TestData.Destinations.Length));
-        }
+        aggregate.ShouldSatisfyAllConditions(() => aggregate.CallbackMessage.ShouldBe(TestData.CallbackMessage),
+                                             () => aggregate.TypeString.ShouldBe(TestData.TypeString),
+                                             () => aggregate.MessageFormat.ShouldBe(MessageFormat.JSON),
+                                             () => aggregate.Reference.ShouldBe(TestData.Reference),
+                                             () => aggregate.GetDestinations().ShouldNotBeEmpty(),
+                                             () => aggregate.GetDestinations().Length.ShouldBe(TestData.Destinations.Length));
     }
 }

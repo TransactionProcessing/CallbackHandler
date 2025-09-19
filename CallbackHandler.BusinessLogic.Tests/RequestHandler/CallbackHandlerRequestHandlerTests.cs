@@ -1,56 +1,56 @@
 using SimpleResults;
 
-namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
+namespace CallbackHandler.BusinessLogic.Tests.RequestHandler;
+
+using System;
+using System.Threading;
+using BusinessLogic.RequestHandler;
+using BusinessLogic.Requests;
+using BusinessLogic.Services;
+using CallbackHander.Testing;
+using CallbackHandlers.Models;
+using CallbackMessageAggregate;
+using MediatR;
+using Moq;
+using Services;
+using Shared.DomainDrivenDesign.EventSourcing;
+using Shared.EventStore.Aggregate;
+using Shouldly;
+using Xunit;
+
+public class CallbackHandlerRequestHandlerTests
 {
-    using System;
-    using System.Threading;
-    using BusinessLogic.RequestHandler;
-    using BusinessLogic.Requests;
-    using BusinessLogic.Services;
-    using CallbackHander.Testing;
-    using CallbackHandlers.Models;
-    using CallbackMessageAggregate;
-    using MediatR;
-    using Moq;
-    using Services;
-    using Shared.DomainDrivenDesign.EventSourcing;
-    using Shared.EventStore.Aggregate;
-    using Shouldly;
-    using Xunit;
-
-    public class CallbackHandlerRequestHandlerTests
+    [Fact]
+    public void CallbackHandlerRequestHandlerTests_RecordCallbackRequest_IsHandled()
     {
-        [Fact]
-        public void CallbackHandlerRequestHandlerTests_RecordCallbackRequest_IsHandled()
-        {
-            Mock<ICallbackDomainService> domainService = new();
-            domainService.Setup(a => a.RecordCallback(It.IsAny<Guid>(),
-                                                      It.IsAny<String>(),
-                                                      It.IsAny<MessageFormat>(),
-                                                      It.IsAny<String>(),
-                                                      It.IsAny<String>(),
-                                                      It.IsAny<String[]>(),
-                                                      It.IsAny<CancellationToken>()));
-            Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository = new();
+        Mock<ICallbackDomainService> domainService = new();
+        domainService.Setup(a => a.RecordCallback(It.IsAny<Guid>(),
+                                                  It.IsAny<String>(),
+                                                  It.IsAny<MessageFormat>(),
+                                                  It.IsAny<String>(),
+                                                  It.IsAny<String>(),
+                                                  It.IsAny<String[]>(),
+                                                  It.IsAny<CancellationToken>()));
+        Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository = new();
 
-            CallbackHandlerRequestHandler handler = new(domainService.Object, aggregateRepository.Object);
-            
-            CallbackCommands.RecordCallbackRequest request = TestData.RecordCallbackRequest;
+        CallbackHandlerRequestHandler handler = new(domainService.Object, aggregateRepository.Object);
+        
+        CallbackCommands.RecordCallbackRequest request = TestData.RecordCallbackRequest;
 
-            Should.NotThrow(async () => await handler.Handle(request, CancellationToken.None));
-        }
+        Should.NotThrow(async () => await handler.Handle(request, CancellationToken.None));
+    }
 
-        [Fact]
-        public void CallbackHandlerRequestHandlerTests_GetCallbackQuery_IsHandled()
-        {
-            Mock<ICallbackDomainService> domainService =
-                new();
-            domainService.Setup(a => a.RecordCallback(It.IsAny<Guid>(),
-                It.IsAny<String>(),
-                It.IsAny<MessageFormat>(),
-                It.IsAny<String>(),
-                It.IsAny<String>(),
-                It.IsAny<String[]>(),
+    [Fact]
+    public void CallbackHandlerRequestHandlerTests_GetCallbackQuery_IsHandled()
+    {
+        Mock<ICallbackDomainService> domainService =
+            new();
+        domainService.Setup(a => a.RecordCallback(It.IsAny<Guid>(),
+            It.IsAny<String>(),
+            It.IsAny<MessageFormat>(),
+            It.IsAny<String>(),
+            It.IsAny<String>(),
+            It.IsAny<String[]>(),
                 It.IsAny<CancellationToken>()));
             Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository =
                 new();
@@ -70,4 +70,3 @@ namespace CallbackHandler.BusinessLogic.Tests.RequestHandler
             });
         }
     }
-}

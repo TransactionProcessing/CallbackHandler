@@ -12,57 +12,57 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace CallbackHandler.BusinessLogic.Tests.Mediator
+namespace CallbackHandler.BusinessLogic.Tests.Mediator;
+
+using BusinessLogic.Services;
+using Lamar;
+using Microsoft.Extensions.DependencyInjection;
+
+public class MediatorTests
 {
-    using BusinessLogic.Services;
-    using Lamar;
-    using Microsoft.Extensions.DependencyInjection;
+    private readonly List<IBaseRequest> Requests = new List<IBaseRequest>();
 
-    public class MediatorTests
+    public MediatorTests()
     {
-        private readonly List<IBaseRequest> Requests = new List<IBaseRequest>();
+        this.Requests.Add(TestData.RecordCallbackRequest);
+    }
 
-        public MediatorTests()
+    [Fact]
+    public async Task Mediator_Send_RequestHandled()
+    {
+        Mock<IWebHostEnvironment> hostingEnvironment = new();
+        hostingEnvironment.Setup(he => he.EnvironmentName).Returns("Development");
+        hostingEnvironment.Setup(he => he.ContentRootPath).Returns("/home");
+        hostingEnvironment.Setup(he => he.ApplicationName).Returns("Test Application");
+
+        ServiceRegistry services = new();
+        Startup s = new(hostingEnvironment.Object);
+        Startup.Configuration = this.SetupMemoryConfiguration();
+
+        this.AddTestRegistrations(services, hostingEnvironment.Object);
+        s.ConfigureContainer(services);
+        Startup.Container.AssertConfigurationIsValid(AssertMode.Full);
+
+        List<String> errors = new();
+        IMediator mediator = Startup.Container.GetService<IMediator>();
+        foreach (IBaseRequest baseRequest in this.Requests)
         {
-            this.Requests.Add(TestData.RecordCallbackRequest);
-        }
-
-        [Fact]
-        public async Task Mediator_Send_RequestHandled()
-        {
-            Mock<IWebHostEnvironment> hostingEnvironment = new();
-            hostingEnvironment.Setup(he => he.EnvironmentName).Returns("Development");
-            hostingEnvironment.Setup(he => he.ContentRootPath).Returns("/home");
-            hostingEnvironment.Setup(he => he.ApplicationName).Returns("Test Application");
-
-            ServiceRegistry services = new();
-            Startup s = new(hostingEnvironment.Object);
-            Startup.Configuration = this.SetupMemoryConfiguration();
-
-            this.AddTestRegistrations(services, hostingEnvironment.Object);
-            s.ConfigureContainer(services);
-            Startup.Container.AssertConfigurationIsValid(AssertMode.Full);
-
-            List<String> errors = new();
-            IMediator mediator = Startup.Container.GetService<IMediator>();
-            foreach (IBaseRequest baseRequest in this.Requests)
+            try
             {
-                try
-                {
-                    await mediator.Send(baseRequest);
-                }
-                catch (Exception ex)
-                {
-                    errors.Add(ex.Message);
-                }
+                await mediator.Send(baseRequest);
             }
-
-            if (errors.Any())
+            catch (Exception ex)
             {
-                String errorMessage = String.Join(Environment.NewLine, errors);
-                throw new Exception(errorMessage);
+                errors.Add(ex.Message);
             }
         }
+
+        if (errors.Any())
+        {
+            String errorMessage = String.Join(Environment.NewLine, errors);
+            throw new Exception(errorMessage);
+        }
+    }
 
         private IConfigurationRoot SetupMemoryConfiguration()
         {
@@ -100,4 +100,3 @@ namespace CallbackHandler.BusinessLogic.Tests.Mediator
             services.OverrideServices(s => { s.AddSingleton<ICallbackDomainService, DummyCallbackDomainService>(); });
         }
     }
-}
