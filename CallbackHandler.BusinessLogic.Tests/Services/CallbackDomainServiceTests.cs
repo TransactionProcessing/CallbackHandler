@@ -30,16 +30,15 @@ public class CallbackDomainServiceTests
 
     [Fact]
     public async Task CallbackDomainService_RecordCallback_CallbackRecorded() {
-        this.AggregateRepository.Setup(a => a.GetLatestVersion(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(TestData.EmptyCallbackMessageAggregate());
+        this.AggregateRepository.Setup(a => a.GetLatestVersion(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                               .ReturnsAsync(TestData.EmptyCallbackMessageAggregate());
 
-        Should.NotThrow(async () => {
-                            await this.DomainService.RecordCallback(TestData.CallbackId,
-                                                                    TestData.TypeString,
-                                                                    (MessageFormat)TestData.MessageFormat,
-                                                                    TestData.CallbackMessage,
-                                                                    TestData.Reference,
-                                                                    TestData.Destinations,
-                                                                    CancellationToken.None);
-                        });
+        Should.NotThrow(async () => await this.DomainService.RecordCallback(TestData.CallbackId,
+                                                                            TestData.TypeString,
+                                                                            (MessageFormat)TestData.MessageFormat,
+                                                                            TestData.CallbackMessage,
+                                                                            TestData.Reference,
+                                                                            TestData.Destinations,
+                                                                            CancellationToken.None));
     }
 }
