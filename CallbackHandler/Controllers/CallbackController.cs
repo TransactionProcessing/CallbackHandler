@@ -91,7 +91,7 @@ namespace CallbackHandler.Controllers
         /// <summary>
         /// The controller name
         /// </summary>
-        public const String ControllerName = "callbacks";
+        private const String ControllerName = "callbacks";
 
         /// <summary>
         /// The controller route
