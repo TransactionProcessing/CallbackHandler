@@ -43,11 +43,19 @@ jobs:
     - name: Run Integration Tests
       run: dotnet test "CallbackHandler.IntegrationTests\CallbackHandler.IntegrationTests.csproj"
 
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3  
+    - name: Install LCOV merger
+      run: npm install -g lcov-result-merger
+
+    - name: Merge LCOV reports
+      run: |
+        mkdir -p coverage
+        lcov-result-merger "*.info" > lcov.info
+
+    - name: Upload merged coverage to Codacy
+      uses: codacy/codacy-coverage-reporter-action@v1
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./lcov1.info,./lcov2.info,./lcov3.info              
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: ./lcov.info            
     
     - uses: dacbd/create-issue-action@main
       if: ${{ failure() }}
