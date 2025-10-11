@@ -83,7 +83,6 @@ namespace CallbackHandler
             services.IncludeRegistry<RepositoryRegistry>();
             services.IncludeRegistry<MiddlewareRegistry>();
 
-            // TODO: Create one domain event from each assembly here
             TypeProvider.LoadDomainEventsTypeDynamically();
 
             Startup.Container = new Container(services);
