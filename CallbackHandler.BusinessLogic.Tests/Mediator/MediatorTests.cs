@@ -24,7 +24,8 @@ public class MediatorTests
 
     public MediatorTests()
     {
-        this.Requests.Add(TestData.RecordCallbackRequest);
+        this.Requests.Add(TestData.RecordCallbackCommand);
+        this.Requests.Add(TestData.GetCallbackQuery);
     }
 
     [Fact]

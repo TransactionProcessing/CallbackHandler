@@ -12,7 +12,7 @@ using Requests;
 using Shared.DomainDrivenDesign.EventSourcing;
 using Shared.EventStore.Aggregate;
 
-public class CallbackHandlerRequestHandler : IRequestHandler<CallbackCommands.RecordCallbackRequest, Result>,
+public class CallbackHandlerRequestHandler : IRequestHandler<CallbackCommands.RecordCallbackCommand, Result>,
                                              IRequestHandler<CallbackQueries.GetCallbackQuery, Result<CallbackHandlers.Models.CallbackMessage>>
 {
     private readonly ICallbackDomainService CallbackDomainService;
@@ -25,15 +25,10 @@ public class CallbackHandlerRequestHandler : IRequestHandler<CallbackCommands.Re
         CallbackAggregateRepository = callbackAggregateRepository;
     }
 
-    public async Task<Result> Handle(CallbackCommands.RecordCallbackRequest request,
+    public async Task<Result> Handle(CallbackCommands.RecordCallbackCommand command,
                                      CancellationToken cancellationToken) {
 
-        return await this.CallbackDomainService.RecordCallback(request.CallbackId,
-                                                        request.TypeString,
-                                                        request.MessageFormat,
-                                                        request.CallbackMessage,
-                                                        request.Reference,
-                                                        request.Destinations,
+        return await this.CallbackDomainService.RecordCallback(command,
                                                         cancellationToken);
     }
 

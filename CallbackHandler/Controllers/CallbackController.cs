@@ -46,7 +46,7 @@ namespace CallbackHandler.Controllers
         {
             Guid callbackId = Guid.NewGuid();
 
-            CallbackCommands.RecordCallbackRequest request = new CallbackCommands.RecordCallbackRequest(callbackId,
+            CallbackCommands.RecordCallbackCommand request = new(callbackId,
                 JsonConvert.SerializeObject(depositCallback),
                 new[] { "TransactionProcessor" },
                 MessageFormat.JSON,
