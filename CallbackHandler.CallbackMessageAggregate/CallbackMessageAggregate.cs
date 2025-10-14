@@ -54,12 +54,10 @@ public static class CallbackMessageAggregateExtensions {
                                         String typeString,
                                         MessageFormat messageFormat,
                                         String callbackMessage,
-                                        String reference,
                                         String[] destinations,
-                                        Guid estateId,
-                                        Guid merchantId) {
+                                        (String reference, Guid estateId, Guid merchantId) referenceFields) {
         foreach (String destination in destinations) {
-            CallbackReceivedEvent callbackReceivedEvent = new (aggregateId, typeString, (Int32)messageFormat, callbackMessage, reference, destination, estateId, merchantId);
+            CallbackReceivedEvent callbackReceivedEvent = new (aggregateId, typeString, (Int32)messageFormat, callbackMessage, referenceFields.reference, destination, referenceFields.estateId, referenceFields.merchantId);
 
             aggregate.ApplyAndAppend(callbackReceivedEvent);
         }
