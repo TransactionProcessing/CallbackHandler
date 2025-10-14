@@ -43,7 +43,7 @@ public class TestData
     {
         CallbackMessageAggregate aggregate = new();
         aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, (MessageFormat)TestData.MessageFormat,
-            TestData.CallbackMessage, TestData.Reference, TestData.Destinations, EstateReference, MerchantReference);
+            TestData.CallbackMessage, TestData.Destinations,(TestData.Reference, EstateReference, MerchantReference));
 
         return aggregate;
     }

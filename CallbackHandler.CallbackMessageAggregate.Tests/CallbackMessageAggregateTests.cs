@@ -22,8 +22,8 @@ public class CallbackMessageAggregateTests
     {
         CallbackMessageAggregate aggregate = new();
 
-        Result result = aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Reference, TestData.Destinations,
-            TestData.EstateReference, TestData.MerchantReference);
+        Result result = aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Destinations,
+            (TestData.Reference, TestData.EstateReference, TestData.MerchantReference));
         result.IsSuccess.ShouldBeTrue();
 
         aggregate.ShouldSatisfyAllConditions(() => aggregate.CallbackMessage.ShouldBe(TestData.CallbackMessage),
