@@ -40,8 +40,8 @@ public class CallbackDomainService : ICallbackDomainService
             DomainServiceHelper.HandleGetAggregateResult(getResult, command.CallbackId, false);
 
         CallbackMessageAggregate aggregate = callbackMessageAggregateResult.Data;
-        Result stateResult = aggregate.RecordCallback(command.CallbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Reference, command.Destinations,
-            Guid.Parse(estateReference), Guid.Parse(merchantReference));
+        Result stateResult = aggregate.RecordCallback(command.CallbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Destinations,
+            (command.Reference, Guid.Parse(estateReference), Guid.Parse(merchantReference)));
         if (stateResult.IsFailed)
             return stateResult;
         return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
