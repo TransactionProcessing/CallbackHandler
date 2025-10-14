@@ -59,26 +59,13 @@ public static class CallbackMessageAggregateExtensions {
                                         Guid estateId,
                                         Guid merchantId) {
         foreach (String destination in destinations) {
-            DomainEvent callbackReceivedEvent = CreateCallbackReceivedEvent(aggregate, aggregateId, typeString, messageFormat, callbackMessage, reference, destination, estateId, merchantId);
+            CallbackReceivedEvent callbackReceivedEvent = new (aggregateId, typeString, (Int32)messageFormat, callbackMessage, reference, destination, estateId, merchantId);
 
             aggregate.ApplyAndAppend(callbackReceivedEvent);
         }
 
         return Result.Success();
     }
-
-    internal static DomainEvent CreateCallbackReceivedEvent(this CallbackMessageAggregate aggregate,
-                                                            Guid aggregateId,
-                                                            String typeString,
-                                                            MessageFormat messageFormat,
-                                                            String callbackMessage,
-                                                            String reference,
-                                                            String destination,
-                                                            Guid estateId,
-                                                            Guid merchantId) {
-        return new CallbackReceivedEvent(aggregateId, typeString, (Int32)messageFormat, callbackMessage, reference, destination, estateId, merchantId);
-    }
-
     public static String[] GetDestinations(this CallbackMessageAggregate aggregate) {
         return aggregate.Destinations.ToArray();
     }

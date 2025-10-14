@@ -9,7 +9,7 @@ namespace CallbackHandler.BusinessLogic.Requests;
 [ExcludeFromCodeCoverage]
 public class CallbackCommands
 {
-    public record RecordCallbackRequest(
+    public record RecordCallbackCommand(
         Guid CallbackId,
         String CallbackMessage,
         String[] Destinations,

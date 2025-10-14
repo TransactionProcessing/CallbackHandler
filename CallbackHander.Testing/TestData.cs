@@ -23,8 +23,8 @@ public class TestData
     public static Guid EstateReference = Guid.Parse("640E863C-23E2-44BD-B971-7C92733FFD4C");
     public static Guid MerchantReference = Guid.Parse("9D20A396-1CF6-45ED-AA7B-DD436318BA29");
 
-    public static CallbackCommands.RecordCallbackRequest RecordCallbackRequest =>
-        new CallbackCommands.RecordCallbackRequest(TestData.CallbackId,
+    public static CallbackCommands.RecordCallbackCommand RecordCallbackCommand =>
+        new (TestData.CallbackId,
             TestData.CallbackMessage,
             TestData.Destinations,
             (MessageFormat)TestData.MessageFormat,

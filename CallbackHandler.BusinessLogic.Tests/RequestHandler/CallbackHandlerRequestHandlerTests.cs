@@ -24,18 +24,13 @@ public class CallbackHandlerRequestHandlerTests
     public void CallbackHandlerRequestHandlerTests_RecordCallbackRequest_IsHandled()
     {
         Mock<ICallbackDomainService> domainService = new();
-        domainService.Setup(a => a.RecordCallback(It.IsAny<Guid>(),
-                                                  It.IsAny<String>(),
-                                                  It.IsAny<MessageFormat>(),
-                                                  It.IsAny<String>(),
-                                                  It.IsAny<String>(),
-                                                  It.IsAny<String[]>(),
+        domainService.Setup(a => a.RecordCallback(It.IsAny<CallbackCommands.RecordCallbackCommand>(),
                                                   It.IsAny<CancellationToken>()));
         Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository = new();
 
         CallbackHandlerRequestHandler handler = new(domainService.Object, aggregateRepository.Object);
         
-        CallbackCommands.RecordCallbackRequest request = TestData.RecordCallbackRequest;
+        CallbackCommands.RecordCallbackCommand request = TestData.RecordCallbackCommand;
 
         Should.NotThrow(async () => await handler.Handle(request, CancellationToken.None));
     }
@@ -45,13 +40,8 @@ public class CallbackHandlerRequestHandlerTests
     {
         Mock<ICallbackDomainService> domainService =
             new();
-        domainService.Setup(a => a.RecordCallback(It.IsAny<Guid>(),
-            It.IsAny<String>(),
-            It.IsAny<MessageFormat>(),
-            It.IsAny<String>(),
-            It.IsAny<String>(),
-            It.IsAny<String[]>(),
-                It.IsAny<CancellationToken>()));
+        //domainService.Setup(a => a.RecordCallback(It.IsAny<CallbackCommands.RecordCallbackCommand>(),
+        //        It.IsAny<CancellationToken>()));
             Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository =
                 new();
 
