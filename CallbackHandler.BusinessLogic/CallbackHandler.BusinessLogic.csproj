@@ -4,10 +4,10 @@
 	  <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="MediatR" Version="12.5.0" />
-		<PackageReference Include="Shared" Version="2025.7.13" />
-		<PackageReference Include="Shared.DomainDrivenDesign" Version="2025.7.13" />
-		<PackageReference Include="Shared.EventStore" Version="2025.7.13" />
+		<PackageReference Include="MediatR" Version="13.1.0" />
+		<PackageReference Include="Shared" Version="2025.10.2" />
+		<PackageReference Include="Shared.DomainDrivenDesign" Version="2025.10.2" />
+		<PackageReference Include="Shared.EventStore" Version="2025.10.2" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\CallbackHandler.CallbackMessageAggregate\CallbackHandler.CallbackMessageAggregate.csproj" />
