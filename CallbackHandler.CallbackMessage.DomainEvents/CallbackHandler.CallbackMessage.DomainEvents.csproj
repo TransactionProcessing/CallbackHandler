@@ -5,7 +5,7 @@
 		<DebugType>None</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Shared" Version="2025.10.2" />
-		<PackageReference Include="Shared.DomainDrivenDesign" Version="2025.10.2" />
+		<PackageReference Include="Shared" Version="2025.10.3" />
+		<PackageReference Include="Shared.DomainDrivenDesign" Version="2025.10.3" />
 	</ItemGroup>
 </Project>
