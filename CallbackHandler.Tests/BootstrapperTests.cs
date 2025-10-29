@@ -29,6 +29,8 @@ namespace CallbackHandler.Tests
                     builder.UseEnvironment("Development");
                     builder.ConfigureAppConfiguration((context, config) =>
                     {
+                        config.Sources.Clear();
+
                         var dict = new Dictionary<string, string>
                         {
                             // Add necessary configuration settings here
@@ -37,7 +39,7 @@ namespace CallbackHandler.Tests
                         config.AddInMemoryCollection(dict);
                     });
                 });
-
+            
             var client = factory.CreateClient();
 
             // Act
