@@ -1,9 +1,5 @@
 ﻿namespace CallbackHandler.Bootstrapper;
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
-using System.Net.Security;
 using CallbackMessageAggregate;
 using Common;
 using Lamar;
@@ -13,6 +9,11 @@ using Shared.DomainDrivenDesign.EventSourcing;
 using Shared.EventStore.Aggregate;
 using Shared.EventStore.EventStore;
 using Shared.EventStore.Extensions;
+using Shared.General;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
+using System.Net.Security;
 
 [ExcludeFromCodeCoverage]
 public class RepositoryRegistry : ServiceRegistry
@@ -22,7 +23,7 @@ public class RepositoryRegistry : ServiceRegistry
         this.AddTransient<IEventStoreContext, EventStoreContext>();
         this.AddSingleton<IAggregateRepository<CallbackMessageAggregate, DomainEvent>, AggregateRepository<CallbackMessageAggregate, DomainEvent>>();
 
-        String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
+        String connectionString = ConfigurationReader.GetValue("EventStoreSettings", "ConnectionString");
 
         this.AddEventStoreProjectionManagementClient(connectionString);
         this.AddEventStorePersistentSubscriptionsClient(connectionString);

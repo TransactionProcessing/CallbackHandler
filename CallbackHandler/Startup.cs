@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+/*using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +40,7 @@ namespace CallbackHandler
     using System.Net.Http;
     using System.Reflection;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
-
+    
     [ExcludeFromCodeCoverage]
     public class Startup
     {
@@ -132,4 +132,4 @@ namespace CallbackHandler
             
         }
     }
-}
+}*/

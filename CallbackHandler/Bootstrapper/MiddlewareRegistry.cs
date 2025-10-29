@@ -24,9 +24,8 @@ using Swashbuckle.AspNetCore.Filters;
 [ExcludeFromCodeCoverage]
 public class MiddlewareRegistry :ServiceRegistry
 {
-    public MiddlewareRegistry()
-    {
-        String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
+    public MiddlewareRegistry() {
+        String connectionString = ConfigurationReader.GetValue("EventStoreSettings", "ConnectionString");
         EventStoreClientSettings eventStoreSettings = EventStoreClientSettings.Create(connectionString);
 
         this.AddHealthChecks().AddEventStore(eventStoreSettings,

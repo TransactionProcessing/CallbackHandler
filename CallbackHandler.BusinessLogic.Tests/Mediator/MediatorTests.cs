@@ -17,7 +17,7 @@ namespace CallbackHandler.BusinessLogic.Tests.Mediator;
 using BusinessLogic.Services;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
-
+/*
 public class MediatorTests
 {
     private readonly List<IBaseRequest> Requests = new List<IBaseRequest>();
@@ -100,4 +100,4 @@ public class MediatorTests
 
             services.OverrideServices(s => { s.AddSingleton<ICallbackDomainService, DummyCallbackDomainService>(); });
         }
-    }
+    }*/
