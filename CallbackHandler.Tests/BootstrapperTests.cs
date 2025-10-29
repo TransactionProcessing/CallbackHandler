@@ -27,6 +27,15 @@ namespace CallbackHandler.Tests
                 .WithWebHostBuilder(builder =>
                 {
                     builder.UseEnvironment("Development");
+                    builder.ConfigureAppConfiguration((context, config) =>
+                    {
+                        var dict = new Dictionary<string, string>
+                        {
+                            // Add necessary configuration settings here
+                            { "EventStoreSettings:ConnectionString", "esdb://admin:changeit@127.0.0.1:2113?tls=true&tlsVerifyCert=false" }
+                        };
+                        config.AddInMemoryCollection(dict);
+                    });
                 });
 
             var client = factory.CreateClient();
