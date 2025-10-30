@@ -2,11 +2,6 @@
 
 namespace CallbackHandler.Bootstrapper;
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Reflection;
 using Common;
 using EventStore.Client;
 using Lamar;
@@ -20,6 +15,13 @@ using Shared.EventStore.Extensions;
 using Shared.General;
 using Shared.Middleware;
 using Swashbuckle.AspNetCore.Filters;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
 
 [ExcludeFromCodeCoverage]
 public class MiddlewareRegistry :ServiceRegistry
@@ -85,5 +87,24 @@ public class MiddlewareRegistry :ServiceRegistry
                 new(middlewareLogLevel, logRequests, logResponses);
 
             this.AddSingleton(config);
+
+            this.ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+                options.SerializerOptions.PropertyNameCaseInsensitive = true; // optional, but safer
+            });
+    }
+
+    public class SnakeCaseNamingPolicy : JsonNamingPolicy
+    {
+        public override string ConvertName(string name)
+        {
+            // simple PascalCase to snake_case
+            return string.Concat(
+                name.Select((c, i) =>
+                    i > 0 && char.IsUpper(c) ? "_" + char.ToLower(c) : char.ToLower(c).ToString()
+                )
+            );
         }
+    }
 }

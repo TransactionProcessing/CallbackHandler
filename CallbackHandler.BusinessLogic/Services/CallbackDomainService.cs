@@ -25,6 +25,7 @@ public class CallbackDomainService : ICallbackDomainService
 
         // split the reference string into an array of strings
         String[] referenceData = command.Reference?.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+        // TODO: Validate the reference data has the correct number of elements
         if (referenceData.Length == 0) {
             return Result.Failure("Reference cannot be empty.");
         }
