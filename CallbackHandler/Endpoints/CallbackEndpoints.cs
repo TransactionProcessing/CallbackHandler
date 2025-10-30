@@ -15,12 +15,12 @@ namespace CallbackHandler.Endpoints
             RouteGroupBuilder group = endpoints.MapGroup(BaseRoute)
                 .WithTags("Callbacks");
 
-            group.MapPost("/", Handlers.CallbackHandlers.RecordCallbackAsync)
+            group.MapPost("/", Handlers.CallbackHandlers.RecordCallback)
                 .WithName("RecordCallback")
                 .WithSummary("Records a deposit callback")
                 .Produces<Result<Guid>>(StatusCodes.Status200OK);
 
-            group.MapGet("/{callbackId:guid}", Handlers.CallbackHandlers.GetCallbackAsync)
+            group.MapGet("/{callbackId:guid}", Handlers.CallbackHandlers.GetCallback)
                 .WithName("GetCallback")
                 .WithSummary("Gets a callback by ID")
                 .Produces<Result<DataTransferObjects.CallbackMessage>>(StatusCodes.Status200OK);
