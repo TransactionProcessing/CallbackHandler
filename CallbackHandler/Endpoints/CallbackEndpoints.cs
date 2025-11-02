@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CallbackHandler.DataTransferObjects;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using SimpleResults;
 using System;
+using Shared.Extensions;
+using Shared.Middleware;
 
 namespace CallbackHandler.Endpoints
 {
@@ -18,12 +21,12 @@ namespace CallbackHandler.Endpoints
             group.MapPost("/", Handlers.CallbackHandlers.RecordCallback)
                 .WithName("RecordCallback")
                 .WithSummary("Records a deposit callback")
-                .Produces<Result<Guid>>(StatusCodes.Status200OK);
+                .WithStandardProduces<CallbackResponse, ErrorResponse>(); ;
 
             group.MapGet("/{callbackId:guid}", Handlers.CallbackHandlers.GetCallback)
                 .WithName("GetCallback")
                 .WithSummary("Gets a callback by ID")
-                .Produces<Result<DataTransferObjects.CallbackMessage>>(StatusCodes.Status200OK);
+                .WithStandardProduces<DataTransferObjects.CallbackMessage, ErrorResponse>();
 
             return endpoints;
         }
