@@ -75,12 +75,12 @@ namespace CallbackHandler.IntegrationTests.Shared
                 var originalDeposit = JsonConvert.DeserializeObject<Deposit>(sentCallback.Value);
 
                 var content = await response.Content.ReadAsStringAsync();
-                ResponseData<CallbackMessage> responseData =
-                    JsonConvert.DeserializeObject<ResponseData<CallbackMessage>>(content);
+                CallbackMessage responseData =
+                    JsonConvert.DeserializeObject<CallbackMessage>(content);
 
 
-                responseData.Data.Reference.ShouldBe(originalDeposit.Reference);
-                var callbackDeposit = JsonConvert.DeserializeObject<Deposit>(responseData.Data.Message);
+                responseData.Reference.ShouldBe(originalDeposit.Reference);
+                var callbackDeposit = JsonConvert.DeserializeObject<Deposit>(responseData.Message);
                 callbackDeposit.AccountNumber.ShouldBe(originalDeposit.AccountNumber);
             }
         }
