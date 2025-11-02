@@ -53,10 +53,10 @@ namespace CallbackHandler.IntegrationTests.Shared
                 var response = await client.SendAsync(msg);
                 response.StatusCode.ShouldBe(HttpStatusCode.OK);
                 var content = await response.Content.ReadAsStringAsync();
-                ResponseData<Guid> responseData =
-                    JsonConvert.DeserializeObject<ResponseData<Guid>>(content);
+                CallbackResponse responseData =
+                    JsonConvert.DeserializeObject<CallbackResponse>(content);
 
-                this.TestingContext.SentCallbacks.Add(responseData.Data, payload);
+                this.TestingContext.SentCallbacks.Add(responseData.CallbackId, payload);
             }
         }
 
