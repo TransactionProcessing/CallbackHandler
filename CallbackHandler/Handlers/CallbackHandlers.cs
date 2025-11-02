@@ -1,21 +1,28 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CallbackHandler.BusinessLogic.Requests;
+﻿using CallbackHandler.BusinessLogic.Requests;
 using CallbackHandler.DataTransferObjects;
 using CallbackHandlers.Models;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shared.Results;
 using SimpleResults;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Shared.Results.Web;
 
 namespace CallbackHandler.Handlers;
 
 public static class CallbackHandlers
 {
-    public static async Task<Result<Guid>> RecordCallback(Deposit depositCallback,
-                                                               IMediator mediator,
-                                                               CancellationToken cancellationToken)
+    public static async Task<IResult> RecordCallback(Deposit depositCallback,
+                                                     IMediator mediator,
+                                                     CancellationToken cancellationToken)
     {
         Guid callbackId = Guid.NewGuid();
 
@@ -29,31 +36,23 @@ public static class CallbackHandlers
 
         Result result = await mediator.Send(request, cancellationToken);
 
-        if (result.IsFailed) {
-            return ResultHelpers.CreateFailure(result);
-        }
-
-        return Result.Success(callbackId);
+        return  ResponseFactory.FromResult<CallbackResponse>(result, (r) => new CallbackResponse {
+            CallbackId = callbackId
+        });
     }
 
-    public static async Task<Result<DataTransferObjects.CallbackMessage>> GetCallback(Guid callbackId,
-                                                                                           IMediator mediator,
-                                                                                           CancellationToken cancellationToken)
+    public static async Task<IResult> GetCallback(Guid callbackId,
+                                                  IMediator mediator,
+                                                  CancellationToken cancellationToken)
     {
         CallbackQueries.GetCallbackQuery query = new(callbackId);
-        Result<global::CallbackHandlers.Models.CallbackMessage> getResult = await mediator.Send(query, cancellationToken);
+        Result<global::CallbackHandlers.Models.CallbackMessage> result = await mediator.Send(query, cancellationToken);
 
-        if (getResult.IsFailed) {
-            return ResultHelpers.CreateFailure(getResult);
-        }
-
-        Result<DataTransferObjects.CallbackMessage> result = Result.Success(new DataTransferObjects.CallbackMessage
+        return ResponseFactory.FromResult(result, (r) => new DataTransferObjects.CallbackMessage
         {
-            Reference = getResult.Data.Reference,
-            TypeString = getResult.Data.TypeString,
-            Message = getResult.Data.Message
+            Reference = r.Reference,
+            TypeString = r.TypeString,
+            Message = r.Message
         });
-
-        return result;
     }
 }
