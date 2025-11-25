@@ -8,7 +8,7 @@ using Newtonsoft.Json.Bson;
 
 namespace CallbackHandler.IntegrationTests.Common;
 
-public class CallbackHandlerDockerHelper : global::Shared.IntegrationTesting.DockerHelper
+public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.DockerHelper
 {
     public override async Task CreateSubscriptions()
     {

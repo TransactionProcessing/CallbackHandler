@@ -5,7 +5,7 @@ namespace CallbackHandler.IntegrationTests.Common;
 
 public class TestingContext
 {
-    public CallbackHandlerDockerHelper DockerHelper { get; set; }
+    public DockerHelper DockerHelper { get; set; }
     public NlogLogger Logger { get; set; }
 
     public List<Deposit> Deposits { get; set; }
