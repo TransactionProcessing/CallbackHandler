@@ -31,7 +31,7 @@ public class GenericSteps
 
         DockerServices dockerServices = DockerServices.CallbackHandler | DockerServices.EventStore | DockerServices.SqlServer;
 
-        this.TestingContext.DockerHelper = new CallbackHandlerDockerHelper();
+        this.TestingContext.DockerHelper = new DockerHelper();
         this.TestingContext.DockerHelper.Logger = logger;
         this.TestingContext.Logger = logger;
         this.TestingContext.DockerHelper.RequiredDockerServices = dockerServices;
@@ -39,8 +39,6 @@ public class GenericSteps
 
         await Setup.GlobalSetup(this.TestingContext.DockerHelper);
 
-        this.TestingContext.DockerHelper.SqlServerContainer = Setup.DatabaseServerContainer;
-        this.TestingContext.DockerHelper.SqlServerNetwork = Setup.DatabaseServerNetwork;
         this.TestingContext.DockerHelper.DockerCredentials = Setup.DockerCredentials;
         this.TestingContext.DockerHelper.SqlCredentials = Setup.SqlCredentials;
         this.TestingContext.DockerHelper.SqlServerContainerName = "sharedsqlserver";
@@ -56,7 +54,7 @@ public class GenericSteps
     [AfterScenario()]
     public async Task StopSystem()
     {
-        DockerServices dockerSharedServices = DockerServices.SqlServer;
+        DockerServices dockerSharedServices = DockerServices.None;
 
         this.TestingContext.Logger.LogInformation("About to Stop Containers for Scenario Run");
         await this.TestingContext.DockerHelper.StopContainersForScenarioRun(dockerSharedServices).ConfigureAwait(false);
