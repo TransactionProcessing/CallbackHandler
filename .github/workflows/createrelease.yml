@@ -82,75 +82,75 @@ jobs:
           name: callbackhandler
           path: C:\Temp\callbackhandler
 
-      - name: Stop and Remove Existing Windows Service (if applicable)
-        shell: powershell
+      - name: Stop and Remove Existing Windows Service
+        shell: cmd
         run: |
-          $serviceName = "CallbackHandler"
+          set servicename=CallbackHandler
 
-          # Stop service if running
-          if (Get-Service $serviceName -ErrorAction SilentlyContinue) {
-              Write-Host "Stopping existing service..."
-              Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
-
-              # Remove service
-              Write-Host "Deleting existing service..."
-              sc.exe delete $serviceName
-          }
-
+          sc query %servicename% >nul 2>&1
+          if %errorlevel%==0 (
+              echo Stopping service...
+              sc stop %servicename%
+              echo Deleting service...
+              sc delete %servicename%
+          ) else (
+              echo Service does not exist.
+          )
+          
       - name: Unzip the files
-        shell: powershell
+        shell: cmd
         run: |
-          $targetPath = "C:\txnproc\CallbackHandler"
+          set target=C:\txnproc\CallbackHandler
 
-          if (!(Test-Path $targetPath)) {
-              New-Item -ItemType Directory -Path $targetPath | Out-Null
-          }
+          if not exist "%target%" (
+              mkdir "%target%"
+          )
 
-          Expand-Archive -Path "C:\Temp\callbackhandler\callbackhandler.zip" -DestinationPath $targetPath -Force
+          tar -xf C:\Temp\callbackhandler\callbackhandler.zip -C "%target%"
 
       # Install .NET Runtime if needed. Adjust for the actual version (example: .NET 9 Runtime)
       - name: Install .NET Runtime
-        shell: powershell
+        shell: cmd
         run: |
-          # Check if dotnet 10 is installed
-          $dotnetVersion = (& dotnet --list-runtimes 2>$null | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
-          if ($dotnetVersion -eq 0) {
-              Write-Host "Installing .NET 10 Runtime..."
-
-              $installerUrl = "https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe"
-              $installerPath = "dotnet-runtime-10.exe"
-
-              Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
-              Start-Process ".\dotnet-runtime-10.exe" -ArgumentList "/quiet" -Wait
-
-              Remove-Item ".\dotnet-runtime-10.exe"
-          }
-          else {
-              Write-Host ".NET 10 Runtime already installed."
-          }
+          set dotnetPath=C:\Program Files\dotnet\shared\Microsoft.NETCore.App
+          dir "%dotnetPath%\10*" >nul 2>&1
+          if errorlevel 1 (
+              echo Installing .NET 10 Runtime...
+              curl -L -o dotnet-runtime-10.exe https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe
+              dotnet-runtime-10.exe /quiet
+              del dotnet-runtime-10.exe
+          ) else (
+              echo .NET 10 Runtime already installed.
+          )
 
       - name: Install and Start Windows Service
-        shell: powershell
+        shell: cmd
         run: |
-          $serviceName = "CallbackHandler"
-          $serviceDisplay = "Transaction Processing - Callback Handler"
-          $workingDirectory = "C:\Services\CallbackHandler"
-          $dllName = "CallbackHandler.dll"
-          $exePath = "C:\Windows\System32\dotnet.exe"
-          $fullCmd = "`"$exePath`" `"$workingDirectory\$dllName`""
+          set servicename=CallbackHandler
+          set servicedisplay=Transaction Processing - Callback Handler
+          set workdir=C:\Services\CallbackHandler
+          set dllname=CallbackHandler.dll
+          set exepath=C:\Windows\System32\dotnet.exe
 
-          # Create the service
-          Write-Host "Creating Windows Service..."
-          sc.exe create $serviceName binPath= "$fullCmd" start= auto
+          set fullcmd="%exepath% \"%workdir%\%dllname%\""
 
-          # Set description
-          sc.exe description $serviceName "$serviceDisplay"
+          echo Creating service...
+          sc create %servicename% binPath= "%fullcmd%" start= auto
 
-          # Start service
-          Start-Service -Name $serviceName
+          echo Setting service description...
+          sc description %servicename% "%servicedisplay%"
 
-          # Show status
-          Get-Service -Name $serviceName
+          echo Configuring failure actions...
+          sc failure %servicename% actions= restart/60000/restart/60000/restart/60000 reset= 86400
+
+          echo Setting failure flag (required on some systems)...
+          sc failureflag %servicename% 1
+
+          echo Starting service...
+          sc start %servicename%
+
+          echo Status:
+          sc query %servicename%
 
   deployproduction:
     runs-on: [productionserver, windows]
@@ -165,75 +165,75 @@ jobs:
           name: callbackhandler
           path: C:\Temp\callbackhandler
 
-      - name: Stop and Remove Existing Windows Service (if applicable)
-        shell: powershell
+      - name: Stop and Remove Existing Windows Service
+        shell: cmd
         run: |
-          $serviceName = "CallbackHandler"
+          set servicename=CallbackHandler
 
-          # Stop service if running
-          if (Get-Service $serviceName -ErrorAction SilentlyContinue) {
-              Write-Host "Stopping existing service..."
-              Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
-
-              # Remove service
-              Write-Host "Deleting existing service..."
-              sc.exe delete $serviceName
-          }
-
+          sc query %servicename% >nul 2>&1
+          if %errorlevel%==0 (
+              echo Stopping service...
+              sc stop %servicename%
+              echo Deleting service...
+              sc delete %servicename%
+          ) else (
+              echo Service does not exist.
+          )
+          
       - name: Unzip the files
-        shell: powershell
+        shell: cmd
         run: |
-          $targetPath = "C:\txnproc\CallbackHandler"
+          set target=C:\txnproc\CallbackHandler
 
-          if (!(Test-Path $targetPath)) {
-              New-Item -ItemType Directory -Path $targetPath | Out-Null
-          }
+          if not exist "%target%" (
+              mkdir "%target%"
+          )
 
-          Expand-Archive -Path "C:\Temp\callbackhandler\callbackhandler.zip" -DestinationPath $targetPath -Force
+          tar -xf C:\Temp\callbackhandler\callbackhandler.zip -C "%target%"
 
       # Install .NET Runtime if needed. Adjust for the actual version (example: .NET 9 Runtime)
       - name: Install .NET Runtime
-        shell: powershell
+        shell: cmd
         run: |
-          # Check if dotnet 10 is installed
-          $dotnetVersion = (& dotnet --list-runtimes 2>$null | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
-          if ($dotnetVersion -eq 0) {
-              Write-Host "Installing .NET 10 Runtime..."
-
-              $installerUrl = "https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe"
-              $installerPath = "dotnet-runtime-10.exe"
-
-              Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
-              Start-Process ".\dotnet-runtime-10.exe" -ArgumentList "/quiet" -Wait
-
-              Remove-Item ".\dotnet-runtime-10.exe"
-          }
-          else {
-              Write-Host ".NET 10 Runtime already installed."
-          }
+          set dotnetPath=C:\Program Files\dotnet\shared\Microsoft.NETCore.App
+          dir "%dotnetPath%\10*" >nul 2>&1
+          if errorlevel 1 (
+              echo Installing .NET 10 Runtime...
+              curl -L -o dotnet-runtime-10.exe https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe
+              dotnet-runtime-10.exe /quiet
+              del dotnet-runtime-10.exe
+          ) else (
+              echo .NET 10 Runtime already installed.
+          )
 
       - name: Install and Start Windows Service
-        shell: powershell
+        shell: cmd
         run: |
-          $serviceName = "CallbackHandler"
-          $serviceDisplay = "Transaction Processing - Callback Handler"
-          $workingDirectory = "C:\Services\CallbackHandler"
-          $dllName = "CallbackHandler.dll"
-          $exePath = "C:\Windows\System32\dotnet.exe"
-          $fullCmd = "`"$exePath`" `"$workingDirectory\$dllName`""
+          set servicename=CallbackHandler
+          set servicedisplay=Transaction Processing - Callback Handler
+          set workdir=C:\Services\CallbackHandler
+          set dllname=CallbackHandler.dll
+          set exepath=C:\Windows\System32\dotnet.exe
 
-          # Create the service
-          Write-Host "Creating Windows Service..."
-          sc.exe create $serviceName binPath= "$fullCmd" start= auto
+          set fullcmd="%exepath% \"%workdir%\%dllname%\""
 
-          # Set description
-          sc.exe description $serviceName "$serviceDisplay"
+          echo Creating service...
+          sc create %servicename% binPath= "%fullcmd%" start= auto
 
-          # Start service
-          Start-Service -Name $serviceName
+          echo Setting service description...
+          sc description %servicename% "%servicedisplay%"
 
-          # Show status
-          Get-Service -Name $serviceName          
+          echo Configuring failure actions...
+          sc failure %servicename% actions= restart/60000/restart/60000/restart/60000 reset= 86400
+
+          echo Setting failure flag (required on some systems)...
+          sc failureflag %servicename% 1
+
+          echo Starting service...
+          sc start %servicename%
+
+          echo Status:
+          sc query %servicename%
 
   buildwindows:
     name: "Windows Release"
