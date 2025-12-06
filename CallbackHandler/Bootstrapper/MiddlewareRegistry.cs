@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using KurrentDB.Client;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi;
 
 namespace CallbackHandler.Bootstrapper;
 
@@ -8,7 +10,6 @@ using Lamar;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Shared.EventStore.Extensions;
@@ -29,7 +30,7 @@ public class MiddlewareRegistry :ServiceRegistry
     public MiddlewareRegistry()
     {
         String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
-        EventStoreClientSettings eventStoreSettings = EventStoreClientSettings.Create(connectionString);
+        KurrentDBClientSettings eventStoreSettings = KurrentDBClientSettings.Create(connectionString);
 
         this.AddHealthChecks().AddEventStore(eventStoreSettings,
                                              userCredentials: eventStoreSettings.DefaultCredentials,
@@ -64,47 +65,34 @@ public class MiddlewareRegistry :ServiceRegistry
                                        c.IncludeXmlComments(fileInfo.FullName);
                                    }
 
-                               });
-            this.AddSwaggerExamples();
+                           });
+        this.AddSwaggerExamples();
 
-            this.AddControllers().AddNewtonsoftJson(options =>
-                                                    {
-                                                        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                                                        options.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
-                                                        options.SerializerSettings.Formatting = Formatting.Indented;
-                                                        options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                                                        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                                                    });
-
-            Assembly assembly = this.GetType().GetTypeInfo().Assembly;
-            this.AddMvcCore().AddApplicationPart(assembly).AddControllersAsServices();
-
-            bool logRequests = ConfigurationReader.GetValueOrDefault<Boolean>("MiddlewareLogging", "LogRequests", true);
-            bool logResponses = ConfigurationReader.GetValueOrDefault<Boolean>("MiddlewareLogging", "LogResponses", true);
-            LogLevel middlewareLogLevel = ConfigurationReader.GetValueOrDefault<LogLevel>("MiddlewareLogging", "MiddlewareLogLevel", LogLevel.Warning);
-
-            RequestResponseMiddlewareLoggingConfig config =
-                new(middlewareLogLevel, logRequests, logResponses);
-
-            this.AddSingleton(config);
-
-            this.ConfigureHttpJsonOptions(options =>
-            {
-                options.SerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
-                options.SerializerOptions.PropertyNameCaseInsensitive = true; // optional, but safer
-            });
-    }
-
-    public class SnakeCaseNamingPolicy : JsonNamingPolicy
-    {
-        public override string ConvertName(string name)
+        this.AddControllers().AddNewtonsoftJson(options =>
         {
-            // simple PascalCase to snake_case
-            return string.Concat(
-                name.Select((c, i) =>
-                    i > 0 && char.IsUpper(c) ? "_" + char.ToLower(c) : char.ToLower(c).ToString()
-                )
-            );
-        }
+            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            options.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
+            options.SerializerSettings.Formatting = Formatting.Indented;
+            options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+            options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        });
+
+        Assembly assembly = this.GetType().GetTypeInfo().Assembly;
+        this.AddMvcCore().AddApplicationPart(assembly).AddControllersAsServices();
+
+        bool logRequests = ConfigurationReader.GetValueOrDefault<Boolean>("MiddlewareLogging", "LogRequests", true);
+        bool logResponses = ConfigurationReader.GetValueOrDefault<Boolean>("MiddlewareLogging", "LogResponses", true);
+        LogLevel middlewareLogLevel = ConfigurationReader.GetValueOrDefault<LogLevel>("MiddlewareLogging", "MiddlewareLogLevel", LogLevel.Warning);
+
+        RequestResponseMiddlewareLoggingConfig config =
+            new(middlewareLogLevel, logRequests, logResponses);
+
+        this.AddSingleton(config);
+
+        this.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
+            options.SerializerOptions.PropertyNameCaseInsensitive = true; // optional, but safer
+        });
     }
 }

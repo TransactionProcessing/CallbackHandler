@@ -1,45 +1,22 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using CallbackHandler.Endpoints;
 
 namespace CallbackHandler
 {
     using Bootstrapper;
-    using BusinessLogic.Common;
-    using BusinessLogic.RequestHandler;
-    using BusinessLogic.Requests;
-    using Common;
-    using EventStore.Client;
     using HealthChecks.UI.Client;
     using Lamar;
-    using MediatR;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-    using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Logging;
-    using Microsoft.OpenApi.Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
-    using NLog.Extensions.Logging;
-    using Shared.DomainDrivenDesign.EventSourcing;
     using Shared.EventStore.Aggregate;
-    using Shared.EventStore.EventStore;
-    using Shared.EventStore.Extensions;
     using Shared.Extensions;
     using Shared.General;
     using Shared.Logger;
     using Shared.Middleware;
-    using Swashbuckle.AspNetCore.Filters;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Net.Http;
-    using System.Reflection;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     [ExcludeFromCodeCoverage]
