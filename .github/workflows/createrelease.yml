@@ -113,21 +113,34 @@ jobs:
           Write-Host "Extracting files..."
           Expand-Archive -Path $zipFile -DestinationPath $targetPath -Force
 
-      - name: Install .NET Runtime if needed
+      - name: Ensure .NET 10 Runtime is installed
         shell: pwsh
         run: |
-          # Detect .NET 10 runtime
-          $dotnetInstalled = (& dotnet --list-runtimes 2>$null | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
-
+          # Full path to dotnet.exe
+          $dotnetExe = "C:\Program Files\dotnet\dotnet.exe"
+      
+          # Add to PATH temporarily
+          $env:PATH = "C:\Program Files\dotnet;" + $env:PATH
+      
+          # Check if .NET 10 runtime is installed
+          $dotnetInstalled = 0
+          if (Test-Path $dotnetExe) {
+              $dotnetInstalled = (& $dotnetExe --list-runtimes 2>$null | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
+          }
+      
           if ($dotnetInstalled -eq 0) {
-              Write-Host "Installing .NET 10 Runtime..."
-
+              Write-Host ".NET 10 Runtime not found. Installing..."
+      
               $installerUrl = "https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe"
-              $installer = "dotnet-runtime-10.exe"
-
-              Invoke-WebRequest -Uri $installerUrl -OutFile $installer
-              Start-Process ".\$installer" -ArgumentList "/quiet" -Wait
-              Remove-Item ".\$installer"
+              $installerPath = "dotnet-runtime-10.exe"
+      
+              Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+              Start-Process ".\$installerPath" -ArgumentList "/quiet" -Wait
+              Remove-Item ".\$installerPath"
+      
+              # Ensure dotnet is available after installation
+              $env:PATH = "C:\Program Files\dotnet;" + $env:PATH
+              Write-Host ".NET 10 Runtime installed successfully."
           }
           else {
               Write-Host ".NET 10 Runtime already installed."
