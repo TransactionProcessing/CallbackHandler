@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  buildlinux:
+  build:
     name: "Release"
     env:
         ASPNETCORE_ENVIRONMENT: "Production"
@@ -14,11 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2.3.4
-
-    - name: Install NET 9
-      uses: actions/setup-dotnet@v4.0.1
-      with:
-        dotnet-version: '9.0.x'
 
     - name: Get the version
       id: get_version
@@ -75,87 +70,91 @@ jobs:
         dotnet nuget push Nugets/CallbackHandler.CallbackMessage.DomainEvents.${{ steps.get_version.outputs.VERSION }}.nupkg --api-key ${{ secrets.PRIVATEFEED_APIKEY }} --source ${{ secrets.PRIVATEFEED_URL }} --skip-duplicate
 
   deploystaging:
-    runs-on: [stagingserver, linux]
-    needs: buildlinux
+    runs-on: [stagingserver, windows]
+    needs: build
     environment: staging
     name: "Deploy to Staging"
-    
+
     steps:
       - name: Download the artifact
         uses: actions/download-artifact@v4.1.8
         with:
           name: callbackhandler
-          path: /tmp/callbackhandler # Download to a temporary directory
-  
-      - name: Remove existing service (if applicable)
+          path: C:\Temp\callbackhandler
+
+      - name: Stop and Remove Existing Windows Service (if applicable)
+        shell: powershell
         run: |
-          SERVICE_NAME="callbackhandler"
-          if systemctl is-active --quiet "$SERVICE_NAME"; then
-            echo "Stopping existing service..."
-            sudo systemctl stop "$SERVICE_NAME"
-          fi
-          if systemctl is-enabled --quiet "$SERVICE_NAME"; then
-            echo "Disabling existing service..."
-            sudo systemctl disable "$SERVICE_NAME"
-          fi
-          if [ -f "/etc/systemd/system/${SERVICE_NAME}.service" ]; then
-            echo "Removing existing service unit file..."
-            sudo rm "/etc/systemd/system/${SERVICE_NAME}.service"
-            sudo systemctl daemon-reload
-          fi
-  
+          $serviceName = "CallbackHandler"
+
+          # Stop service if running
+          if (Get-Service $serviceName -ErrorAction SilentlyContinue) {
+              Write-Host "Stopping existing service..."
+              Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
+
+              # Remove service
+              Write-Host "Deleting existing service..."
+              sc.exe delete $serviceName
+          }
+
       - name: Unzip the files
+        shell: powershell
         run: |
-          sudo mkdir -p /opt/txnproc/transactionprocessing/callbackhandler
-          sudo unzip -o /tmp/callbackhandler/callbackhandler.zip -d /opt/txnproc/transactionprocessing/callbackhandler
-  
-      # IMPORTANT: Add a step to ensure the .NET runtime is installed on the server
-      # This assumes it's not already there. If your base image already has it, you can skip this.
+          $targetPath = "C:\txnproc\CallbackHandler"
+
+          if (!(Test-Path $targetPath)) {
+              New-Item -ItemType Directory -Path $targetPath | Out-Null
+          }
+
+          Expand-Archive -Path "C:\Temp\callbackhandler\callbackhandler.zip" -DestinationPath $targetPath -Force
+
+      # Install .NET Runtime if needed. Adjust for the actual version (example: .NET 9 Runtime)
       - name: Install .NET Runtime
+        shell: powershell
         run: |
-          # Example for Ubuntu. Adjust based on your .NET version (e.g., 8.0, 7.0)
-          # and if you need the SDK or just the runtime.
-          # This uses Microsoft's package repository for the latest versions.
-          wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
-          rm packages-microsoft-prod.deb
-          sudo apt update
-          sudo apt install -y aspnetcore-runtime-9.0
-  
-      - name: Install and Start as a Linux service
+          # Check if dotnet 10 is installed
+          $dotnetVersion = (& dotnet --list-runtimes 2>$null | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
+          if ($dotnetVersion -eq 0) {
+              Write-Host "Installing .NET 10 Runtime..."
+
+              $installerUrl = "https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe"
+              $installerPath = "dotnet-runtime-10.exe"
+
+              Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+              Start-Process ".\dotnet-runtime-10.exe" -ArgumentList "/quiet" -Wait
+
+              Remove-Item ".\dotnet-runtime-10.exe"
+          }
+          else {
+              Write-Host ".NET 10 Runtime already installed."
+          }
+
+      - name: Install and Start Windows Service
+        shell: powershell
         run: |
-          SERVICE_NAME="callbackhandler"
-          # The WorkingDirectory is crucial for .NET apps to find appsettings.json and other files
-          WORKING_DIRECTORY="/opt/txnproc/transactionprocessing/callbackhandler"
-          DLL_NAME="CallbackHandler.dll" # Your application's DLL
-          SERVICE_DESCRIPTION="Transaction Processing - Callback Handler"
-  
-          # Create a systemd service file
-          echo "[Unit]" | sudo tee /etc/systemd/system/${SERVICE_NAME}.service
-          echo "Description=${SERVICE_DESCRIPTION}" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "After=network.target" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "[Service]" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          # IMPORTANT: Use 'dotnet' to run your DLL
-          echo "ExecStart=/usr/bin/dotnet ${WORKING_DIRECTORY}/${DLL_NAME}" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "WorkingDirectory=${WORKING_DIRECTORY}" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "Restart=always" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "User=youruser"   # IMPORTANT: Change to a dedicated, less privileged user
-          echo "Group=yourgroup" # IMPORTANT: Change to a dedicated, less privileged group
-          echo "Environment=ASPNETCORE_ENVIRONMENT=Production" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service # Example
-          echo "" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "[Install]" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "WantedBy=multi-user.target" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-  
-          # Reload systemd, enable, and start the service
-          sudo systemctl daemon-reload
-          sudo systemctl enable "$SERVICE_NAME"
-          sudo systemctl start "$SERVICE_NAME"
-          sudo systemctl status "$SERVICE_NAME" --no-pager # For debugging/verification  
+          $serviceName = "CallbackHandler"
+          $serviceDisplay = "Transaction Processing - Callback Handler"
+          $workingDirectory = "C:\Services\CallbackHandler"
+          $dllName = "CallbackHandler.dll"
+          $exePath = "C:\Windows\System32\dotnet.exe"
+          $fullCmd = "`"$exePath`" `"$workingDirectory\$dllName`""
+
+          # Create the service
+          Write-Host "Creating Windows Service..."
+          sc.exe create $serviceName binPath= "$fullCmd" start= auto
+
+          # Set description
+          sc.exe description $serviceName "$serviceDisplay"
+
+          # Start service
+          Start-Service -Name $serviceName
+
+          # Show status
+          Get-Service -Name $serviceName
 
   deployproduction:
-    runs-on: [productionserver, linux]
-    needs: [buildlinux, deploystaging]
+    runs-on: [productionserver, windows]
+    needs: [build, deploystaging]
     environment: production
     name: "Deploy to Production"
     
@@ -164,73 +163,77 @@ jobs:
         uses: actions/download-artifact@v4.1.8
         with:
           name: callbackhandler
-          path: /tmp/callbackhandler # Download to a temporary directory
-  
-      - name: Remove existing service (if applicable)
+          path: C:\Temp\callbackhandler
+
+      - name: Stop and Remove Existing Windows Service (if applicable)
+        shell: powershell
         run: |
-          SERVICE_NAME="callbackhandler"
-          if systemctl is-active --quiet "$SERVICE_NAME"; then
-            echo "Stopping existing service..."
-            sudo systemctl stop "$SERVICE_NAME"
-          fi
-          if systemctl is-enabled --quiet "$SERVICE_NAME"; then
-            echo "Disabling existing service..."
-            sudo systemctl disable "$SERVICE_NAME"
-          fi
-          if [ -f "/etc/systemd/system/${SERVICE_NAME}.service" ]; then
-            echo "Removing existing service unit file..."
-            sudo rm "/etc/systemd/system/${SERVICE_NAME}.service"
-            sudo systemctl daemon-reload
-          fi
-  
+          $serviceName = "CallbackHandler"
+
+          # Stop service if running
+          if (Get-Service $serviceName -ErrorAction SilentlyContinue) {
+              Write-Host "Stopping existing service..."
+              Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
+
+              # Remove service
+              Write-Host "Deleting existing service..."
+              sc.exe delete $serviceName
+          }
+
       - name: Unzip the files
+        shell: powershell
         run: |
-          sudo mkdir -p /opt/txnproc/transactionprocessing/callbackhandler
-          sudo unzip -o /tmp/callbackhandler/callbackhandler.zip -d /opt/txnproc/transactionprocessing/callbackhandler
-  
-      # IMPORTANT: Add a step to ensure the .NET runtime is installed on the server
-      # This assumes it's not already there. If your base image already has it, you can skip this.
+          $targetPath = "C:\txnproc\CallbackHandler"
+
+          if (!(Test-Path $targetPath)) {
+              New-Item -ItemType Directory -Path $targetPath | Out-Null
+          }
+
+          Expand-Archive -Path "C:\Temp\callbackhandler\callbackhandler.zip" -DestinationPath $targetPath -Force
+
+      # Install .NET Runtime if needed. Adjust for the actual version (example: .NET 9 Runtime)
       - name: Install .NET Runtime
+        shell: powershell
         run: |
-          # Example for Ubuntu. Adjust based on your .NET version (e.g., 8.0, 7.0)
-          # and if you need the SDK or just the runtime.
-          # This uses Microsoft's package repository for the latest versions.
-          wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-          sudo dpkg -i packages-microsoft-prod.deb
-          rm packages-microsoft-prod.deb
-          sudo apt update
-          sudo apt install -y aspnetcore-runtime-9.0
-  
-      - name: Install and Start as a Linux service
+          # Check if dotnet 10 is installed
+          $dotnetVersion = (& dotnet --list-runtimes 2>$null | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
+          if ($dotnetVersion -eq 0) {
+              Write-Host "Installing .NET 10 Runtime..."
+
+              $installerUrl = "https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe"
+              $installerPath = "dotnet-runtime-10.exe"
+
+              Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+              Start-Process ".\dotnet-runtime-10.exe" -ArgumentList "/quiet" -Wait
+
+              Remove-Item ".\dotnet-runtime-10.exe"
+          }
+          else {
+              Write-Host ".NET 10 Runtime already installed."
+          }
+
+      - name: Install and Start Windows Service
+        shell: powershell
         run: |
-          SERVICE_NAME="callbackhandler"
-          # The WorkingDirectory is crucial for .NET apps to find appsettings.json and other files
-          WORKING_DIRECTORY="/opt/txnproc/transactionprocessing/callbackhandler"
-          DLL_NAME="CallbackHandler.dll" # Your application's DLL
-          SERVICE_DESCRIPTION="Transaction Processing - Callback Handler"
-  
-          # Create a systemd service file
-          echo "[Unit]" | sudo tee /etc/systemd/system/${SERVICE_NAME}.service
-          echo "Description=${SERVICE_DESCRIPTION}" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "After=network.target" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "[Service]" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          # IMPORTANT: Use 'dotnet' to run your DLL
-          echo "ExecStart=/usr/bin/dotnet ${WORKING_DIRECTORY}/${DLL_NAME}" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "WorkingDirectory=${WORKING_DIRECTORY}" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "Restart=always" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "User=youruser"   # IMPORTANT: Change to a dedicated, less privileged user
-          echo "Group=yourgroup" # IMPORTANT: Change to a dedicated, less privileged group
-          echo "Environment=ASPNETCORE_ENVIRONMENT=Production" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service # Example
-          echo "" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "[Install]" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-          echo "WantedBy=multi-user.target" | sudo tee -a /etc/systemd/system/${SERVICE_NAME}.service
-  
-          # Reload systemd, enable, and start the service
-          sudo systemctl daemon-reload
-          sudo systemctl enable "$SERVICE_NAME"
-          sudo systemctl start "$SERVICE_NAME"
-          sudo systemctl status "$SERVICE_NAME" --no-pager # For debugging/verification              
+          $serviceName = "CallbackHandler"
+          $serviceDisplay = "Transaction Processing - Callback Handler"
+          $workingDirectory = "C:\Services\CallbackHandler"
+          $dllName = "CallbackHandler.dll"
+          $exePath = "C:\Windows\System32\dotnet.exe"
+          $fullCmd = "`"$exePath`" `"$workingDirectory\$dllName`""
+
+          # Create the service
+          Write-Host "Creating Windows Service..."
+          sc.exe create $serviceName binPath= "$fullCmd" start= auto
+
+          # Set description
+          sc.exe description $serviceName "$serviceDisplay"
+
+          # Start service
+          Start-Service -Name $serviceName
+
+          # Show status
+          Get-Service -Name $serviceName          
 
   buildwindows:
     name: "Windows Release"

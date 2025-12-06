@@ -24,10 +24,10 @@ public class RepositoryRegistry : ServiceRegistry
 
         String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
 
-        this.AddEventStoreProjectionManagementClient(connectionString);
-        this.AddEventStorePersistentSubscriptionsClient(connectionString);
+        this.AddKurrentDBProjectionManagementClient(connectionString);
+        this.AddKurrentDBPersistentSubscriptionsClient(connectionString);
 
-        this.AddEventStoreClient(connectionString);
+        this.AddKurrentDBClient(connectionString);
 
         this.AddSingleton<IDomainEventFactory<IDomainEvent>, DomainEventFactory>();
     }
