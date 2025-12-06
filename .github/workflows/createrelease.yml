@@ -131,10 +131,9 @@ jobs:
           if ($dotnetInstalled -eq 0) {
               Write-Host ".NET 10 Runtime not found. Installing..."
       
-              $installerUrl = "https://download.visualstudio.microsoft.com/download/pr/6daeb1c2-6c1d-4c34-a4ba-5f12b5e3a884/dotnet-runtime-10.0.0-win-x64.exe"
-              $installerPath = "dotnet-runtime-10.exe"
-      
-              Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+              Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+              .\dotnet-install.ps1 -Runtime dotnet -Version 10.0.0
+                    
               Start-Process ".\$installerPath" -ArgumentList "/quiet" -Wait
               Remove-Item ".\$installerPath"
       
