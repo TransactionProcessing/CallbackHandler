@@ -71,30 +71,7 @@ jobs:
         uses: actions/download-artifact@v4.1.8
         with:
           name: callbackhandler
-
-      - name: Ensure .NET 10 Runtime Installed
-        shell: pwsh
-        run: |
-          $dotnetExe = "C:\Program Files\dotnet\dotnet.exe"
-          $env:PATH = "C:\Program Files\dotnet;" + $env:PATH
-
-          if (!(Test-Path $dotnetExe)) {
-              Write-Host ".NET not found — installing runtime..."
-              Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-              .\dotnet-install.ps1 -Runtime dotnet -Version 10.0.0
-          }
-          else {
-              $installed = (& $dotnetExe --list-runtimes | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
-              if ($installed -eq 0) {
-                  Write-Host ".NET 10 missing — installing..."
-                  Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-                  .\dotnet-install.ps1 -Runtime dotnet -Version 10.0.0
-              }
-              else {
-                  Write-Host ".NET 10 Runtime already installed."
-              }
-          }
-
+      
       - name: Remove existing  Windows service
         run: |
           $serviceName = "Transaction Processing - Callback Handler"
@@ -127,29 +104,6 @@ jobs:
         uses: actions/download-artifact@v4.1.8
         with:
           name: callbackhandler
-
-      - name: Ensure .NET 10 Runtime Installed
-        shell: pwsh
-        run: |
-          $dotnetExe = "C:\Program Files\dotnet\dotnet.exe"
-          $env:PATH = "C:\Program Files\dotnet;" + $env:PATH
-
-          if (!(Test-Path $dotnetExe)) {
-              Write-Host ".NET not found — installing runtime..."
-              Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-              .\dotnet-install.ps1 -Runtime dotnet -Version 10.0.0
-          }
-          else {
-              $installed = (& $dotnetExe --list-runtimes | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
-              if ($installed -eq 0) {
-                  Write-Host ".NET 10 missing — installing..."
-                  Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-                  .\dotnet-install.ps1 -Runtime dotnet -Version 10.0.0
-              }
-              else {
-                  Write-Host ".NET 10 Runtime already installed."
-              }
-          }
 
       - name: Remove existing  Windows service
         run: |
