@@ -61,47 +61,16 @@ jobs:
           path: callbackhandler.zip
 
   deploystaging:
-    runs-on: [stagingserver, windows]
+    runs-on: stagingserver
     needs: build
     environment: staging
     name: "Deploy to Staging"
-
+    
     steps:
-      - name: Download Artifact
+      - name: Download the artifact
         uses: actions/download-artifact@v4.1.8
         with:
           name: callbackhandler
-          path: C:\Temp\callbackhandler
-
-      - name: Stop & Remove Existing Service
-        shell: pwsh
-        run: |
-          $serviceName = "Transaction Processing - Callback Handler"
-
-          $svc = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
-          if ($svc) {
-              Write-Host "Stopping service..."
-              Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
-              Start-Sleep -Seconds 2
-
-              Write-Host "Removing service..."
-              sc.exe delete "$serviceName" | Out-Null
-          } else {
-              Write-Host "Service does not exist. Skipping removal."
-          }
-
-      - name: Unzip Files
-        shell: pwsh
-        run: |
-          $targetPath = "C:\txnproc\CallbackHandler"
-          $zipPath = "C:\Temp\callbackhandler\callbackhandler.zip"
-
-          if (!(Test-Path $targetPath)) {
-              New-Item -Path $targetPath -ItemType Directory | Out-Null
-          }
-
-          Write-Host "Extracting package..."
-          Expand-Archive -Path $zipPath -DestinationPath $targetPath -Force
 
       - name: Ensure .NET 10 Runtime Installed
         shell: pwsh
@@ -126,126 +95,106 @@ jobs:
               }
           }
 
-      - name: Install & Start Windows Service
-        shell: pwsh
+      - name: Remove existing  Windows service
         run: |
           $serviceName = "Transaction Processing - Callback Handler"
-          $serviceDisplay = "Transaction Processing - Callback Handler"
-          $serviceDir = "C:\txnproc\CallbackHandler"
-          $dll = "CallbackHandler.dll"
-          $exe = "C:\Windows\System32\dotnet.exe"
+          # Check if the service exists
+          if (Get-Service -Name $serviceName -ErrorAction SilentlyContinue) {
+            Stop-Service -Name $serviceName
+            sc.exe delete $serviceName
+          }
 
-          $binPath = "`"$exe`" `"$serviceDir\$dll`""
-
-          Write-Host "Creating service..."
-          sc.exe create "$serviceName" binPath= "$binPath" start= auto | Out-Null
-
-          Write-Host "Setting description..."
-          sc.exe description "$serviceName" "$serviceDisplay" | Out-Null
-
-          Write-Host "Configuring recovery..."
-          sc.exe failure "$serviceName" actions= restart/5000/restart/5000/restart/5000 reset= 86400 | Out-Null
-          sc.exe failureflag "$serviceName" 1 | Out-Null
-
-          Write-Host "Starting service..."
-          Start-Service -Name "$serviceName"
-
-          Get-Service -Name "$serviceName"
+      - name: Unzip the files
+        run: |
+          Expand-Archive -Path callbackhandler.zip -DestinationPath "C:\txnproc\transactionprocessing\callbackhandler" -Force
+      
+      - name: Install as a Windows service
+        run: |
+          $serviceName = "Transaction Processing - Callback Handler"
+          $servicePath = "C:\txnproc\transactionprocessing\callbackhandler\CallbackHandler.exe"
+                   
+          New-Service -Name $serviceName -BinaryPathName $servicePath -Description "Transaction Processing - CallbackHandler" -DisplayName "Transaction Processing - CallbackHandler" -StartupType Automatic
+          Start-Service -Name $serviceName  
 
   deployproduction:
-    runs-on: [productionserver, windows]
+    runs-on: productionserver
     needs: [build, deploystaging]
     environment: production
     name: "Deploy to Production"
-  
+    
     steps:
       - name: Download the artifact
         uses: actions/download-artifact@v4.1.8
         with:
           name: callbackhandler
-          path: C:\Temp\callbackhandler
-  
-      - name: Stop & Remove Existing Windows Service
-        shell: pwsh
-        run: |
-          $serviceName = "Transaction Processing - Callback Handler"
-  
-          $svc = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
-          if ($svc) {
-              Write-Host "Stopping existing service..."
-              Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
-              Start-Sleep -Seconds 2
-  
-              Write-Host "Removing existing service..."
-              sc.exe delete "$serviceName" | Out-Null
-          }
-          else {
-              Write-Host "Service does not exist. Skipping removal."
-          }
-  
-      - name: Unzip Files
-        shell: pwsh
-        run: |
-          $targetPath = "C:\txnproc\CallbackHandler"
-          $zipFile = "C:\Temp\callbackhandler\callbackhandler.zip"
-  
-          if (!(Test-Path $targetPath)) {
-              Write-Host "Creating service directory..."
-              New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
-          }
-  
-          Write-Host "Extracting files..."
-          Expand-Archive -Path $zipFile -DestinationPath $targetPath -Force
-  
+
       - name: Ensure .NET 10 Runtime Installed
         shell: pwsh
         run: |
           $dotnetExe = "C:\Program Files\dotnet\dotnet.exe"
           $env:PATH = "C:\Program Files\dotnet;" + $env:PATH
-  
-          function Install-DotNet {
+
+          if (!(Test-Path $dotnetExe)) {
+              Write-Host ".NET not found — installing runtime..."
               Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
               .\dotnet-install.ps1 -Runtime dotnet -Version 10.0.0
-              Write-Host ".NET 10 Runtime installed successfully."
-          }
-  
-          if (!(Test-Path $dotnetExe)) {
-              Write-Host ".NET not found — installing..."
-              Install-DotNet
           }
           else {
-              $installed = (& $dotnetExe --list-runtimes 2>$null | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
+              $installed = (& $dotnetExe --list-runtimes | Select-String "Microsoft\.NETCore\.App 10" | Measure-Object).Count
               if ($installed -eq 0) {
-                  Write-Host ".NET 10 Runtime missing — installing..."
-                  Install-DotNet
+                  Write-Host ".NET 10 missing — installing..."
+                  Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
+                  .\dotnet-install.ps1 -Runtime dotnet -Version 10.0.0
               }
               else {
                   Write-Host ".NET 10 Runtime already installed."
               }
           }
-  
-      - name: Install & Start Windows Service
-        shell: pwsh
+
+      - name: Remove existing  Windows service
         run: |
-          $serviceName    = "Transaction Processing - Callback Handler"
-          $serviceDisplay = "Transaction Processing - Callback Handler"
-          $workingDir     = "C:\txnproc\CallbackHandler"
-          $dllName        = "CallbackHandler.dll"
-          $exePath        = "C:\Windows\System32\dotnet.exe"
-          $binPath        = "`"$exePath`" `"$workingDir\$dllName`""
-  
-          Write-Host "Creating Windows service..."
-          sc.exe create "$serviceName" binPath= "$binPath" start= auto | Out-Null
-  
-          Write-Host "Setting description..."
-          sc.exe description "$serviceName" "$serviceDisplay" | Out-Null
-  
-          Write-Host "Configuring restart on failure..."
-          sc.exe failure "$serviceName" actions= restart/5000/restart/5000/restart/5000 reset= 86400 | Out-Null
-          sc.exe failureflag "$serviceName" 1 | Out-Null
-  
-          Write-Host "Starting service..."
-          Start-Service -Name "$serviceName"
-  
-          Write-Host "Service status:"
-          Get-Service -Name "$serviceName"
+          $serviceName = "Transaction Processing - Callback Handler"
+          # Check if the service exists
+          if (Get-Service -Name $serviceName -ErrorAction SilentlyContinue) {
+            Stop-Service -Name $serviceName
+            sc.exe delete $serviceName
+          } 
+
+      - name: Unzip the files
+        run: |
+          Expand-Archive -Path callbackhandler.zip -DestinationPath "C:\txnproc\transactionprocessing\callbackhandler" -Force
+                 
+      - name: Install as a Windows service
+        run: |
+          $serviceName = "Transaction Processing - Callback Handler"
+          $servicePath = "C:\txnproc\transactionprocessing\callbackhandler\CallbackHandler.exe"
+          
+          New-Service -Name $serviceName -BinaryPathName $servicePath -Description "Transaction Processing - CallbackHandler" -DisplayName "Transaction Processing - CallbackHandler" -StartupType Automatic
+          Start-Service -Name $serviceName
+
+  buildwindows:
+    name: "Windows Release"
+    env:
+        ASPNETCORE_ENVIRONMENT: "Production"
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2.3.4
+
+    - name: Get the version
+      id: get_version
+      uses: battila7/get-version-action@v2
+
+    - name: Publish Images to Docker Hub - Pre Release
+      if: ${{ github.event.release.prerelease == true }} 
+      run: |
+        docker build . --file CallbackHandler/Dockerfilewindows --tag stuartferguson/callbackhandlerwindows:dev
+        docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }}
+        docker push stuartferguson/callbackhandlerwindows:dev
+    - name: Publish Images to Docker Hub - Formal Release
+      if: ${{ github.event.release.prerelease == false }} 
+      run: |
+        docker build . --file CallbackHandler/Dockerfilewindows --tag stuartferguson/callbackhandlerwindows:latest
+        docker login --username=${{ secrets.DOCKER_USERNAME }} --password=${{ secrets.DOCKER_PASSWORD }}
+        docker push stuartferguson/callbackhandlerwindows:latest
