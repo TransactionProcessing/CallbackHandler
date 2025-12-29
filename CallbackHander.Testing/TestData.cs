@@ -31,6 +31,22 @@ public class TestData
             TestData.TypeString,
             TestData.Reference);
 
+    public static CallbackCommands.RecordCallbackCommand RecordCallbackCommandEmptyReference =>
+        new(TestData.CallbackId,
+            TestData.CallbackMessage,
+            TestData.Destinations,
+            (MessageFormat)TestData.MessageFormat,
+            TestData.TypeString,
+            String.Empty);
+
+    public static CallbackCommands.RecordCallbackCommand RecordCallbackCommandInvalidReference =>
+        new(TestData.CallbackId,
+            TestData.CallbackMessage,
+            TestData.Destinations,
+            (MessageFormat)TestData.MessageFormat,
+            TestData.TypeString,
+            "reference");
+
     public static CallbackQueries.GetCallbackQuery GetCallbackQuery =>
         new CallbackQueries.GetCallbackQuery(TestData.CallbackId);
 

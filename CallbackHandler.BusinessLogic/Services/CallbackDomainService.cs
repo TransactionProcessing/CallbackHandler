@@ -3,13 +3,19 @@ using SimpleResults;
 
 namespace CallbackHandler.BusinessLogic.Services;
 
-using CallbackHandler.BusinessLogic.Requests;
+using Requests;
 using CallbackMessageAggregate;
 using Shared.DomainDrivenDesign.EventSourcing;
 using Shared.EventStore.Aggregate;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+public interface ICallbackDomainService
+{
+    Task<Result> RecordCallback(CallbackCommands.RecordCallbackCommand command,
+                                CancellationToken cancellationToken);
+}
 
 public class CallbackDomainService : ICallbackDomainService
 {
@@ -23,10 +29,14 @@ public class CallbackDomainService : ICallbackDomainService
                                              CancellationToken cancellationToken) {
 
         // split the reference string into an array of strings
-        String[] referenceData = command.Reference?.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
-        // TODO: Validate the reference data has the correct number of elements
+        String[] referenceData = command.Reference?.Split(['-'], StringSplitOptions.RemoveEmptyEntries) ?? [];
+
         if (referenceData.Length == 0) {
             return Result.Invalid("Reference cannot be empty.");
+        }
+
+        if (referenceData.Length != 2) {
+            return Result.Invalid("Reference must contain estate and merchant references separated by a hyphen.");
         }
 
         // Element 0 is estate reference, Element 1 is merchant reference
