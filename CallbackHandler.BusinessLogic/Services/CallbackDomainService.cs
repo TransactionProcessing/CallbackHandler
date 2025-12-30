@@ -1,12 +1,19 @@
-﻿using Shared.EventStore.Helpers;
+﻿using SecurityService.Client;
+using Shared.EventStore.Helpers;
+using Shared.Logger;
 using SimpleResults;
+using TransactionProcessor.Client;
+using TransactionProcessor.DataTransferObjects.Responses.Merchant;
 
 namespace CallbackHandler.BusinessLogic.Services;
 
-using Requests;
 using CallbackMessageAggregate;
+using Requests;
+using SecurityService.DataTransferObjects.Responses;
 using Shared.DomainDrivenDesign.EventSourcing;
 using Shared.EventStore.Aggregate;
+using Shared.General;
+using Shared.Results;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,9 +27,15 @@ public interface ICallbackDomainService
 public class CallbackDomainService : ICallbackDomainService
 {
     private readonly IAggregateRepository<CallbackMessageAggregate, DomainEvent> AggregateRepository;
+    private readonly ISecurityServiceClient SecurityServiceClient;
+    private readonly ITransactionProcessorClient TransactionProcessorClient;
 
-    public CallbackDomainService(IAggregateRepository<CallbackMessageAggregate, DomainEvent> aggregateRepository) {
+    public CallbackDomainService(IAggregateRepository<CallbackMessageAggregate, DomainEvent> aggregateRepository,
+                                 ISecurityServiceClient securityServiceClient,
+                                 ITransactionProcessorClient transactionProcessorClient) {
         this.AggregateRepository = aggregateRepository;
+        this.SecurityServiceClient = securityServiceClient;
+        this.TransactionProcessorClient = transactionProcessorClient;
     }
 
     public async Task<Result> RecordCallback(CallbackCommands.RecordCallbackCommand command,
@@ -43,8 +56,21 @@ public class CallbackDomainService : ICallbackDomainService
         String estateReference = referenceData[0];
         String merchantReference = referenceData[1];
 
-        // TODO: Validate the reference data
-        
+        // Validate the reference data
+        // Validate the estate and merchant references are valid GUIDs
+        if (!Guid.TryParse(estateReference, out Guid estateId) || !Guid.TryParse(merchantReference, out Guid merchantId)) {
+            return Result.Invalid("Estate or Merchant reference is not a valid GUID.");
+        }
+
+        Result<TokenResponse> getTokenResult = await Helpers.GetToken(this.TokenResponse, this.SecurityServiceClient, cancellationToken);
+        if (getTokenResult.IsFailed)
+            return ResultHelpers.CreateFailure(getTokenResult);
+        this.TokenResponse = getTokenResult.Data;
+
+        Result<MerchantResponse> result = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
+        if (result.IsFailed)
+            return ResultHelpers.CreateFailure(result);
+
         Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(command.CallbackId, cancellationToken);
         Result<CallbackMessageAggregate> callbackMessageAggregateResult =
             DomainServiceHelper.HandleGetAggregateResult(getResult, command.CallbackId, false);
@@ -55,5 +81,41 @@ public class CallbackDomainService : ICallbackDomainService
         if (stateResult.IsFailed)
             return stateResult;
         return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
+    }
+
+    private TokenResponse TokenResponse;
+}
+
+public static class Helpers {
+    public static async Task<Result<TokenResponse>> GetToken(TokenResponse currentToken, ISecurityServiceClient securityServiceClient, CancellationToken cancellationToken)
+    {
+        // Get a token to talk to the estate service
+        String clientId = ConfigurationReader.GetValue("AppSettings", "ClientId");
+        String clientSecret = ConfigurationReader.GetValue("AppSettings", "ClientSecret");
+        Logger.LogDebug($"Client Id is {clientId}");
+        Logger.LogDebug($"Client Secret is {clientSecret}");
+
+        if (currentToken == null)
+        {
+            Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
+            if (tokenResult.IsFailed)
+                return ResultHelpers.CreateFailure(tokenResult);
+            TokenResponse token = tokenResult.Data;
+            Logger.LogDebug($"Token is {token.AccessToken}");
+            return Result.Success(token);
+        }
+
+        if (currentToken.Expires.UtcDateTime.Subtract(DateTime.UtcNow) < TimeSpan.FromMinutes(2))
+        {
+            Logger.LogDebug($"Token is about to expire at {currentToken.Expires.DateTime:O}");
+            Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
+            if (tokenResult.IsFailed)
+                return ResultHelpers.CreateFailure(tokenResult);
+            TokenResponse token = tokenResult.Data;
+            Logger.LogDebug($"Token is {token.AccessToken}");
+            return Result.Success(token);
+        }
+
+        return Result.Success(currentToken);
     }
 }

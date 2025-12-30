@@ -5,9 +5,11 @@
   </PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="MediatR" Version="14.0.0" />
+		<PackageReference Include="SecurityService.Client" Version="2025.12.2" />
 		<PackageReference Include="Shared" Version="2025.12.1" />
 		<PackageReference Include="Shared.DomainDrivenDesign" Version="2025.12.1" />
 		<PackageReference Include="Shared.EventStore" Version="2025.12.1" />
+		<PackageReference Include="TransactionProcessor.Client" Version="2025.12.1" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\CallbackHandler.CallbackMessageAggregate\CallbackHandler.CallbackMessageAggregate.csproj" />
