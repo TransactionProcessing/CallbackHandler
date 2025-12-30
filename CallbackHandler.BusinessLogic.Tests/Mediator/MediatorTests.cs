@@ -17,6 +17,7 @@ namespace CallbackHandler.BusinessLogic.Tests.Mediator;
 using BusinessLogic.Services;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.General;
 
 public class MediatorTests
 {
@@ -38,7 +39,10 @@ public class MediatorTests
 
         ServiceRegistry services = new();
         Startup s = new(hostingEnvironment.Object);
-        Startup.Configuration = this.SetupMemoryConfiguration();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(TestData.DefaultAppSettings).Build();
+        //ConfigurationReader.Initialise(configurationRoot);
+
+        Startup.Configuration = configurationRoot;
 
         this.AddTestRegistrations(services, hostingEnvironment.Object);
         s.ConfigureContainer(services);

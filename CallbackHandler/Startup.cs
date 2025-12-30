@@ -60,6 +60,7 @@ namespace CallbackHandler
             services.IncludeRegistry<MediatorRegistry>();
             services.IncludeRegistry<RepositoryRegistry>();
             services.IncludeRegistry<MiddlewareRegistry>();
+            services.IncludeRegistry<ClientRegistry>();
 
             TypeProvider.LoadDomainEventsTypeDynamically();
 
