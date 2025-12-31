@@ -34,7 +34,7 @@ public class MiddlewareRegistry :ServiceRegistry
         String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
         KurrentDBClientSettings eventStoreSettings = KurrentDBClientSettings.Create(connectionString);
 
-        this.AddHealthChecks().AddTransactionProcessorService().AddEventStore(eventStoreSettings, userCredentials: eventStoreSettings.DefaultCredentials,
+        this.AddHealthChecks().AddEventStore(eventStoreSettings, userCredentials: eventStoreSettings.DefaultCredentials,
                                              name: "Eventstore", failureStatus: HealthStatus.Unhealthy, tags: new[] { "db", "eventstore" });
 
         this.AddSwaggerGen(AddSwaggerAction);
