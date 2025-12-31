@@ -17,6 +17,7 @@ using Shared.Results;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 public interface ICallbackDomainService
 {
@@ -41,14 +42,33 @@ public class CallbackDomainService : ICallbackDomainService
     public async Task<Result> RecordCallback(CallbackCommands.RecordCallbackCommand command,
                                              CancellationToken cancellationToken) {
 
-        // split the reference string into an array of strings
-        String[] referenceData = command.Reference?.Split(['-'], StringSplitOptions.RemoveEmptyEntries) ?? [];
+        // validate the reference
+        Result<(Guid estateId, Guid merchantId)> validateResult = await ValidateReference(command.Reference);
+        if (validateResult.IsFailed)
+            return ResultHelpers.CreateFailure(validateResult);
 
-        if (referenceData.Length == 0) {
+        Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(command.CallbackId, cancellationToken);
+        Result<CallbackMessageAggregate> callbackMessageAggregateResult =
+            DomainServiceHelper.HandleGetAggregateResult(getResult, command.CallbackId, false);
+
+        CallbackMessageAggregate aggregate = callbackMessageAggregateResult.Data;
+        Result stateResult = aggregate.RecordCallback(command.CallbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Destinations,
+            (command.Reference, Guid.Parse(estateReference), Guid.Parse(merchantReference)));
+        if (stateResult.IsFailed)
+            return stateResult;
+        return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
+    }
+
+    private async Task<Result> ValidateReference(String reference) {
+        String[] referenceData = reference?.Split(['-'], StringSplitOptions.RemoveEmptyEntries) ?? [];
+
+        if (referenceData.Length == 0)
+        {
             return Result.Invalid("Reference cannot be empty.");
         }
 
-        if (referenceData.Length != 2) {
+        if (referenceData.Length != 2)
+        {
             return Result.Invalid("Reference must contain estate and merchant references separated by a hyphen.");
         }
 
@@ -58,7 +78,8 @@ public class CallbackDomainService : ICallbackDomainService
 
         // Validate the reference data
         // Validate the estate and merchant references are valid GUIDs
-        if (!Guid.TryParse(estateReference, out Guid estateId) || !Guid.TryParse(merchantReference, out Guid merchantId)) {
+        if (!Guid.TryParse(estateReference, out Guid estateId) || !Guid.TryParse(merchantReference, out Guid merchantId))
+        {
             return Result.Invalid("Estate or Merchant reference is not a valid GUID.");
         }
 
@@ -71,16 +92,7 @@ public class CallbackDomainService : ICallbackDomainService
         if (result.IsFailed)
             return ResultHelpers.CreateFailure(result);
 
-        Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(command.CallbackId, cancellationToken);
-        Result<CallbackMessageAggregate> callbackMessageAggregateResult =
-            DomainServiceHelper.HandleGetAggregateResult(getResult, command.CallbackId, false);
-
-        CallbackMessageAggregate aggregate = callbackMessageAggregateResult.Data;
-        Result stateResult = aggregate.RecordCallback(command.CallbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Destinations,
-            (command.Reference, Guid.Parse(estateReference), Guid.Parse(merchantReference)));
-        if (stateResult.IsFailed)
-            return stateResult;
-        return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
+        return Result.Success();
     }
 
     private TokenResponse TokenResponse;
