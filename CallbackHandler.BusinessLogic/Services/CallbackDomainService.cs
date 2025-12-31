@@ -43,7 +43,7 @@ public class CallbackDomainService : ICallbackDomainService
                                              CancellationToken cancellationToken) {
 
         // validate the reference
-        Result<(Guid estateId, Guid merchantId)> validateResult = await ValidateReference(command.Reference);
+        Result<(Guid estateId, Guid merchantId)> validateResult = await ValidateReference(command.Reference, cancellationToken);
         if (validateResult.IsFailed)
             return ResultHelpers.CreateFailure(validateResult);
 
@@ -53,13 +53,13 @@ public class CallbackDomainService : ICallbackDomainService
 
         CallbackMessageAggregate aggregate = callbackMessageAggregateResult.Data;
         Result stateResult = aggregate.RecordCallback(command.CallbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Destinations,
-            (command.Reference, Guid.Parse(estateReference), Guid.Parse(merchantReference)));
+            (command.Reference,validateResult.Data.estateId, validateResult.Data.merchantId));
         if (stateResult.IsFailed)
             return stateResult;
         return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
     }
 
-    private async Task<Result> ValidateReference(String reference) {
+    private async Task<Result<(Guid estateId, Guid merchantId)>> ValidateReference(String reference, CancellationToken cancellationToken) {
         String[] referenceData = reference?.Split(['-'], StringSplitOptions.RemoveEmptyEntries) ?? [];
 
         if (referenceData.Length == 0)
@@ -92,7 +92,7 @@ public class CallbackDomainService : ICallbackDomainService
         if (result.IsFailed)
             return ResultHelpers.CreateFailure(result);
 
-        return Result.Success();
+        return Result.Success((estateId,merchantId));
     }
 
     private TokenResponse TokenResponse;
