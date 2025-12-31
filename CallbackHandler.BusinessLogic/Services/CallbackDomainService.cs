@@ -62,15 +62,14 @@ public class CallbackDomainService : ICallbackDomainService
     private async Task<Result<(Guid estateId, Guid merchantId)>> ValidateReference(String reference, CancellationToken cancellationToken) {
         String[] referenceData = reference?.Split(['-'], StringSplitOptions.RemoveEmptyEntries) ?? [];
 
-        if (referenceData.Length == 0)
-        {
-            return Result.Invalid("Reference cannot be empty.");
-        }
 
-        if (referenceData.Length != 2)
-        {
-            return Result.Invalid("Reference must contain estate and merchant references separated by a hyphen.");
-        }
+        var result = referenceData.Length switch {
+            0 => Result.Invalid("Reference cannot be empty."),
+            _ when referenceData.Length != 2 => Result.Invalid("Reference must contain estate and merchant references separated by a hyphen."),
+            _ => Result.Success()
+        };
+        if (result.IsFailed)
+            return ResultHelpers.CreateFailure(result);
 
         // Element 0 is estate reference, Element 1 is merchant reference
         String estateReference = referenceData[0];
@@ -88,9 +87,9 @@ public class CallbackDomainService : ICallbackDomainService
             return ResultHelpers.CreateFailure(getTokenResult);
         this.TokenResponse = getTokenResult.Data;
 
-        Result<MerchantResponse> result = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
-        if (result.IsFailed)
-            return ResultHelpers.CreateFailure(result);
+        Result<MerchantResponse> getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
+        if (getMerchantResult.IsFailed)
+            return ResultHelpers.CreateFailure(getMerchantResult);
 
         return Result.Success((estateId,merchantId));
     }
