@@ -107,6 +107,119 @@ namespace CallbackHandler.IntegrationTests.Features
             await testRunner.CollectScenarioErrorsAsync();
         }
         
+        public virtual async global::System.Threading.Tasks.Task FeatureBackgroundAsync()
+        {
+#line 4
+#line hidden
+            global::Reqnroll.Table table1 = new global::Reqnroll.Table(new string[] {
+                        "Name",
+                        "DisplayName",
+                        "Description"});
+            table1.AddRow(new string[] {
+                        "estateManagement",
+                        "Estate Managememt REST Scope",
+                        "A scope for Estate Managememt REST"});
+            table1.AddRow(new string[] {
+                        "transactionProcessor",
+                        "Transaction Processor REST  Scope",
+                        "A scope for Transaction Processor REST"});
+            table1.AddRow(new string[] {
+                        "voucherManagement",
+                        "Voucher Management REST  Scope",
+                        "A scope for Voucher Management REST"});
+            table1.AddRow(new string[] {
+                        "messagingService",
+                        "Scope for Messaging REST",
+                        "Scope for Messaging REST"});
+#line 5
+await testRunner.GivenAsync("I create the following api scopes", ((string)(null)), table1, "Given ");
+#line hidden
+            global::Reqnroll.Table table2 = new global::Reqnroll.Table(new string[] {
+                        "Name",
+                        "DisplayName",
+                        "Secret",
+                        "Scopes",
+                        "UserClaims"});
+            table2.AddRow(new string[] {
+                        "estateManagement",
+                        "Estate Managememt REST",
+                        "Secret1",
+                        "estateManagement",
+                        "MerchantId, EstateId, role"});
+            table2.AddRow(new string[] {
+                        "transactionProcessor",
+                        "Transaction Processor REST",
+                        "Secret1",
+                        "transactionProcessor",
+                        ""});
+            table2.AddRow(new string[] {
+                        "voucherManagement",
+                        "Voucher Management REST",
+                        "Secret1",
+                        "voucherManagement",
+                        ""});
+            table2.AddRow(new string[] {
+                        "messagingService",
+                        "Messaging REST",
+                        "Secret",
+                        "messagingService",
+                        ""});
+#line 12
+ await testRunner.GivenAsync("the following api resources exist", ((string)(null)), table2, "Given ");
+#line hidden
+            global::Reqnroll.Table table3 = new global::Reqnroll.Table(new string[] {
+                        "ClientId",
+                        "ClientName",
+                        "Secret",
+                        "Scopes",
+                        "GrantTypes"});
+            table3.AddRow(new string[] {
+                        "serviceClient",
+                        "Service Client",
+                        "Secret1",
+                        "estateManagement,transactionProcessor,voucherManagement,messagingService",
+                        "client_credentials"});
+#line 19
+ await testRunner.GivenAsync("the following clients exist", ((string)(null)), table3, "Given ");
+#line hidden
+            global::Reqnroll.Table table4 = new global::Reqnroll.Table(new string[] {
+                        "ClientId"});
+            table4.AddRow(new string[] {
+                        "serviceClient"});
+#line 23
+ await testRunner.GivenAsync("I have a token to access the estate management and transaction processor resource" +
+                    "s", ((string)(null)), table4, "Given ");
+#line hidden
+            global::Reqnroll.Table table5 = new global::Reqnroll.Table(new string[] {
+                        "EstateName"});
+            table5.AddRow(new string[] {
+                        "Test Estate 1"});
+#line 27
+ await testRunner.GivenAsync("I have created the following estates", ((string)(null)), table5, "Given ");
+#line hidden
+            global::Reqnroll.Table table6 = new global::Reqnroll.Table(new string[] {
+                        "MerchantName",
+                        "AddressLine1",
+                        "Town",
+                        "Region",
+                        "Country",
+                        "ContactName",
+                        "EmailAddress",
+                        "EstateName"});
+            table6.AddRow(new string[] {
+                        "Test Merchant 1",
+                        "Address Line 1",
+                        "TestTown",
+                        "Test Region",
+                        "United Kingdom",
+                        "Test Contact 1",
+                        "testcontact1@merchant1.co.uk",
+                        "Test Estate 1"});
+#line 31
+ await testRunner.GivenAsync("I create the following merchants", ((string)(null)), table6, "Given ");
+#line hidden
+        }
+        
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
             return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/BankDepositCallback.feature.ndjson", 3);
@@ -122,7 +235,7 @@ namespace CallbackHandler.IntegrationTests.Features
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Process a Bank Deposit Callback", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 4
+#line 35
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -132,29 +245,30 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             else
             {
                 await this.ScenarioStartAsync();
-                global::Reqnroll.Table table1 = new global::Reqnroll.Table(new string[] {
+#line 4
+await this.FeatureBackgroundAsync();
+#line hidden
+                global::Reqnroll.Table table7 = new global::Reqnroll.Table(new string[] {
                             "Amount",
                             "DateTime",
                             "DepositId",
                             "HostIdentifier",
-                            "Reference",
                             "SortCode",
                             "AccountNumber"});
-                table1.AddRow(new string[] {
+                table7.AddRow(new string[] {
                             "100.00",
                             "Today",
                             "6AE04AFC-D7F8-4936-A3A2-DCA177CAA106",
                             "DC4A7DDA-45A1-4D5B-8D46-21FA99A3868E",
-                            "DC4A7DDA45A14D5B8D4621FA99A3868E-6AE04AFCD7F84936A3A2DCA177CAA106",
                             "11-22-33",
                             "12345678"});
-#line 5
- await testRunner.GivenAsync("I have the following Bank Deposit Callbacks", ((string)(null)), table1, "Given ");
+#line 36
+ await testRunner.GivenAsync("I have the following Bank Deposit Callbacks", ((string)(null)), table7, "Given ");
 #line hidden
-#line 8
+#line 39
  await testRunner.WhenAsync("I send the requests to the callback handler for deposits", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 9
+#line 40
  await testRunner.ThenAsync("the deposit records are recorded", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
