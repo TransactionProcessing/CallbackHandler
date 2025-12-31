@@ -29,7 +29,9 @@ public class GenericSteps
         logger.Initialise(LogManager.GetLogger(scenarioName), scenarioName);
         LogManager.AddHiddenAssembly(typeof(NlogLogger).Assembly);
 
-        DockerServices dockerServices = DockerServices.CallbackHandler | DockerServices.EventStore | DockerServices.SqlServer;
+        DockerServices dockerServices = DockerServices.SecurityService | DockerServices.TransactionProcessor | 
+                                        DockerServices.CallbackHandler | DockerServices.EventStore |
+                                        DockerServices.SqlServer | DockerServices.TestHost;
 
         this.TestingContext.DockerHelper = new DockerHelper();
         this.TestingContext.DockerHelper.Logger = logger;
