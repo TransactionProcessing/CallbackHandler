@@ -15,11 +15,8 @@ public class MediatorRegistry : ServiceRegistry
 {
     public MediatorRegistry()
     {
-        this.AddTransient<IMediator, Mediator>();
-        
-        // request & notification handlers
-        this.AddSingleton<IRequestHandler<CallbackCommands.RecordCallbackCommand, Result>, CallbackHandlerRequestHandler>();
-        this.AddSingleton<IRequestHandler<CallbackQueries.GetCallbackQuery, Result<CallbackHandlers.Models.CallbackMessage>>, CallbackHandlerRequestHandler>();
+
+        this.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CallbackHandlerRequestHandler).Assembly));
         this.AddSingleton<ICallbackDomainService, CallbackDomainService>();
     }
 }
