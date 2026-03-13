@@ -20,8 +20,8 @@
 	  <PackageReference Include="SecurityService.IntegrationTesting.Helpers" Version="2026.2.3" />
 	  <PackageReference Include="Shared" Version="2026.3.1" />
     <PackageReference Include="Shared.IntegrationTesting" Version="2026.3.1" />
-    <PackageReference Include="TransactionProcessor.Client" Version="2026.3.1" />
-    <PackageReference Include="TransactionProcessor.IntegrationTesting.Helpers" Version="2026.3.1" />
+    <PackageReference Include="TransactionProcessor.Client" Version="2026.3.2" />
+    <PackageReference Include="TransactionProcessor.IntegrationTesting.Helpers" Version="2026.3.2" />
   </ItemGroup>
 
   <ItemGroup>
