@@ -29,8 +29,8 @@ Given I create the following api scopes
 	| Test Estate 1 |
 		
 	Given I create the following merchants
-	| MerchantName    | AddressLine1   | Town     | Region      | Country        | ContactName    | EmailAddress                 | EstateName    |
-	| Test Merchant 1 | Address Line 1 | TestTown | Test Region | United Kingdom | Test Contact 1 | testcontact1@merchant1.co.uk | Test Estate 1 |
+	| MerchantName    | AddressLine1   | Town     | Region      | PostalCode | Country        | ContactName    | EmailAddress                 | EstateName    |
+	| Test Merchant 1 | Address Line 1 | TestTown | Test Region | TE57 1NG   | United Kingdom | Test Contact 1 | testcontact1@merchant1.co.uk | Test Estate 1 |
 
 Scenario: Process a Bank Deposit Callback
 	Given I have the following Bank Deposit Callbacks
