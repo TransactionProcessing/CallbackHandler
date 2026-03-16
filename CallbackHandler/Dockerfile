@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
+RUN useradd --create-home --home-dir /home/txnproc --shell /usr/sbin/nologin txnproc \
+    && mkdir -p /home/txnproc/config /home/txnproc/trace
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
@@ -22,4 +24,6 @@ RUN dotnet publish "CallbackHandler.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN chown -R txnproc:txnproc /app /home/txnproc
+USER txnproc
 ENTRYPOINT ["dotnet", "CallbackHandler.dll"]
