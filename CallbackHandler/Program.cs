@@ -96,7 +96,7 @@ namespace CallbackHandler
                                                          if (sentrySection.Exists())
                                                          {
                                                              // Replace the condition below if you intended to only enable Sentry in certain environments.
-                                                             if (env.IsDevelopment())
+                                                             if (env.IsDevelopment() == false)
                                                              {
                                                                  webBuilder.UseSentry(o =>
                                                                  {
