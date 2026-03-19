@@ -27,10 +27,6 @@ public static class CallbackHandlers
     {
         Guid callbackId = Guid.NewGuid();
 
-        if (depositCallback.Reference == "ExceptionTest") {
-            throw new Exception("This is a test exception");
-        }
-
         CallbackCommands.RecordCallbackCommand request = new(
             callbackId,
             JsonConvert.SerializeObject(depositCallback),
