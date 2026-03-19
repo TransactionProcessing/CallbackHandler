@@ -2,23 +2,28 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using Shared.General;
+using Shared.Logger;
+using Shared.Middleware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NLog.Extensions.Logging;
-using Shared.Logger;
-using Shared.Middleware;
+using JasperFx.CommandLine.Descriptions;
 
 namespace CallbackHandler
 {
     using Lamar.Microsoft.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
     using NLog;
+    using Sentry.Extensibility;
     using Shared.DomainDrivenDesign.EventSourcing;
     using Shared.EventStore.Aggregate;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Reflection;
 
     [ExcludeFromCodeCoverage]
     public class Program
@@ -68,7 +73,30 @@ namespace CallbackHandler
                                                      webBuilder.UseStartup<Startup>();
                                                      webBuilder.UseConfiguration(config);
                                                      webBuilder.UseKestrel();
+
+                                                     IConfigurationSection isSentryConfigured = config.GetSection("SentryConfiguration");
+                                                     if (isSentryConfigured.Exists()) {
+                                                         webBuilder.Configure((context,
+                                                                               app) => {
+                                                             if (context.HostingEnvironment.IsDevelopment() == false) {
+                                                                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
+
+                                                                 webBuilder.UseSentry(o => {
+
+                                                                     o.Dsn = ConfigurationReader.GetValueFromSection<String>("SentryConfiguration", "Dsn");
+                                                                     o.SendDefaultPii = true; // required for body + user data
+                                                                     o.MaxRequestBodySize = RequestSize.Always;
+                                                                     o.CaptureBlockingCalls = true;
+                                                                     //o.CaptureFailedRequests = true;
+                                                                     o.Release = version != null ? version.ToString() : "unknown";
+
+                                                                 });
+                                                             }
+                                                         });
+
+                                                     }
                                                  });
+
             return hostBuilder;
         }
 
