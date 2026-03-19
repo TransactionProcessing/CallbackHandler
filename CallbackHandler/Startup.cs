@@ -1,8 +1,8 @@
+using CallbackHandler.Endpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using CallbackHandler.Endpoints;
 
 namespace CallbackHandler
 {
@@ -11,6 +11,7 @@ namespace CallbackHandler
     using Lamar;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Logging;
+    using Sentry;
     using Shared.EventStore.Aggregate;
     using Shared.Extensions;
     using Shared.General;
@@ -80,7 +81,7 @@ namespace CallbackHandler
 
             Logger.Initialise(logger);
             Startup.Configuration.LogConfiguration(Logger.LogWarning);
-
+            
             ConfigurationReader.Initialise(Startup.Configuration);
             app.UseMiddleware<TenantMiddleware>();
             app.AddRequestResponseLogging();
