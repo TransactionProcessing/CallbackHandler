@@ -103,7 +103,8 @@ namespace CallbackHandler
                                                                      o.Dsn = builtConfig["SentryConfiguration:Dsn"];
                                                                      o.SendDefaultPii = true;
                                                                      o.MaxRequestBodySize = RequestSize.Always;
-                                                                     o.CaptureBlockingCalls = true;
+                                                                     o.CaptureBlockingCalls = bool.Parse(builtConfig["SentryConfiguration:CaptureBlockingCalls"]);
+                                                                     o.IncludeActivityData = bool.Parse(builtConfig["SentryConfiguration:IncludeActivityData"]);
                                                                      o.Release = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
                                                                  });
                                                              }
