@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using SimpleResults;
-using System;
 using Shared.Extensions;
 using Shared.Middleware;
 
@@ -21,7 +19,7 @@ namespace CallbackHandler.Endpoints
             group.MapPost("/", Handlers.CallbackHandlers.RecordCallback)
                 .WithName("RecordCallback")
                 .WithSummary("Records a deposit callback")
-                .WithStandardProduces<CallbackResponse, ErrorResponse>(); ;
+                .WithStandardProduces<CallbackResponse, ErrorResponse>();
 
             group.MapGet("/{callbackId:guid}", Handlers.CallbackHandlers.GetCallback)
                 .WithName("GetCallback")
