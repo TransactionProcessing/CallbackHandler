@@ -2,10 +2,10 @@
 
 namespace CallbackHandler.Common
 {
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Swashbuckle.AspNetCore.SwaggerGen;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
 
     [ExcludeFromCodeCoverage]
     public class SwaggerDefaultValues : IOperationFilter

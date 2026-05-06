@@ -1,7 +1,8 @@
-﻿using CallbackHandler.DataTransferObjects;
+﻿using System.Text.Json;
+using CallbackHandler.DataTransferObjects;
 using Reqnroll;
-using SecurityService.DataTransferObjects.Responses;
 using Shared.Logger;
+using Shared.Serialisation;
 using Shouldly;
 using TransactionProcessor.DataTransferObjects.Responses.Merchant;
 using TransactionProcessor.IntegrationTesting.Helpers;
@@ -10,7 +11,6 @@ namespace CallbackHandler.IntegrationTests.Common;
 
 public class TestingContext
 {
-    
     public DockerHelper DockerHelper { get; set; }
     public NlogLogger Logger { get; set; }
 
@@ -175,3 +175,4 @@ public class ClientDetails
 
     #endregion
 }
+

@@ -1,18 +1,12 @@
 ﻿using CallbackHandler.IntegrationTests.Common;
 using Reqnroll;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using CallbackHandler.DataTransferObjects;
-using Newtonsoft.Json;
-using SecurityService.DataTransferObjects.Requests;
-using SecurityService.DataTransferObjects.Responses;
+using SecurityService.DataTransferObjects;
 using SecurityService.IntegrationTesting.Helpers;
+using Shared.Serialisation;
 using Shouldly;
 using TransactionProcessor.DataTransferObjects.Requests.Estate;
 using TransactionProcessor.DataTransferObjects.Requests.Merchant;
@@ -73,7 +67,7 @@ namespace CallbackHandler.IntegrationTests.Shared
                 String requestUri =
                     $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/callbacks";
                 HttpRequestMessage msg = new(HttpMethod.Post, requestUri);
-                var payload = JsonConvert.SerializeObject(testingContextDeposit);
+                var payload =  StringSerialiser.Serialise(testingContextDeposit);
 
                 msg.Content = new StringContent(payload, Encoding.UTF8,
                     MediaTypeHeaderValue.Parse("application/json"));
@@ -81,7 +75,7 @@ namespace CallbackHandler.IntegrationTests.Shared
                 response.StatusCode.ShouldBe(HttpStatusCode.OK);
                 var content = await response.Content.ReadAsStringAsync();
                 CallbackResponse responseData =
-                    JsonConvert.DeserializeObject<CallbackResponse>(content);
+                    StringSerialiser.Deserialise<CallbackResponse>(content);
 
                 this.TestingContext.SentCallbacks.Add(responseData.CallbackId, payload);
             }
@@ -99,15 +93,14 @@ namespace CallbackHandler.IntegrationTests.Shared
                 var response = await client.SendAsync(msg);
                 response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-                var originalDeposit = JsonConvert.DeserializeObject<Deposit>(sentCallback.Value);
+                var originalDeposit = StringSerialiser.Deserialise<Deposit>(sentCallback.Value);
 
                 var content = await response.Content.ReadAsStringAsync();
                 CallbackMessage responseData =
-                    JsonConvert.DeserializeObject<CallbackMessage>(content);
-
+                    StringSerialiser.Deserialise<CallbackMessage>(content);
 
                 responseData.Reference.ShouldBe(originalDeposit.Reference);
-                var callbackDeposit = JsonConvert.DeserializeObject<Deposit>(responseData.Message);
+                var callbackDeposit = StringSerialiser.Deserialise<Deposit>(responseData.Message);
                 callbackDeposit.AccountNumber.ShouldBe(originalDeposit.AccountNumber);
             }
         }

@@ -1,30 +1,23 @@
 ﻿using KurrentDB.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
-using Shared.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CallbackHandler.Bootstrapper;
 
 using Common;
-using EventStore.Client;
 using Lamar;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Shared.EventStore.Extensions;
 using Shared.General;
 using Shared.Middleware;
 using Swashbuckle.AspNetCore.Filters;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 
 [ExcludeFromCodeCoverage]
 public class MiddlewareRegistry :ServiceRegistry
@@ -40,14 +33,7 @@ public class MiddlewareRegistry :ServiceRegistry
         this.AddSwaggerGen(AddSwaggerAction);
         this.AddSwaggerExamples();
 
-        this.AddControllers().AddNewtonsoftJson(options =>
-        {
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            options.SerializerSettings.TypeNameHandling = TypeNameHandling.None;
-            options.SerializerSettings.Formatting = Formatting.Indented;
-            options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-        });
+        this.AddControllers();
 
         Assembly assembly = this.GetType().GetTypeInfo().Assembly;
         this.AddMvcCore().AddApplicationPart(assembly).AddControllersAsServices();
@@ -58,10 +44,7 @@ public class MiddlewareRegistry :ServiceRegistry
         
         this.AddSingleton(new RequestResponseMiddlewareLoggingConfig(middlewareLogLevel, logRequests, logResponses));
 
-        this.ConfigureHttpJsonOptions(options => {
-            options.SerializerOptions.PropertyNamingPolicy = new SnakeCaseNamingPolicy();
-            options.SerializerOptions.PropertyNameCaseInsensitive = true; // optional, but safer
-        });
+        this.ConfigureHttpJsonOptions(jsonOptions => JsonSerializerConfiguration.ConfigureMinimalApi(jsonOptions.SerializerOptions));
     }
 
     private void AddSwaggerAction(SwaggerGenOptions c) {
