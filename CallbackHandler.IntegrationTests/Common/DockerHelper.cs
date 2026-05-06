@@ -1,19 +1,17 @@
 using EventStore.Client;
-using Newtonsoft.Json.Bson;
 using SecurityService.Client;
 using Shared.IntegrationTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.Serialisation;
 using TransactionProcessor.Client;
 
 namespace CallbackHandler.IntegrationTests.Common;
 
 public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.DockerHelper
 {
+    public DockerHelper() {
+        StringSerialiser.Initialise(new SystemTextJsonSerializer(SystemTextJsonSerializer.GetDefaultJsonSerializerOptions()));
+    }
+
     public ISecurityServiceClient SecurityServiceClient;
     public ITransactionProcessorClient TransactionProcessorClient;
     public EventStoreProjectionManagementClient ProjectionManagementClient;
@@ -67,10 +65,20 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
             }
         };
         HttpClient httpClient = new HttpClient(clientHandler);
-        this.SecurityServiceClient = new SecurityServiceClient(SecurityServiceBaseAddressResolver, httpClient);
-        this.TransactionProcessorClient = new TransactionProcessorClient(TransactionProcessorBaseAddressResolver, httpClient);
+        this.SecurityServiceClient = new SecurityServiceClient(SecurityServiceBaseAddressResolver, httpClient, Serialise, Deserialise);
+        this.TransactionProcessorClient = new TransactionProcessorClient(TransactionProcessorBaseAddressResolver, httpClient, Serialise, Deserialise);
         this.ProjectionManagementClient = new EventStoreProjectionManagementClient(ConfigureEventStoreSettings());
         this.TestHostHttpClient = new HttpClient(clientHandler);
         this.TestHostHttpClient.BaseAddress = new Uri($"http://127.0.0.1:{this.TestHostServicePort}");
+    }
+
+    String Serialise(Object arg)
+    {
+        return StringSerialiser.Serialise<Object>(arg, new SerialiserOptions(SerialiserPropertyFormat.SnakeCase));
+    }
+
+    Object Deserialise(String arg, Type type)
+    {
+        return StringSerialiser.DeserializeObject<Object>(arg, type, new SerialiserOptions(SerialiserPropertyFormat.SnakeCase));
     }
 }

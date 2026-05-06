@@ -10,6 +10,7 @@ namespace CallbackHandler
     using HealthChecks.UI.Client;
     using Lamar;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Sentry;
     using Shared.EventStore.Aggregate;
@@ -17,6 +18,7 @@ namespace CallbackHandler
     using Shared.General;
     using Shared.Logger;
     using Shared.Middleware;
+    using Shared.Serialisation;
     using System.Diagnostics.CodeAnalysis;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -54,10 +56,13 @@ namespace CallbackHandler
             services.IncludeRegistry<RepositoryRegistry>();
             services.IncludeRegistry<MiddlewareRegistry>();
             services.IncludeRegistry<ClientRegistry>();
+            services.IncludeRegistry<SerialiserRegistry>();
 
             TypeProvider.LoadDomainEventsTypeDynamically();
 
             Startup.Container = new Container(services);
+            var serialiser = Container.GetRequiredService<IStringSerialiser>();
+            StringSerialiser.Initialise(serialiser);
         }
         
 

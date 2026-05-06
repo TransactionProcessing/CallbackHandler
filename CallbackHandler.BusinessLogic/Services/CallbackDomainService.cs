@@ -1,4 +1,5 @@
 ﻿using SecurityService.Client;
+using SecurityService.DataTransferObjects;
 using Shared.EventStore.Helpers;
 using Shared.Logger;
 using SimpleResults;
@@ -9,7 +10,6 @@ namespace CallbackHandler.BusinessLogic.Services;
 
 using CallbackMessageAggregate;
 using Requests;
-using SecurityService.DataTransferObjects.Responses;
 using Shared.DomainDrivenDesign.EventSourcing;
 using Shared.EventStore.Aggregate;
 using Shared.General;

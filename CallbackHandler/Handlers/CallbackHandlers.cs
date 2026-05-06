@@ -3,19 +3,12 @@ using CallbackHandler.DataTransferObjects;
 using CallbackHandlers.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Sentry;
-using Shared.Results;
 using Shared.Results.Web;
 using SimpleResults;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Shared.Serialisation;
 
 namespace CallbackHandler.Handlers;
 
@@ -29,7 +22,7 @@ public static class CallbackHandlers
 
         CallbackCommands.RecordCallbackCommand request = new(
             callbackId,
-            JsonConvert.SerializeObject(depositCallback),
+            StringSerialiser.Serialise(depositCallback),
             new[] { "TransactionProcessor" },
             MessageFormat.JSON,
             depositCallback.GetType().ToString(),

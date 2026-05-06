@@ -1,13 +1,13 @@
 using CallbackHandlers.Models;
 using System;
 using System.Collections.Generic;
+using SecurityService.DataTransferObjects;
 using Xunit;
 
 namespace CallbackHander.Testing;
 
 using CallbackHandler.BusinessLogic.Requests;
 using CallbackHandler.CallbackMessageAggregate;
-using SecurityService.DataTransferObjects.Responses;
 
 public class TestData
 {
@@ -26,7 +26,7 @@ public class TestData
     public static Guid MerchantReference = Guid.Parse("9D20A396-1CF6-45ED-AA7B-DD436318BA29");
     public static TokenResponse TokenResponse()
     {
-        return SecurityService.DataTransferObjects.Responses.TokenResponse.Create("AccessToken", string.Empty, 100);
+        return SecurityService.DataTransferObjects.TokenResponse.Create("AccessToken", string.Empty, 100);
     }
 
     public static IReadOnlyDictionary<String, String> DefaultAppSettings =>
