@@ -8,6 +8,7 @@ using SimpleResults;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Shared.Logger;
 using Shared.Serialisation;
 
 namespace CallbackHandler.Handlers;

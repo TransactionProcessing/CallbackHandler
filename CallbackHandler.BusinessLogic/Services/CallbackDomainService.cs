@@ -46,7 +46,6 @@ public class CallbackDomainService : ICallbackDomainService
         Result<(Guid estateId, Guid merchantId)> validateResult = await ValidateReference(command.Reference, cancellationToken);
         if (validateResult.IsFailed)
             return ResultHelpers.CreateFailure(validateResult);
-
         Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(command.CallbackId, cancellationToken);
         Result<CallbackMessageAggregate> callbackMessageAggregateResult =
             DomainServiceHelper.HandleGetAggregateResult(getResult, command.CallbackId, false);
@@ -56,6 +55,7 @@ public class CallbackDomainService : ICallbackDomainService
             (command.Reference,validateResult.Data.estateId, validateResult.Data.merchantId));
         if (stateResult.IsFailed)
             return stateResult;
+        
         return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
     }
 

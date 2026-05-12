@@ -72,8 +72,10 @@ namespace CallbackHandler.IntegrationTests.Shared
                 msg.Content = new StringContent(payload, Encoding.UTF8,
                     MediaTypeHeaderValue.Parse("application/json"));
                 var response = await client.SendAsync(msg);
-                response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
                 var content = await response.Content.ReadAsStringAsync();
+                response.StatusCode.ShouldBe(HttpStatusCode.OK, content);
+                
                 CallbackResponse responseData =
                     StringSerialiser.Deserialise<CallbackResponse>(content);
 
