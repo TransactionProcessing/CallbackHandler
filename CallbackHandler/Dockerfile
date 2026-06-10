@@ -10,8 +10,10 @@ COPY ["CallbackHandler.CallbackMessageAggregate/CallbackHandler.CallbackMessageA
 COPY ["CallbackHandlers.Models/CallbackHandlers.Models.csproj", "CallbackHandlers.Models/"]
 COPY ["CallbackHandler.CallbackMessage.DomainEvents/CallbackHandler.CallbackMessage.DomainEvents.csproj", "CallbackHandler.CallbackMessage.DomainEvents/"]
 COPY ["CallbackHandler.DataTransferObjects/CallbackHandler.DataTransferObjects.csproj", "CallbackHandler.DataTransferObjects/"]
-RUN dotnet restore "CallbackHandler/CallbackHandler.csproj"
+COPY ["Directory.Packages.props", "."]
 COPY . .
+RUN dotnet restore "CallbackHandler/CallbackHandler.csproj"
+
 WORKDIR "/src/CallbackHandler"
 RUN dotnet build "CallbackHandler.csproj" -c Release -o /app/build
 
