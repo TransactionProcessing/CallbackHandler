@@ -37,7 +37,7 @@ namespace CallbackHandler.IntegrationTests.Shared
             this.TestingContext = testingContext;
             this.SecurityServiceSteps = new SecurityServiceSteps(testingContext.DockerHelper.SecurityServiceClient);
             this.TransactionProcessorSteps = new TransactionProcessorSteps(testingContext.DockerHelper.TransactionProcessorClient, testingContext.DockerHelper.TestHostHttpClient,
-                testingContext.DockerHelper.ProjectionManagementClient);
+                testingContext.DockerHelper.ProjectionManagementClient, testingContext.DockerHelper.AgencyBankingClient);
 
         }
 
@@ -166,7 +166,7 @@ namespace CallbackHandler.IntegrationTests.Shared
         [When(@"I create the following merchants")]
         public async Task WhenICreateTheFollowingMerchants(DataTable table)
         {
-            List<(EstateDetails estate, CreateMerchantRequest)> requests = table.Rows.ToCreateMerchantRequests(this.TestingContext.Estates);
+            List<(EstateDetails estate, CreateMerchantRequest, Boolean EnableAgencyBanking)> requests = table.Rows.ToCreateMerchantRequests(this.TestingContext.Estates);
 
             List<MerchantResponse> verifiedMerchants = await this.TransactionProcessorSteps.WhenICreateTheFollowingMerchants(this.TestingContext.AccessToken, requests);
 
