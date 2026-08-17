@@ -2,6 +2,7 @@ using EventStore.Client;
 using SecurityService.Client;
 using Shared.IntegrationTesting;
 using Shared.Serialisation;
+using TestHosts.Clients;
 using TransactionProcessor.Client;
 
 namespace CallbackHandler.IntegrationTests.Common;
@@ -15,6 +16,9 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
     public ISecurityServiceClient SecurityServiceClient;
     public ITransactionProcessorClient TransactionProcessorClient;
     public EventStoreProjectionManagementClient ProjectionManagementClient;
+
+    public IAgencyBankingClient AgencyBankingClient;
+    
     public HttpClient TestHostHttpClient;
     public override async Task CreateSubscriptions()
     {
@@ -53,7 +57,7 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
         // Setup the base address resolvers
         String SecurityServiceBaseAddressResolver(String api) => $"https://127.0.0.1:{this.SecurityServicePort}";
         String TransactionProcessorBaseAddressResolver(String api) => $"http://127.0.0.1:{this.TransactionProcessorPort}";
-
+        String TestHostServiceBaseAddressResolver(String api) => $"http://127.0.0.1:{this.TestHostServicePort}";
         HttpClientHandler clientHandler = new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = (message,
@@ -70,6 +74,7 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
         this.ProjectionManagementClient = new EventStoreProjectionManagementClient(ConfigureEventStoreSettings());
         this.TestHostHttpClient = new HttpClient(clientHandler);
         this.TestHostHttpClient.BaseAddress = new Uri($"http://127.0.0.1:{this.TestHostServicePort}");
+        this.AgencyBankingClient = new AgencyBankingClient(TestHostServiceBaseAddressResolver, httpClient, Serialise_CamelCase, this.Deserialise_CamelCase);
     }
 
     String Serialise(Object arg)
@@ -80,5 +85,15 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
     Object Deserialise(String arg, Type type)
     {
         return StringSerialiser.DeserializeObject<Object>(arg, type, new SerialiserOptions(SerialiserPropertyFormat.SnakeCase));
+    }
+
+    String Serialise_CamelCase(Object arg)
+    {
+        return StringSerialiser.Serialise<Object>(arg, new SerialiserOptions(SerialiserPropertyFormat.CamelCase));
+    }
+
+    Object Deserialise_CamelCase(String arg, Type type)
+    {
+        return StringSerialiser.DeserializeObject<Object>(arg, type, new SerialiserOptions(SerialiserPropertyFormat.CamelCase));
     }
 }
