@@ -33,9 +33,10 @@ jobs:
     - name: Run Unit Tests
       run: |
         echo "ASPNETCORE_ENVIRONMENT are > ${ASPNETCORE_ENVIRONMENT}"
-        dotnet test "CallbackHandler.BusinessLogic.Tests/CallbackHandler.BusinessLogic.Tests.csproj" --configuration Release --no-build --verbosity normal /p:CollectCoverage=true /p:Exclude="[xunit*]*" /p:ExcludeByAttribute="Obsolete" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="CompilerGeneratedAttribute" /p:ExcludeByAttribute="ExcludeFromCodeCoverageAttribute" /p:CoverletOutput="../lcov1.info" -m:1 /p:CoverletOutputFormat="lcov"
-        dotnet test "CallbackHandler.CallbackMessageAggregate.Tests/CallbackHandler.CallbackMessageAggregate.Tests.csproj" --configuration Release --no-build --verbosity normal /p:CollectCoverage=true /p:Exclude="[xunit*]*" /p:ExcludeByAttribute="Obsolete" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="CompilerGeneratedAttribute" /p:ExcludeByAttribute="ExcludeFromCodeCoverageAttribute" /p:CoverletOutput="../lcov2.info" -m:1 /p:CoverletOutputFormat="lcov"
-        dotnet test "CallbackHandler.Tests/CallbackHandler.Tests.csproj" --configuration Release --no-build --verbosity normal /p:CollectCoverage=true /p:Exclude="[xunit*]*" /p:ExcludeByAttribute="Obsolete" /p:ExcludeByAttribute="GeneratedCodeAttribute" /p:ExcludeByAttribute="CompilerGeneratedAttribute" /p:ExcludeByAttribute="ExcludeFromCodeCoverageAttribute" /p:CoverletOutput="../lcov3.info" -m:1 /p:CoverletOutputFormat="lcov"
+        mkdir -p coverage/lcov1 coverage/lcov2 coverage/lcov3
+        dotnet test "CallbackHandler.BusinessLogic.Tests/CallbackHandler.BusinessLogic.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format lcov --results-directory "${{ github.workspace }}/coverage/lcov1"
+        dotnet test "CallbackHandler.CallbackMessageAggregate.Tests/CallbackHandler.CallbackMessageAggregate.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format lcov --results-directory "${{ github.workspace }}/coverage/lcov2"
+        dotnet test "CallbackHandler.Tests/CallbackHandler.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format lcov --results-directory "${{ github.workspace }}/coverage/lcov3"
     
     - name: Build Docker Image
       run: docker build . --file CallbackHandler/Dockerfile --tag callbackhandler:latest
