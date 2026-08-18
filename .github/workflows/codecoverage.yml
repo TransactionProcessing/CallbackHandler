@@ -27,20 +27,13 @@ jobs:
     - name: Run Unit Tests
       run: |
         echo "ASPNETCORE_ENVIRONMENT are > ${ASPNETCORE_ENVIRONMENT}"
-        mkdir -p coverage/lcov1 coverage/lcov2 coverage/lcov3
-        dotnet test "CallbackHandler.BusinessLogic.Tests/CallbackHandler.BusinessLogic.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format lcov --results-directory "${{ github.workspace }}/coverage/lcov1"
-        dotnet test "CallbackHandler.CallbackMessageAggregate.Tests/CallbackHandler.CallbackMessageAggregate.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format lcov --results-directory "${{ github.workspace }}/coverage/lcov2"
-        dotnet test "CallbackHandler.Tests/CallbackHandler.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format lcov --results-directory "${{ github.workspace }}/coverage/lcov3"
-
-    - name: Install LCOV merger
-      run: npm install -g lcov-result-merger
-
-    - name: Merge LCOV reports
-      run: |
-        lcov-result-merger "coverage/*/coverage.info" > lcov.info
+        mkdir -p coverage/cob1 coverage/cob2 coverage/cob3
+        dotnet test "CallbackHandler.BusinessLogic.Tests/CallbackHandler.BusinessLogic.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format cobertura --results-directory "${{ github.workspace }}/coverage/cob1"
+        dotnet test "CallbackHandler.CallbackMessageAggregate.Tests/CallbackHandler.CallbackMessageAggregate.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format cobertura --results-directory "${{ github.workspace }}/coverage/cob2"
+        dotnet test "CallbackHandler.Tests/CallbackHandler.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format cobertura --results-directory "${{ github.workspace }}/coverage/cob3"
 
     - name: Upload merged coverage to Codacy
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: ./lcov.info      
+        coverage-reports: ./coverage/*/coverage.cobertura.xml
