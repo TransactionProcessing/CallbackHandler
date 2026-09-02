@@ -6,11 +6,11 @@ namespace CallbackHandler.Tests
     using System.Collections.Generic;
     using System.Diagnostics;
     using Lamar;
+    using Imposter.Abstractions;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Moq;
 
     [Collection("TestCollection")]
     public class BootstrapperTests
@@ -18,16 +18,16 @@ namespace CallbackHandler.Tests
         [Fact]
         public void VerifyBootstrapperIsValid()
         {
-            Mock<IWebHostEnvironment> hostingEnvironment = new();
-            hostingEnvironment.Setup(he => he.EnvironmentName).Returns("Development");
-            hostingEnvironment.Setup(he => he.ContentRootPath).Returns("/home");
-            hostingEnvironment.Setup(he => he.ApplicationName).Returns("Test Application");
+            IWebHostEnvironmentImposter hostingEnvironment = new();
+            hostingEnvironment.EnvironmentName.Getter().Returns("Development");
+            hostingEnvironment.ContentRootPath.Getter().Returns("/home");
+            hostingEnvironment.ApplicationName.Getter().Returns("Test Application");
 
             ServiceRegistry services = new();
-            Startup s = new(hostingEnvironment.Object);
+            Startup s = new(hostingEnvironment.Instance());
             Startup.Configuration = this.SetupMemoryConfiguration();
 
-            this.AddTestRegistrations(services, hostingEnvironment.Object);
+            this.AddTestRegistrations(services, hostingEnvironment.Instance());
             s.ConfigureContainer(services);
             Startup.Container.AssertConfigurationIsValid(AssertMode.Full);
         }

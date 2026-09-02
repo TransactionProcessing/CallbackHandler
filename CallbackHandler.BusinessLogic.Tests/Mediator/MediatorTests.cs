@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Moq;
+using Imposter.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -32,19 +32,19 @@ public class MediatorTests
     [Fact]
     public async Task Mediator_Send_RequestHandled()
     {
-        Mock<IWebHostEnvironment> hostingEnvironment = new();
-        hostingEnvironment.Setup(he => he.EnvironmentName).Returns("Development");
-        hostingEnvironment.Setup(he => he.ContentRootPath).Returns("/home");
-        hostingEnvironment.Setup(he => he.ApplicationName).Returns("Test Application");
+        IWebHostEnvironmentImposter hostingEnvironment = new();
+        hostingEnvironment.EnvironmentName.Getter().Returns("Development");
+        hostingEnvironment.ContentRootPath.Getter().Returns("/home");
+        hostingEnvironment.ApplicationName.Getter().Returns("Test Application");
 
         ServiceRegistry services = new();
-        Startup s = new(hostingEnvironment.Object);
+        Startup s = new(hostingEnvironment.Instance());
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(TestData.DefaultAppSettings).Build();
         //ConfigurationReader.Initialise(configurationRoot);
 
         Startup.Configuration = configurationRoot;
 
-        this.AddTestRegistrations(services, hostingEnvironment.Object);
+        this.AddTestRegistrations(services, hostingEnvironment.Instance());
         s.ConfigureContainer(services);
         Startup.Container.AssertConfigurationIsValid(AssertMode.Full);
 
