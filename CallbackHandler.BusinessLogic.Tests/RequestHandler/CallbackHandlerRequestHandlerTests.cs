@@ -11,7 +11,7 @@ using CallbackHander.Testing;
 using CallbackHandlers.Models;
 using CallbackMessageAggregate;
 using MediatR;
-using Moq;
+using Imposter.Abstractions;
 using Services;
 using Shared.DomainDrivenDesign.EventSourcing;
 using Shared.EventStore.Aggregate;
@@ -23,12 +23,10 @@ public class CallbackHandlerRequestHandlerTests
     [Fact]
     public void CallbackHandlerRequestHandlerTests_RecordCallbackRequest_IsHandled()
     {
-        Mock<ICallbackDomainService> domainService = new();
-        domainService.Setup(a => a.RecordCallback(It.IsAny<CallbackCommands.RecordCallbackCommand>(),
-                                                  It.IsAny<CancellationToken>()));
-        Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository = new();
+        ICallbackDomainServiceImposter domainService = new();
+        IAggregateRepositoryImposter<CallbackMessageAggregate, DomainEvent> aggregateRepository = new();
 
-        CallbackHandlerRequestHandler handler = new(domainService.Object, aggregateRepository.Object);
+        CallbackHandlerRequestHandler handler = new(domainService.Instance(), aggregateRepository.Instance());
         
         CallbackCommands.RecordCallbackCommand request = TestData.RecordCallbackCommand;
 
@@ -38,17 +36,15 @@ public class CallbackHandlerRequestHandlerTests
     [Fact]
     public void CallbackHandlerRequestHandlerTests_GetCallbackQuery_IsHandled()
     {
-        Mock<ICallbackDomainService> domainService =
+        ICallbackDomainServiceImposter domainService =
             new();
-        //domainService.Setup(a => a.RecordCallback(It.IsAny<CallbackCommands.RecordCallbackCommand>(),
-        //        It.IsAny<CancellationToken>()));
-            Mock<IAggregateRepository<CallbackMessageAggregate, DomainEvent>> aggregateRepository =
+            IAggregateRepositoryImposter<CallbackMessageAggregate, DomainEvent> aggregateRepository =
                 new();
 
-            aggregateRepository.Setup(a => a.GetLatestVersion(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            aggregateRepository.GetLatestVersion(Arg<Guid>.Any(), Arg<CancellationToken>.Any())
                 .ReturnsAsync(TestData.RecordedCallbackMessageAggregate());
 
-            CallbackHandlerRequestHandler handler = new(domainService.Object, aggregateRepository.Object);
+            CallbackHandlerRequestHandler handler = new(domainService.Instance(), aggregateRepository.Instance());
 
             CallbackQueries.GetCallbackQuery query = TestData.GetCallbackQuery;
 
