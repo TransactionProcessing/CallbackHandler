@@ -32,8 +32,19 @@ jobs:
         dotnet test "CallbackHandler.CallbackMessageAggregate.Tests/CallbackHandler.CallbackMessageAggregate.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format cobertura --results-directory "${{ github.workspace }}/coverage/cob2"
         dotnet test "CallbackHandler.Tests/CallbackHandler.Tests.csproj" --configuration Release --no-build --verbosity normal --coverlet --coverlet-output-format cobertura --results-directory "${{ github.workspace }}/coverage/cob3"
 
+        for directory in coverage/cob1 coverage/cob2 coverage/cob3; do
+          report=$(find "$directory" -type f -name 'coverage*.xml' -print -quit)
+          if [ -z "$report" ]; then
+            echo "No Cobertura coverage report found in $directory"
+            exit 1
+          fi
+          if [ "$report" != "$directory/coverage.cobertura.xml" ]; then
+            cp "$report" "$directory/coverage.cobertura.xml"
+          fi
+        done
+
     - name: Upload merged coverage to Codacy
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: ./coverage/*/coverage.cobertura.xml
+        coverage-reports: ./coverage/cob1/coverage.cobertura.xml,./coverage/cob2/coverage.cobertura.xml,./coverage/cob3/coverage.cobertura.xml
