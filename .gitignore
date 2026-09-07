@@ -349,3 +349,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /CallbackHandler/appsettings.Development.json
+/CallbackHandler/hosting.development.json
