@@ -1,6 +1,7 @@
 ﻿using KurrentDB.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
+using Shared.Monitoring;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CallbackHandler.Bootstrapper;
@@ -45,6 +46,8 @@ public class MiddlewareRegistry :ServiceRegistry
         this.AddSingleton(new RequestResponseMiddlewareLoggingConfig(middlewareLogLevel, logRequests, logResponses));
 
         this.ConfigureHttpJsonOptions(jsonOptions => JsonSerializerConfiguration.ConfigureMinimalApi(jsonOptions.SerializerOptions));
+
+        this.AddUptimeKuma();
     }
 
     private void AddSwaggerAction(SwaggerGenOptions c) {
