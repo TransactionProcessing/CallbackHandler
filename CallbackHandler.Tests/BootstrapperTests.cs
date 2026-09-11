@@ -64,6 +64,7 @@ namespace CallbackHandler.Tests
             services.AddSingleton<DiagnosticListener>(diagnosticSource);
             services.AddSingleton<IWebHostEnvironment>(hostingEnvironment);
             services.AddSingleton<IHostEnvironment>(hostingEnvironment);
+            services.AddSingleton<IConfiguration>(Startup.Configuration);
         }
     }
 }

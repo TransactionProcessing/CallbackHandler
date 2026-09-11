@@ -18,6 +18,7 @@ namespace CallbackHandler
     using Shared.General;
     using Shared.Logger;
     using Shared.Middleware;
+    using Shared.Monitoring;
     using Shared.Serialisation;
     using System.Diagnostics.CodeAnalysis;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -67,7 +68,8 @@ namespace CallbackHandler
         
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory,
+        IHostApplicationLifetime lifetime, IHost host)
         {
             if (env.IsDevelopment())
             {
@@ -106,6 +108,13 @@ namespace CallbackHandler
             app.UseSwagger();
 
             app.UseSwaggerUI();
+
+            lifetime.ApplicationStarted.Register(() =>
+            {
+                host.RegisterWithUptimeKumaAsync()
+                    .GetAwaiter()
+                    .GetResult();
+            });
         }
     }
 }
