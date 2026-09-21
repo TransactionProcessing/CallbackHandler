@@ -42,7 +42,11 @@ namespace CallbackHandler
             IConfigurationRoot config = new ConfigurationBuilder().SetBasePath(fi.Directory.FullName)
                                                                   .AddJsonFile("hosting.json", optional: true)
                                                                   .AddJsonFile("hosting.development.json", optional: true)
-                                                                  .AddEnvironmentVariables().Build();
+                                                                  .AddEnvironmentVariables()
+                                                                  .AddInMemoryCollection(new Dictionary<string, string?>
+                                                                  {
+                                                                      ["HealthMonitoring:Service:Version"] = Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "0.0.0.0"
+                                                                  }).Build();
 
             ConfigureLogging();
 

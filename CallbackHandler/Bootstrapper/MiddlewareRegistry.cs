@@ -1,4 +1,5 @@
-﻿using KurrentDB.Client;
+﻿using HealthMonitoring.Client;
+using KurrentDB.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
 using Shared.Monitoring;
@@ -47,7 +48,7 @@ public class MiddlewareRegistry :ServiceRegistry
 
         this.ConfigureHttpJsonOptions(jsonOptions => JsonSerializerConfiguration.ConfigureMinimalApi(jsonOptions.SerializerOptions));
 
-        this.AddUptimeKuma();
+        this.AddHealthMonitoringRegistration(Startup.Configuration);
     }
 
     private void AddSwaggerAction(SwaggerGenOptions c) {
