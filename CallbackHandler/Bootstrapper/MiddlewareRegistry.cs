@@ -2,7 +2,6 @@
 using KurrentDB.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
-using Shared.Monitoring;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CallbackHandler.Bootstrapper;

@@ -18,7 +18,6 @@ namespace CallbackHandler
     using Shared.General;
     using Shared.Logger;
     using Shared.Middleware;
-    using Shared.Monitoring;
     using Shared.Serialisation;
     using System.Diagnostics.CodeAnalysis;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
