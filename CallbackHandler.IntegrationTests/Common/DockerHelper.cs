@@ -17,6 +17,8 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
     public ITransactionProcessorClient TransactionProcessorClient;
     public EventStoreProjectionManagementClient ProjectionManagementClient;
 
+    public String AccessToken;
+
     public IAgencyBankingClient AgencyBankingClient;
     
     public HttpClient TestHostHttpClient;
@@ -75,6 +77,14 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
         this.TestHostHttpClient = new HttpClient(clientHandler);
         this.TestHostHttpClient.BaseAddress = new Uri($"http://127.0.0.1:{this.TestHostServicePort}");
         this.AgencyBankingClient = new AgencyBankingClient(TestHostServiceBaseAddressResolver, httpClient, Serialise_CamelCase, this.Deserialise_CamelCase);
+
+
+        SimpleResults.Result<SecurityService.DataTransferObjects.TokenResponse> bootstrapToken = await this.SecurityServiceClient.GetToken("management-bootstrap", "management-bootstrap-secret", CancellationToken.None);
+        if (bootstrapToken.IsFailed || String.IsNullOrWhiteSpace(bootstrapToken.Data?.AccessToken))
+        {
+            throw new InvalidOperationException("Unable to obtain the integration-test management bootstrap token.");
+        }
+        this.AccessToken = bootstrapToken.Data.AccessToken;
     }
 
     String Serialise(Object arg)
