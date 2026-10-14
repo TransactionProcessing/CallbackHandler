@@ -49,7 +49,7 @@ public class GenericSteps
 
         this.TestingContext.Logger = logger;
         this.TestingContext.Logger.LogInformation($"About to Start Containers for Scenario Run [{this.ScenarioContext.ScenarioInfo.Title}]");
-        await this.TestingContext.DockerHelper.StartContainersForScenarioRun(scenarioName, dockerServices).ConfigureAwait(false);
+        await this.TestingContext.DockerHelper.StartContainersForScenarioRun(scenarioName, dockerServices, CancellationToken.None).ConfigureAwait(false);
         this.TestingContext.Logger.LogInformation("Containers for Scenario Run Started");
     }
 

@@ -22,7 +22,7 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
     public IAgencyBankingClient AgencyBankingClient;
     
     public HttpClient TestHostHttpClient;
-    public override async Task CreateSubscriptions()
+    public override async Task CreateSubscriptions(CancellationToken cancellationToken)
     {
         List<(String streamName, String groupName, Int32 maxRetries)> subscriptions = new();
         subscriptions.AddRange(TransactionProcessor.IntegrationTesting.Helpers.SubscriptionsHelper.GetSubscriptions());
@@ -53,8 +53,8 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
     }
 
     public override async Task StartContainersForScenarioRun(String scenarioName,
-                                                       DockerServices dockerServices) {
-        await base.StartContainersForScenarioRun(scenarioName, dockerServices);
+                                                       DockerServices dockerServices, CancellationToken cancellationToken) {
+        await base.StartContainersForScenarioRun(scenarioName, dockerServices, cancellationToken);
 
         // Setup the base address resolvers
         String SecurityServiceBaseAddressResolver(String api) => $"https://127.0.0.1:{this.SecurityServicePort}";
