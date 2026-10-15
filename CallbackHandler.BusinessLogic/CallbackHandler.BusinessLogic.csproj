@@ -9,6 +9,7 @@
 		<PackageReference Include="Shared" />
 		<PackageReference Include="Shared.DomainDrivenDesign" />
 		<PackageReference Include="Shared.EventStore" />
+		<PackageReference Include="System.Security.Cryptography.Pkcs" />
 		<PackageReference Include="TransactionProcessor.Client" />
 	</ItemGroup>
 	<ItemGroup>
