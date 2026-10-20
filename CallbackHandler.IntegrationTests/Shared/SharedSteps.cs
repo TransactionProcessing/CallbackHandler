@@ -38,7 +38,7 @@ namespace CallbackHandler.IntegrationTests.Shared
 
             this.SecurityServiceSteps = new SecurityServiceSteps(testingContext.DockerHelper.SecurityServiceClient, testingContext.DockerHelper.AccessToken);
             this.TransactionProcessorSteps = new TransactionProcessorSteps(testingContext.DockerHelper.TransactionProcessorClient, testingContext.DockerHelper.TestHostHttpClient,
-                testingContext.DockerHelper.ProjectionManagementClient, testingContext.DockerHelper.AgencyBankingClient);
+                testingContext.DockerHelper.LegacyProjectionManagementClient, testingContext.DockerHelper.AgencyBankingClient);
 
         }
 
@@ -60,13 +60,14 @@ namespace CallbackHandler.IntegrationTests.Shared
         }
 
         [When(@"I send the requests to the callback handler for deposits")]
-        public async Task WhenISendTheRequestsToTheCallbackHandlerForDeposits()
-        {
+        public async Task WhenISendTheRequestsToTheCallbackHandlerForDeposits() {
+            String apiVersion = ScenarioContext.ScenarioInfo.Arguments["APIVersion"].ToString();
+
             using HttpClient client = new();
             foreach (var testingContextDeposit in this.TestingContext.Deposits)
             {
                 String requestUri =
-                    $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/callbacks";
+                    $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/v{apiVersion}/callbacks";
                 HttpRequestMessage msg = new(HttpMethod.Post, requestUri);
                 var payload =  StringSerialiser.Serialise(testingContextDeposit);
 
@@ -87,11 +88,12 @@ namespace CallbackHandler.IntegrationTests.Shared
         [Then("the deposit records are recorded")]
         public async Task ThenTheDepositRecordsAreRecorded()
         {
+            String apiVersion = ScenarioContext.ScenarioInfo.Arguments["APIVersion"].ToString();
             using HttpClient client = new();
             foreach (var sentCallback in this.TestingContext.SentCallbacks)
             {
                 String requestUri =
-                    $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/callbacks/{sentCallback.Key}";
+                    $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/v{apiVersion}/callbacks/{sentCallback.Key}";
                 HttpRequestMessage msg = new(HttpMethod.Get, requestUri);
                 var response = await client.SendAsync(msg);
                 response.StatusCode.ShouldBe(HttpStatusCode.OK);

@@ -3,6 +3,7 @@ using Xunit;
 
 namespace CallbackHandler.Tests
 {
+    using CallbackHandler.Bootstrapper;
     using System.Collections.Generic;
     using System.Diagnostics;
     using Lamar;
@@ -11,6 +12,7 @@ namespace CallbackHandler.Tests
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Shared.Serialisation;
 
     [Collection("TestCollection")]
     public class BootstrapperTests
@@ -24,12 +26,13 @@ namespace CallbackHandler.Tests
             hostingEnvironment.ApplicationName.Getter().Returns("Test Application");
 
             ServiceRegistry services = new();
-            Startup s = new(hostingEnvironment.Instance());
-            Startup.Configuration = this.SetupMemoryConfiguration();
+            IConfigurationRoot configuration = this.SetupMemoryConfiguration();
 
-            this.AddTestRegistrations(services, hostingEnvironment.Instance());
-            s.ConfigureContainer(services);
-            Startup.Container.AssertConfigurationIsValid(AssertMode.Full);
+            this.AddTestRegistrations(services, hostingEnvironment.Instance(), configuration);
+            services.AddCallbackHandlerRegistries(configuration);
+            Container container = new(services);
+            container.AssertConfigurationIsValid(AssertMode.Full);
+            StringSerialiser.Initialise(container.GetRequiredService<IStringSerialiser>());
         }
 
         private IConfigurationRoot SetupMemoryConfiguration()
@@ -56,7 +59,8 @@ namespace CallbackHandler.Tests
         }
 
         private void AddTestRegistrations(ServiceRegistry services,
-                                                        IWebHostEnvironment hostingEnvironment)
+                                         IWebHostEnvironment hostingEnvironment,
+                                         IConfiguration configuration)
         {
             services.AddLogging();
             DiagnosticListener diagnosticSource = new(hostingEnvironment.ApplicationName);
@@ -64,7 +68,7 @@ namespace CallbackHandler.Tests
             services.AddSingleton<DiagnosticListener>(diagnosticSource);
             services.AddSingleton<IWebHostEnvironment>(hostingEnvironment);
             services.AddSingleton<IHostEnvironment>(hostingEnvironment);
-            services.AddSingleton<IConfiguration>(Startup.Configuration);
+            services.AddSingleton<IConfiguration>(configuration);
         }
     }
 }

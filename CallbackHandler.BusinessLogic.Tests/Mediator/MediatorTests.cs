@@ -14,10 +14,12 @@ using Xunit;
 
 namespace CallbackHandler.BusinessLogic.Tests.Mediator;
 
+using CallbackHandler.Bootstrapper;
 using BusinessLogic.Services;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.General;
+using Shared.Serialisation;
 
 public class MediatorTests
 {
@@ -38,18 +40,17 @@ public class MediatorTests
         hostingEnvironment.ApplicationName.Getter().Returns("Test Application");
 
         ServiceRegistry services = new();
-        Startup s = new(hostingEnvironment.Instance());
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(TestData.DefaultAppSettings).Build();
         //ConfigurationReader.Initialise(configurationRoot);
 
-        Startup.Configuration = configurationRoot;
-
-        this.AddTestRegistrations(services, hostingEnvironment.Instance());
-        s.ConfigureContainer(services);
-        Startup.Container.AssertConfigurationIsValid(AssertMode.Full);
+        this.AddTestRegistrations(services, hostingEnvironment.Instance(), configurationRoot);
+        services.AddCallbackHandlerRegistries(configurationRoot);
+        Container container = new(services);
+        container.AssertConfigurationIsValid(AssertMode.Full);
+        StringSerialiser.Initialise(container.GetRequiredService<IStringSerialiser>());
 
         List<String> errors = new();
-        IMediator mediator = Startup.Container.GetService<IMediator>();
+        IMediator mediator = container.GetService<IMediator>();
         foreach (IBaseRequest baseRequest in this.Requests)
         {
             try
@@ -92,7 +93,8 @@ public class MediatorTests
         }
 
         private void AddTestRegistrations(ServiceRegistry services,
-                                          IWebHostEnvironment hostingEnvironment)
+                                          IWebHostEnvironment hostingEnvironment,
+                                          IConfiguration configuration)
         {
             services.AddLogging();
             DiagnosticListener diagnosticSource = new(hostingEnvironment.ApplicationName);
@@ -100,7 +102,7 @@ public class MediatorTests
             services.AddSingleton<DiagnosticListener>(diagnosticSource);
             services.AddSingleton<IWebHostEnvironment>(hostingEnvironment);
             services.AddSingleton<IHostEnvironment>(hostingEnvironment);
-            services.AddSingleton<IConfiguration>(Startup.Configuration);
+            services.AddSingleton<IConfiguration>(configuration);
 
             services.OverrideServices(s => { s.AddSingleton<ICallbackDomainService, DummyCallbackDomainService>(); });
         }
