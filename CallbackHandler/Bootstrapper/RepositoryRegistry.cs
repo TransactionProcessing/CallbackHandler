@@ -17,12 +17,12 @@ using Shared.EventStore.Extensions;
 [ExcludeFromCodeCoverage]
 public class RepositoryRegistry : ServiceRegistry
 {
-    public RepositoryRegistry()
+    public RepositoryRegistry(IConfiguration configuration)
     {
         this.AddTransient<IEventStoreContext, EventStoreContext>();
         this.AddSingleton<IAggregateRepository<CallbackMessageAggregate, DomainEvent>, AggregateRepository<CallbackMessageAggregate, DomainEvent>>();
 
-        String connectionString = Startup.Configuration.GetValue<String>("EventStoreSettings:ConnectionString");
+        String connectionString = configuration.GetValue<String>("EventStoreSettings:ConnectionString");
 
         this.AddKurrentDBProjectionManagementClient(connectionString);
         this.AddKurrentDBPersistentSubscriptionsClient(connectionString);

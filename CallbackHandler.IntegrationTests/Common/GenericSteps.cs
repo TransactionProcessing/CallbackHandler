@@ -30,7 +30,7 @@ public class GenericSteps
         LogManager.AddHiddenAssembly(typeof(NlogLogger).Assembly);
 
         DockerServices dockerServices = DockerServices.SecurityService | DockerServices.TransactionProcessor | 
-                                        DockerServices.CallbackHandler | DockerServices.EventStore |
+                                        DockerServices.CallbackHandler | DockerServices.KurrentDb |
                                         DockerServices.SqlServer | DockerServices.TestHost;
 
         this.TestingContext.DockerHelper = new DockerHelper();

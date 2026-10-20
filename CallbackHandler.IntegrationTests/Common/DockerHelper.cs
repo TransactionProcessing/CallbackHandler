@@ -1,4 +1,5 @@
 using EventStore.Client;
+using KurrentDB.Client;
 using SecurityService.Client;
 using Shared.IntegrationTesting;
 using Shared.Serialisation;
@@ -15,7 +16,10 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
 
     public ISecurityServiceClient SecurityServiceClient;
     public ITransactionProcessorClient TransactionProcessorClient;
-    public EventStoreProjectionManagementClient ProjectionManagementClient;
+
+    public EventStoreProjectionManagementClient LegacyProjectionManagementClient;
+
+    public KurrentDBProjectionManagementClient ProjectionManagementClient;
 
     public String AccessToken;
 
@@ -52,6 +56,18 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
         return this.CallbackHandlerPort;
     }
 
+    protected virtual EventStoreClientSettings ConfigureLegacyEventstoreDbSettings(String username = "admin", String password = "changeit") {
+        String connectionString = $"esdb://{username}:{password}@127.0.0.1:{this.KurrentDbHttpPort}";
+
+        connectionString = this.IsSecureKurrentDb switch {
+                               true => $"{connectionString}?tls=true&tlsVerifyCert=false",
+                               _ => $"{connectionString}?tls=false&tlsVerifyCert=false"
+                           };
+
+        return EventStoreClientSettings.Create(connectionString);
+    }
+
+
     public override async Task StartContainersForScenarioRun(String scenarioName,
                                                        DockerServices dockerServices, CancellationToken cancellationToken) {
         await base.StartContainersForScenarioRun(scenarioName, dockerServices, cancellationToken);
@@ -65,15 +81,13 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
             ServerCertificateCustomValidationCallback = (message,
                                                          certificate2,
                                                          arg3,
-                                                         arg4) =>
-            {
-                return true;
-            }
+                                                         arg4) => true
         };
         HttpClient httpClient = new HttpClient(clientHandler);
         this.SecurityServiceClient = new SecurityServiceClient(SecurityServiceBaseAddressResolver, httpClient, Serialise, Deserialise);
         this.TransactionProcessorClient = new TransactionProcessorClient(TransactionProcessorBaseAddressResolver, httpClient, Serialise, Deserialise);
-        this.ProjectionManagementClient = new EventStoreProjectionManagementClient(ConfigureEventStoreSettings());
+        this.ProjectionManagementClient = new KurrentDBProjectionManagementClient(this.ConfigureKurrentDbSettings());
+        this.LegacyProjectionManagementClient = new EventStoreProjectionManagementClient(this.ConfigureLegacyEventstoreDbSettings());
         this.TestHostHttpClient = new HttpClient(clientHandler);
         this.TestHostHttpClient.BaseAddress = new Uri($"http://127.0.0.1:{this.TestHostServicePort}");
         this.AgencyBankingClient = new AgencyBankingClient(TestHostServiceBaseAddressResolver, httpClient, Serialise_CamelCase, this.Deserialise_CamelCase);
