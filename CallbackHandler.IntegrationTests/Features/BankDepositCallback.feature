@@ -32,13 +32,9 @@ Given I create the following api scopes
 	| MerchantName    | AddressLine1   | Town     | Region      | PostalCode | Country        | ContactName    | EmailAddress                 | EstateName    |
 	| Test Merchant 1 | Address Line 1 | TestTown | Test Region | TE57 1NG   | United Kingdom | Test Contact 1 | testcontact1@merchant1.co.uk | Test Estate 1 |
 
-Scenario Outline: Process a Bank Deposit Callback
+Scenario: Process a Bank Deposit Callback
 	Given I have the following Bank Deposit Callbacks
 	| Amount | DateTime | DepositId                            | HostIdentifier                       |  SortCode | AccountNumber |
 	| 100.00 | Today    | 6AE04AFC-D7F8-4936-A3A2-DCA177CAA106 | DC4A7DDA-45A1-4D5B-8D46-21FA99A3868E |  11-22-33 | 12345678      |
 	When I send the requests to the callback handler for deposits
 	Then the deposit records are recorded
-
-Examples: 
-| APIVersion |
-|          1 |

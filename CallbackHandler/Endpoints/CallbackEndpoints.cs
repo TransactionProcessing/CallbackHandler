@@ -1,6 +1,4 @@
-﻿using Asp.Versioning;
-using Asp.Versioning.Builder;
-using CallbackHandler.DataTransferObjects;
+﻿using CallbackHandler.DataTransferObjects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -10,18 +8,16 @@ namespace CallbackHandler.Endpoints
 {
     public static class CallbackEndpoints
     {
+        private const string BaseRoute = "/api/callbacks";
+
         public static IEndpointRouteBuilder MapCallbackEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            IVersionedEndpointRouteBuilder api = endpoints.NewVersionedApi("Callbacks");
-            RouteGroupBuilder group = api
-                                      .MapGroup("/api/v{version:apiVersion}/callbacks")
-                                      .WithTags("Callbacks")
-                                      .HasApiVersion(new ApiVersion(1.0));
+            RouteGroupBuilder group = endpoints.MapGroup(BaseRoute).WithTags("Callbacks");
 
             group.MapPost("/", Handlers.CallbackHandlers.RecordCallback)
                 .WithName("RecordCallback")
                 .WithSummary("Receive a deposit callback")
-                .WithDescription("Accepts a deposit notification from the transaction processor, records it, and returns the identifier assigned to the callback. Use that identifier with GetCallback to retrieve the recorded message.")
+                .WithDescription("Accepts a deposit notification from an external bank, records it, and returns the identifier assigned to the callback. Use that identifier with GetCallback to retrieve the recorded message.")
                 .Accepts<Deposit>("application/json")
                 .Produces<CallbackResponse>(StatusCodes.Status200OK)
                 .Produces<ErrorResponse>(StatusCodes.Status400BadRequest)
