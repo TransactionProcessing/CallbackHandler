@@ -103,27 +103,23 @@ public static class Helpers {
         // Get a token to talk to the estate service
         String clientId = ConfigurationReader.GetValue("AppSettings", "ClientId");
         String clientSecret = ConfigurationReader.GetValue("AppSettings", "ClientSecret");
-        Logger.LogDebug($"Client Id is {clientId}");
-        Logger.LogDebug($"Client Secret is {clientSecret}");
-
+        
         if (currentToken == null)
         {
             Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
             if (tokenResult.IsFailed)
                 return ResultHelpers.CreateFailure(tokenResult);
             TokenResponse token = tokenResult.Data;
-            Logger.LogDebug($"Token is {token.AccessToken}");
             return Result.Success(token);
         }
 
         if (currentToken.Expires.UtcDateTime.Subtract(DateTime.UtcNow) < TimeSpan.FromMinutes(2))
         {
-            Logger.LogDebug($"Token is about to expire at {currentToken.Expires.DateTime:O}");
+            Logger.LogDebug("Token is about to expire at {tokenExpiry}", currentToken.Expires.DateTime);
             Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
             if (tokenResult.IsFailed)
                 return ResultHelpers.CreateFailure(tokenResult);
             TokenResponse token = tokenResult.Data;
-            Logger.LogDebug($"Token is {token.AccessToken}");
             return Result.Success(token);
         }
 

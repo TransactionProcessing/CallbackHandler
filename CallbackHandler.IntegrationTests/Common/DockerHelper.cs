@@ -16,9 +16,7 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
 
     public ISecurityServiceClient SecurityServiceClient;
     public ITransactionProcessorClient TransactionProcessorClient;
-
-    public EventStoreProjectionManagementClient LegacyProjectionManagementClient;
-
+    
     public KurrentDBProjectionManagementClient ProjectionManagementClient;
 
     public String AccessToken;
@@ -87,7 +85,6 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
         this.SecurityServiceClient = new SecurityServiceClient(SecurityServiceBaseAddressResolver, httpClient, Serialise, Deserialise);
         this.TransactionProcessorClient = new TransactionProcessorClient(TransactionProcessorBaseAddressResolver, httpClient, Serialise, Deserialise);
         this.ProjectionManagementClient = new KurrentDBProjectionManagementClient(this.ConfigureKurrentDbSettings());
-        this.LegacyProjectionManagementClient = new EventStoreProjectionManagementClient(this.ConfigureLegacyEventstoreDbSettings());
         this.TestHostHttpClient = new HttpClient(clientHandler);
         this.TestHostHttpClient.BaseAddress = new Uri($"http://127.0.0.1:{this.TestHostServicePort}");
         this.AgencyBankingClient = new AgencyBankingClient(TestHostServiceBaseAddressResolver, httpClient, Serialise_CamelCase, this.Deserialise_CamelCase);

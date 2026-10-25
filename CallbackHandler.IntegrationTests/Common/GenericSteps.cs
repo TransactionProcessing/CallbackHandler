@@ -27,7 +27,8 @@ public class GenericSteps
         String scenarioName = this.ScenarioContext.ScenarioInfo.Title.Replace(" ", "");
         NlogLogger logger = new();
         logger.Initialise(LogManager.GetLogger(scenarioName), scenarioName);
-        LogManager.AddHiddenAssembly(typeof(NlogLogger).Assembly);
+        LogManager.Setup().SetupLogFactory(setup =>
+            setup.AddCallSiteHiddenAssembly(typeof(NlogLogger).Assembly));
 
         DockerServices dockerServices = DockerServices.SecurityService | DockerServices.TransactionProcessor | 
                                         DockerServices.CallbackHandler | DockerServices.KurrentDb |

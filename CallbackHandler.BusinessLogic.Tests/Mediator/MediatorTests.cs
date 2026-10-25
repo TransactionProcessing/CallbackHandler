@@ -41,8 +41,7 @@ public class MediatorTests
 
         ServiceRegistry services = new();
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(TestData.DefaultAppSettings).Build();
-        //ConfigurationReader.Initialise(configurationRoot);
-
+        
         this.AddTestRegistrations(services, hostingEnvironment.Instance(), configurationRoot);
         services.AddCallbackHandlerRegistries(configurationRoot);
         Container container = new(services);
@@ -55,7 +54,7 @@ public class MediatorTests
         {
             try
             {
-                await mediator.Send(baseRequest);
+                await mediator.Send(baseRequest, TestContext.Current.CancellationToken);
             }
             catch (Exception ex)
             {
