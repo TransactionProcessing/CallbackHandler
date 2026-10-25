@@ -1,5 +1,6 @@
 using CallbackHandler.Endpoints;
 using CallbackHandler.Bootstrapper;
+using CallbackHandler.Common;
 using HealthChecks.UI.Client;
 using JasperFx.CommandLine.Descriptions;
 using Lamar;
@@ -78,8 +79,9 @@ public static class Program
 
         WebApplication app = builder.Build();
 
-        Microsoft.Extensions.Logging.ILogger logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("CallbackHandler");
-        Shared.Logger.Logger.Initialise(logger);
+        LogManager.Setup().LoadConfigurationFromFile("NLog.config");
+        NLog.Logger logger = LogManager.GetLogger("CallbackHandler");
+        Shared.Logger.Logger.Initialise(logger, "callbackhandler");
         IConfigurationRoot appConfiguration = (IConfigurationRoot)app.Configuration;
         appConfiguration.LogConfiguration(Shared.Logger.Logger.LogWarning);
         ConfigurationReader.Initialise(appConfiguration);
@@ -91,6 +93,7 @@ public static class Program
 
         app.UseMiddleware<TenantMiddleware>();
         app.AddRequestResponseLogging();
+        //app.UseMiddleware<RequestResponseLoggingMiddlewareX>();
         app.AddExceptionHandler();
         app.UseRouting();
 

@@ -229,13 +229,11 @@ await testRunner.GivenAsync("I create the following api scopes", ((string)(null)
         
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Process a Bank Deposit Callback")]
-        [global::NUnit.Framework.TestCaseAttribute("1", "0", null)]
-        public async global::System.Threading.Tasks.Task ProcessABankDepositCallback(string aPIVersion, string @__pickleIndex, string[] exampleTags)
+        public async global::System.Threading.Tasks.Task ProcessABankDepositCallback()
         {
-            string[] tagsOfScenario = exampleTags;
+            string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            argumentsOfScenario.Add("APIVersion", aPIVersion);
-            string pickleIndex = @__pickleIndex;
+            string pickleIndex = "0";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Process a Bank Deposit Callback", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;

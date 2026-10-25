@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Shared.Serialisation;
 using System.Text.Json;
-using Shared.Serialisation;
 
 namespace CallbackHandler.Common;
 
