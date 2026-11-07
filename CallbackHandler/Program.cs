@@ -93,7 +93,6 @@ public static class Program
 
         app.UseMiddleware<TenantMiddleware>();
         app.AddRequestResponseLogging();
-        //app.UseMiddleware<RequestResponseLoggingMiddlewareX>();
         app.AddExceptionHandler();
         app.UseRouting();
 
