@@ -173,8 +173,6 @@ namespace CallbackHandler.IntegrationTests.Shared
 
             foreach (KeyValuePair<Guid, MerchantResponse> verifiedMerchant in verifiedMerchants)
             {
-                //await this.TransactionProcessorSteps.WhenICreateTheFollowingMerchants(this.TestingContext.AccessToken, verifiedMerchant.EstateId, verifiedMerchant.MerchantId);
-
                 EstateDetails estateDetails = this.TestingContext.GetEstateDetails(verifiedMerchant.Value.EstateId);
                 estateDetails.AddMerchant(verifiedMerchant.Value);
                 this.TestingContext.Logger.LogInformation($"Merchant {verifiedMerchant.Value.MerchantName} created with Id {verifiedMerchant.Key} for Estate {estateDetails.EstateName}");
