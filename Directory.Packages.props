@@ -4,11 +4,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="EventStore.Client.Grpc.ProjectionManagement" Version="23.3.9" />
-    <PackageVersion Include="HealthMonitoring.Client" Version="2026.10.2.55" />
+    <PackageVersion Include="HealthMonitoring.Client" Version="2026.10.3.57" />
     <PackageVersion Include="Lamar" Version="16.0.0" />
     <PackageVersion Include="Lamar.Microsoft.DependencyInjection" Version="16.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="10.0.14" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="Imposter" Version="1.0.4" />
     <PackageVersion Include="SharpCompress" Version="0.50.7" />
@@ -25,12 +25,12 @@
     <PackageVersion Include="Reqnroll.NUnit" Version="3.3.4" />
     <PackageVersion Include="NUnit" Version="5.0.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.3.1" />
-    <PackageVersion Include="SecurityService.Client" Version="2026.10.3.203" />
-    <PackageVersion Include="SecurityService.IntegrationTesting.Helpers" Version="2026.10.3.203" />
+    <PackageVersion Include="SecurityService.Client" Version="2026.10.3.207" />
+    <PackageVersion Include="SecurityService.IntegrationTesting.Helpers" Version="2026.10.3.207" />
     <PackageVersion Include="Shared" Version="2026.11.2" />
     <PackageVersion Include="Shared.IntegrationTesting" Version="2026.11.2" />
-    <PackageVersion Include="TransactionProcessor.Client" Version="2026.10.2.411" />
-    <PackageVersion Include="TransactionProcessor.IntegrationTesting.Helpers" Version="2026.10.2.411" />
+    <PackageVersion Include="TransactionProcessor.Client" Version="2026.10.3.429" />
+    <PackageVersion Include="TransactionProcessor.IntegrationTesting.Helpers" Version="2026.10.3.429" />
     <PackageVersion Include="Grpc.Net.Client" Version="2.84.0" />
     <PackageVersion Include="Shared.DomainDrivenDesign" Version="2026.11.2" />
     <PackageVersion Include="Shared.EventStore" Version="2026.11.2" />

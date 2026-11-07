@@ -169,15 +169,15 @@ namespace CallbackHandler.IntegrationTests.Shared
         {
             List<(EstateDetails estate, CreateMerchantRequest, Boolean EnableAgencyBanking)> requests = table.Rows.ToCreateMerchantRequests(this.TestingContext.Estates);
 
-            List<MerchantResponse> verifiedMerchants = await this.TransactionProcessorSteps.WhenICreateTheFollowingMerchants(this.TestingContext.AccessToken, requests);
+            Dictionary<Guid, MerchantResponse> verifiedMerchants = await this.TransactionProcessorSteps.WhenICreateTheFollowingMerchants(this.TestingContext.AccessToken, requests);
 
-            foreach (MerchantResponse verifiedMerchant in verifiedMerchants)
+            foreach (KeyValuePair<Guid, MerchantResponse> verifiedMerchant in verifiedMerchants)
             {
                 //await this.TransactionProcessorSteps.WhenICreateTheFollowingMerchants(this.TestingContext.AccessToken, verifiedMerchant.EstateId, verifiedMerchant.MerchantId);
 
-                EstateDetails estateDetails = this.TestingContext.GetEstateDetails(verifiedMerchant.EstateId);
-                estateDetails.AddMerchant(verifiedMerchant);
-                this.TestingContext.Logger.LogInformation($"Merchant {verifiedMerchant.MerchantName} created with Id {verifiedMerchant.MerchantId} for Estate {estateDetails.EstateName}");
+                EstateDetails estateDetails = this.TestingContext.GetEstateDetails(verifiedMerchant.Value.EstateId);
+                estateDetails.AddMerchant(verifiedMerchant.Value);
+                this.TestingContext.Logger.LogInformation($"Merchant {verifiedMerchant.Value.MerchantName} created with Id {verifiedMerchant.Key} for Estate {estateDetails.EstateName}");
             }
         }
     }
