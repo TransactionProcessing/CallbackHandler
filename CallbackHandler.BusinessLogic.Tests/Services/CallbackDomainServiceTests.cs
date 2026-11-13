@@ -101,6 +101,7 @@ public class CallbackDomainServiceTests
 
         Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
+        result.Status.ShouldBe(ResultStatus.NotFound);
     }
 
     [Fact]
