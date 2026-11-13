@@ -87,9 +87,9 @@ public class CallbackDomainService : ICallbackDomainService
             return ResultHelpers.CreateFailure(getTokenResult);
         this.TokenResponse = getTokenResult.Data;
 
-        Result<MerchantResponse> getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
+        var getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
         if (getMerchantResult.IsFailed)
-            return ResultHelpers.CreateFailure(getMerchantResult);
+            return Result.Failure(getMerchantResult.Message);
 
         return Result.Success((estateId,merchantId));
     }
