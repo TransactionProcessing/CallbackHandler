@@ -87,9 +87,24 @@ public class CallbackDomainService : ICallbackDomainService
             return ResultHelpers.CreateFailure(getTokenResult);
         this.TokenResponse = getTokenResult.Data;
 
-        Result<MerchantResponse> getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
+        var getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
         if (getMerchantResult.IsFailed)
-            return ResultHelpers.CreateFailure(getMerchantResult);
+        {
+            if (getMerchantResult.Errors.Count == 0)
+                return Result.Failure(getMerchantResult.Message);
+
+            var merchantError = getMerchantResult.Errors[0];
+            return merchantError.ErrorType switch
+            {
+                TransactionProcessing.UnionResults.ErrorType.Validation => Result.Invalid(merchantError.Message),
+                TransactionProcessing.UnionResults.ErrorType.NotFound => Result.NotFound(merchantError.Message),
+                TransactionProcessing.UnionResults.ErrorType.Unauthorized => Result.Unauthorized(merchantError.Message),
+                TransactionProcessing.UnionResults.ErrorType.Forbidden => Result.Forbidden(merchantError.Message),
+                TransactionProcessing.UnionResults.ErrorType.Conflict => Result.Conflict(merchantError.Message),
+                TransactionProcessing.UnionResults.ErrorType.Critical => Result.CriticalError(merchantError.Message),
+                _ => Result.Failure(merchantError.Message)
+            };
+        }
 
         return Result.Success((estateId,merchantId));
     }

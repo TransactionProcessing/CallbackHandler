@@ -22,6 +22,7 @@ using Shared.EventStore.Aggregate;
 using Shouldly;
 using System.Threading;
 using Xunit;
+using TransactionProcessorResult = TransactionProcessing.UnionResults.Result<TransactionProcessor.DataTransferObjects.Responses.Merchant.MerchantResponse>;
 
 public class CallbackDomainServiceTests
 {
@@ -41,7 +42,8 @@ public class CallbackDomainServiceTests
         this.AggregateRepository.SaveChanges(Arg<CallbackMessageAggregate>.Any(), Arg<CancellationToken>.Any())
             .ReturnsAsync(Result.Success());
         this.SecurityServiceClient.GetToken(Arg<String>.Any(), Arg<String>.Any(), Arg<CancellationToken>.Any()).ReturnsAsync(Result.Success(TestData.TokenResponse()));
-        this.TransactionProcessorClient.GetMerchant(Arg<String>.Any(), Arg<Guid>.Any(), Arg<Guid>.Any(), Arg<CancellationToken>.Any()).ReturnsAsync(Result.Success());
+        this.TransactionProcessorClient.GetMerchant(Arg<String>.Any(), Arg<Guid>.Any(), Arg<Guid>.Any(), Arg<CancellationToken>.Any())
+            .ReturnsAsync(TransactionProcessorResult.Ok(new TransactionProcessor.DataTransferObjects.Responses.Merchant.MerchantResponse()));
 
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(TestData.DefaultAppSettings).Build();
         ConfigurationReader.Initialise(configurationRoot);
@@ -94,10 +96,12 @@ public class CallbackDomainServiceTests
     [Fact]
     public async Task CallbackDomainService_RecordCallback_GetMerchantFailed_ResultFailed()
     {
-        this.TransactionProcessorClient.GetMerchant(Arg<String>.Any(), Arg<Guid>.Any(), Arg<Guid>.Any(), Arg<CancellationToken>.Any()).ReturnsAsync(Result.Failure());
+        this.TransactionProcessorClient.GetMerchant(Arg<String>.Any(), Arg<Guid>.Any(), Arg<Guid>.Any(), Arg<CancellationToken>.Any())
+            .ReturnsAsync(TransactionProcessorResult.Fail(TransactionProcessing.UnionResults.Error.NotFound("Merchant not found.")));
 
         Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
+        result.Status.ShouldBe(ResultStatus.NotFound);
     }
 
     [Fact]

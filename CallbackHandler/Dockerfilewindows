@@ -1,8 +1,8 @@
-FROM stuartferguson/txnprocbasewindows AS base
+FROM mcr.microsoft.com/dotnet/aspnet:11.0-windowsservercore-ltsc2025 AS base
 USER ContainerAdministrator
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2022 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0-windowsservercore-ltsc2025 AS build
 WORKDIR /src
 COPY ["CallbackHandler/NuGet.Config", "."]
 COPY ["CallbackHandler/CallbackHandler.csproj", "CallbackHandler/"]
