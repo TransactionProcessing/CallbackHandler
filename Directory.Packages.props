@@ -31,6 +31,7 @@
     <PackageVersion Include="Shared.IntegrationTesting" Version="2026.11.2" />
     <PackageVersion Include="TransactionProcessor.Client" Version="2026.10.3.435" />
     <PackageVersion Include="TransactionProcessor.IntegrationTesting.Helpers" Version="2026.10.3.435" />
+    <PackageVersion Include="TransactionProcessing.Shared.Logger" Version="2026.11.5" />
     <PackageVersion Include="Grpc.Net.Client" Version="2.84.0" />
     <PackageVersion Include="Shared.DomainDrivenDesign" Version="2026.11.2" />
     <PackageVersion Include="Shared.EventStore" Version="2026.11.2" />
