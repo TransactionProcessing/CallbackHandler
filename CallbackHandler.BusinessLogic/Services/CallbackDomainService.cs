@@ -2,9 +2,8 @@
 using SecurityService.DataTransferObjects;
 using Shared.EventStore.Helpers;
 using Shared.Logger;
-using SimpleResults;
+using TransactionProcessing.UnionResults;
 using TransactionProcessor.Client;
-using TransactionProcessor.DataTransferObjects.Responses.Merchant;
 
 namespace CallbackHandler.BusinessLogic.Services;
 
@@ -17,7 +16,6 @@ using Shared.Results;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 public interface ICallbackDomainService
 {
@@ -121,9 +119,9 @@ public static class Helpers {
         
         if (currentToken == null)
         {
-            Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
+            TransactionProcessing.UnionResults.Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
             if (tokenResult.IsFailed)
-                return ResultHelpers.CreateFailure(tokenResult);
+                return ResultHelpers.CreateFailure<TokenResponse>(tokenResult);
             TokenResponse token = tokenResult.Data;
             return Result.Success(token);
         }
@@ -131,7 +129,7 @@ public static class Helpers {
         if (currentToken.Expires.UtcDateTime.Subtract(DateTime.UtcNow) < TimeSpan.FromMinutes(2))
         {
             Logger.LogDebug("Token is about to expire at {tokenExpiry}", currentToken.Expires.DateTime);
-            Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
+            TransactionProcessing.UnionResults.Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
             if (tokenResult.IsFailed)
                 return ResultHelpers.CreateFailure(tokenResult);
             TokenResponse token = tokenResult.Data;
