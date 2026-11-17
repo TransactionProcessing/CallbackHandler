@@ -1,10 +1,9 @@
-using CallbackHandlers.Models;
+using CallbackHandler.Models;
 using System;
 using System.Collections.Generic;
 using SecurityService.DataTransferObjects;
-using Xunit;
 
-namespace CallbackHander.Testing;
+namespace CallbackHandler.Testing;
 
 using CallbackHandler.BusinessLogic.Requests;
 using CallbackHandler.CallbackMessageAggregate;
@@ -47,40 +46,35 @@ public class TestData
             ["ConnectionStrings:TransactionProcessorReadModel"] = ""
         };
     public static CallbackCommands.RecordCallbackCommand RecordCallbackCommand =>
-        new (TestData.CallbackId,
-            TestData.CallbackMessage,
+        new (TestData.CallbackMessage,
             TestData.Destinations,
             (MessageFormat)TestData.MessageFormat,
             TestData.TypeString,
             TestData.Reference);
 
     public static CallbackCommands.RecordCallbackCommand RecordCallbackCommandEmptyReference =>
-        new(TestData.CallbackId,
-            TestData.CallbackMessage,
+        new(TestData.CallbackMessage,
             TestData.Destinations,
             (MessageFormat)TestData.MessageFormat,
             TestData.TypeString,
             String.Empty);
 
     public static CallbackCommands.RecordCallbackCommand RecordCallbackCommandInvalidReference =>
-        new(TestData.CallbackId,
-            TestData.CallbackMessage,
+        new(TestData.CallbackMessage,
             TestData.Destinations,
             (MessageFormat)TestData.MessageFormat,
             TestData.TypeString,
             "reference");
 
     public static CallbackCommands.RecordCallbackCommand RecordCallbackCommandInvalidEstateIdInReference =>
-        new(TestData.CallbackId,
-            TestData.CallbackMessage,
+        new(TestData.CallbackMessage,
             TestData.Destinations,
             (MessageFormat)TestData.MessageFormat,
             TestData.TypeString,
             "reference-71AA10137C9341C793EDDDE89C549455");
 
     public static CallbackCommands.RecordCallbackCommand RecordCallbackCommandInvalidMerchantIdInReference =>
-        new(TestData.CallbackId,
-            TestData.CallbackMessage,
+        new(TestData.CallbackMessage,
             TestData.Destinations,
             (MessageFormat)TestData.MessageFormat,
             TestData.TypeString,

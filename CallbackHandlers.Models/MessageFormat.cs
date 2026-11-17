@@ -1,4 +1,4 @@
-﻿namespace CallbackHandlers.Models
+﻿namespace CallbackHandler.Models
 {
     public enum MessageFormat
     {

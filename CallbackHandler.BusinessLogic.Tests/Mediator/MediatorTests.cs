@@ -1,4 +1,5 @@
 ﻿using CallbackHander.Testing;
+using CallbackHandler.Testing;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,8 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using TransactionProcessing.Shared.Serialisation;
 using Xunit;
 
 namespace CallbackHandler.BusinessLogic.Tests.Mediator;
@@ -18,8 +19,6 @@ using CallbackHandler.Bootstrapper;
 using BusinessLogic.Services;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.General;
-using Shared.Serialisation;
 
 public class MediatorTests
 {

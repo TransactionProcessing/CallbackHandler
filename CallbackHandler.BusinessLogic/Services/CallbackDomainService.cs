@@ -1,25 +1,25 @@
 ﻿using SecurityService.Client;
 using SecurityService.DataTransferObjects;
-using Shared.EventStore.Helpers;
-using Shared.Logger;
+using TransactionProcessing.Shared.DomainDrivenDesign.EventSourcing;
+using TransactionProcessing.Shared.EventStore.Aggregate;
+using TransactionProcessing.Shared.EventStore.Helpers;
+using TransactionProcessing.Shared.General;
+using TransactionProcessing.Shared.Logger;
 using TransactionProcessing.UnionResults;
 using TransactionProcessor.Client;
+using TransactionProcessor.DataTransferObjects.Responses.Merchant;
 
 namespace CallbackHandler.BusinessLogic.Services;
 
 using CallbackMessageAggregate;
 using Requests;
-using Shared.DomainDrivenDesign.EventSourcing;
-using Shared.EventStore.Aggregate;
-using Shared.General;
-using Shared.Results;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 public interface ICallbackDomainService
 {
-    Task<Result> RecordCallback(CallbackCommands.RecordCallbackCommand command,
+    Task<Result<Guid>> RecordCallback(CallbackCommands.RecordCallbackCommand command,
                                 CancellationToken cancellationToken);
 }
 
@@ -37,35 +37,41 @@ public class CallbackDomainService : ICallbackDomainService
         this.TransactionProcessorClient = transactionProcessorClient;
     }
 
-    public async Task<Result> RecordCallback(CallbackCommands.RecordCallbackCommand command,
+    public async Task<Result<Guid>> RecordCallback(CallbackCommands.RecordCallbackCommand command,
                                              CancellationToken cancellationToken) {
+
+        Guid callbackId = Guid.NewGuid();
 
         // validate the reference
         Result<(Guid estateId, Guid merchantId)> validateResult = await ValidateReference(command.Reference, cancellationToken);
         if (validateResult.IsFailed)
             return ResultHelpers.CreateFailure(validateResult);
-        Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(command.CallbackId, cancellationToken);
+        Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(callbackId, cancellationToken);
         Result<CallbackMessageAggregate> callbackMessageAggregateResult =
-            DomainServiceHelper.HandleGetAggregateResult(getResult, command.CallbackId, false);
+            DomainServiceHelper.HandleGetAggregateResult(getResult, callbackId, false);
 
         CallbackMessageAggregate aggregate = callbackMessageAggregateResult.Data;
-        Result stateResult = aggregate.RecordCallback(command.CallbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Destinations,
+        Result stateResult = aggregate.RecordCallback(callbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Destinations,
             (command.Reference,validateResult.Data.estateId, validateResult.Data.merchantId));
         if (stateResult.IsFailed)
-            return stateResult;
+            return ResultHelpers.CreateFailure(stateResult);
         
-        return await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
+        Result saveResult = await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
+        if (saveResult.IsFailed)
+            return ResultHelpers.CreateFailure(saveResult);
+
+        return Result.Success(callbackId);
     }
 
     private async Task<Result<(Guid estateId, Guid merchantId)>> ValidateReference(String reference, CancellationToken cancellationToken) {
         String[] referenceData = reference?.Split(['-'], StringSplitOptions.RemoveEmptyEntries) ?? [];
 
 
-        var result = referenceData.Length switch {
-            0 => Result.Invalid("Reference cannot be empty."),
-            _ when referenceData.Length != 2 => Result.Invalid("Reference must contain estate and merchant references separated by a hyphen."),
-            _ => Result.Success()
-        };
+        Result result = referenceData.Length switch {
+                            0 => Result.Invalid("Reference cannot be empty."),
+                            _ when referenceData.Length != 2 => Result.Invalid("Reference must contain estate and merchant references separated by a hyphen."),
+                            _ => Result.Success()
+                        };
         if (result.IsFailed)
             return ResultHelpers.CreateFailure(result);
 
@@ -85,13 +91,13 @@ public class CallbackDomainService : ICallbackDomainService
             return ResultHelpers.CreateFailure(getTokenResult);
         this.TokenResponse = getTokenResult.Data;
 
-        var getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
+        Result<MerchantResponse> getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
         if (getMerchantResult.IsFailed)
         {
             if (getMerchantResult.Errors.Count == 0)
                 return Result.Failure(getMerchantResult.Message);
 
-            var merchantError = getMerchantResult.Errors[0];
+            Error merchantError = getMerchantResult.Errors[0];
             return merchantError.ErrorType switch
             {
                 TransactionProcessing.UnionResults.ErrorType.Validation => Result.Invalid(merchantError.Message),
@@ -121,7 +127,7 @@ public static class Helpers {
         {
             TransactionProcessing.UnionResults.Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
             if (tokenResult.IsFailed)
-                return ResultHelpers.CreateFailure<TokenResponse>(tokenResult);
+                return ResultHelpers.CreateFailure(tokenResult);
             TokenResponse token = tokenResult.Data;
             return Result.Success(token);
         }

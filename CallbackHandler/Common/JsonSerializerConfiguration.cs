@@ -1,5 +1,5 @@
-﻿using Shared.Serialisation;
-using System.Text.Json;
+﻿using System.Text.Json;
+using TransactionProcessing.Shared.Serialisation;
 
 namespace CallbackHandler.Common;
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using CallbackHandler.Models;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using CallbackHandlers.Models;
 using MediatR;
-using SimpleResults;
+using TransactionProcessing.UnionResults;
 
 namespace CallbackHandler.BusinessLogic.Requests;
 
@@ -10,10 +10,9 @@ namespace CallbackHandler.BusinessLogic.Requests;
 public class CallbackCommands
 {
     public record RecordCallbackCommand(
-        Guid CallbackId,
         String CallbackMessage,
         String[] Destinations,
         MessageFormat MessageFormat,
         String TypeString,
-        String Reference) : IRequest<Result>;
+        String Reference) : IRequest<Result<Guid>>;
 }

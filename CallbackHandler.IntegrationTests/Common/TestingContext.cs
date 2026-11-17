@@ -1,9 +1,7 @@
-﻿using System.Text.Json;
-using CallbackHandler.DataTransferObjects;
+﻿using CallbackHandler.DataTransferObjects;
 using Reqnroll;
-using Shared.Logger;
-using Shared.Serialisation;
 using Shouldly;
+using TransactionProcessing.Shared.Logger;
 using TransactionProcessor.DataTransferObjects.Responses.Merchant;
 using TransactionProcessor.IntegrationTesting.Helpers;
 

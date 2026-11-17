@@ -1,7 +1,7 @@
 using Lamar;
 using Microsoft.Extensions.Configuration;
-using Shared.EventStore.Aggregate;
-using Shared.General;
+using TransactionProcessing.Shared.EventStore.Aggregate;
+using TransactionProcessing.Shared.General;
 
 namespace CallbackHandler.Bootstrapper;
 

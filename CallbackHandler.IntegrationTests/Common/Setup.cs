@@ -1,7 +1,4 @@
-﻿using Ductus.FluentDocker.Services;
-using Ductus.FluentDocker.Services.Extensions;
-using Reqnroll;
-using Shared.IntegrationTesting;
+﻿using Reqnroll;
 using Shouldly;
 
 namespace CallbackHandler.IntegrationTests.Common;

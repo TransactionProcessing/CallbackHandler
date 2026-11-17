@@ -1,9 +1,8 @@
-using SimpleResults;
+using TransactionProcessing.UnionResults;
 
 namespace CallbackHandler.CallbackMessageAggregate.Tests;
-
-using CallbackHander.Testing;
-using CallbackHandlers.Models;
+using CallbackHandler.Testing;
+using CallbackHandler.Models;
 using Shouldly;
 using Xunit;
 

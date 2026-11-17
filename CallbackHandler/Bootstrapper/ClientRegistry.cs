@@ -1,18 +1,11 @@
-﻿using ClientProxyBase;
-using Lamar;
+﻿using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using SecurityService.Client;
-using Shared.General;
-using Shared.Serialisation;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
-using NLog;
-using Shared.DomainDrivenDesign.EventSourcing;
+using TransactionProcessing.ClientProxyBase;
+using TransactionProcessing.Shared.General;
+using TransactionProcessing.Shared.Serialisation;
 using TransactionProcessor.Client;
 
 namespace CallbackHandler.Bootstrapper;

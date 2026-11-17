@@ -1,8 +1,6 @@
 using CallbackHandler.Endpoints;
 using CallbackHandler.Bootstrapper;
-using CallbackHandler.Common;
 using HealthChecks.UI.Client;
-using JasperFx.CommandLine.Descriptions;
 using Lamar;
 using Lamar.Microsoft.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -13,20 +11,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
-using Sentry;
 using NLog.Extensions.Logging;
 using Sentry.Extensibility;
-using Sentry.Protocol;
-using Shared.Extensions;
-using Shared.General;
-using Shared.Logger;
-using Shared.Middleware;
-using Shared.Serialisation;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using TransactionProcessing.ApiDefaults;
+using TransactionProcessing.Shared.Extensions;
+using TransactionProcessing.Shared.General;
+using TransactionProcessing.Shared.Logger;
+using TransactionProcessing.Shared.Middleware;
+using TransactionProcessing.Shared.Serialisation;
+using Logger = TransactionProcessing.Shared.Logger.Logger;
 
 namespace CallbackHandler;
 
@@ -81,9 +78,9 @@ public static class Program
 
         LogManager.Setup().LoadConfigurationFromFile("NLog.config");
         NLog.Logger logger = LogManager.GetLogger("CallbackHandler");
-        Shared.Logger.Logger.Initialise(logger, "callbackhandler");
+        Logger.Initialise(logger, "callbackhandler");
         IConfigurationRoot appConfiguration = (IConfigurationRoot)app.Configuration;
-        appConfiguration.LogConfiguration(Shared.Logger.Logger.LogWarning);
+        appConfiguration.LogConfiguration(Logger.LogWarning);
         ConfigurationReader.Initialise(appConfiguration);
 
         if (app.Environment.IsDevelopment())
@@ -100,7 +97,7 @@ public static class Program
         app.MapHealthChecks("health", new HealthCheckOptions
         {
             Predicate = _ => true,
-            ResponseWriter = Shared.HealthChecks.HealthCheckMiddleware.WriteResponse
+            ResponseWriter = TransactionProcessing.Shared.HealthChecks.HealthCheckMiddleware.WriteResponse
         });
         app.MapHealthChecks("healthui", new HealthCheckOptions
         {
@@ -123,7 +120,7 @@ public static class Program
             b.SetupLogFactory(setup =>
             {
                 setup.AddCallSiteHiddenAssembly(typeof(NlogLogger).Assembly);
-                setup.AddCallSiteHiddenAssembly(typeof(Shared.Logger.Logger).Assembly);
+                setup.AddCallSiteHiddenAssembly(typeof(TransactionProcessing.Shared.Logger.Logger).Assembly);
                 setup.AddCallSiteHiddenAssembly(typeof(TenantMiddleware).Assembly);
             });
             b.LoadConfigurationFromFile(nlogConfigPath);

@@ -6,15 +6,14 @@ using System.Text;
 using CallbackHandler.DataTransferObjects;
 using SecurityService.DataTransferObjects;
 using SecurityService.IntegrationTesting.Helpers;
-using Shared.Serialisation;
 using Shouldly;
+using TransactionProcessing.Shared.Serialisation;
 using TransactionProcessor.DataTransferObjects.Requests.Estate;
 using TransactionProcessor.DataTransferObjects.Requests.Merchant;
 using TransactionProcessor.DataTransferObjects.Responses.Estate;
 using TransactionProcessor.DataTransferObjects.Responses.Merchant;
 using TransactionProcessor.IntegrationTesting.Helpers;
 using ClientDetails = CallbackHandler.IntegrationTests.Common.ClientDetails;
-using ReqnrollTableHelper = Shared.IntegrationTesting.ReqnrollTableHelper;
 
 namespace CallbackHandler.IntegrationTests.Shared
 {
