@@ -10,9 +10,9 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Grpc.Net.Client" />
-		<PackageReference Include="Shared" />
-		<PackageReference Include="Shared.DomainDrivenDesign" />
-		<PackageReference Include="Shared.EventStore" />
+		<PackageReference Include="TransactionProcessing.Shared" />
+		<PackageReference Include="TransactionProcessing.Shared.DomainDrivenDesign" />
+		<PackageReference Include="TransactionProcessing.Shared.EventStore" />
 		<PackageReference Include="System.Security.Cryptography.Pkcs" />
 	</ItemGroup>
 </Project>

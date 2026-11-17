@@ -6,15 +6,14 @@ using System.Text;
 using CallbackHandler.DataTransferObjects;
 using SecurityService.DataTransferObjects;
 using SecurityService.IntegrationTesting.Helpers;
-using Shared.Serialisation;
 using Shouldly;
+using TransactionProcessing.Shared.Serialisation;
 using TransactionProcessor.DataTransferObjects.Requests.Estate;
 using TransactionProcessor.DataTransferObjects.Requests.Merchant;
 using TransactionProcessor.DataTransferObjects.Responses.Estate;
 using TransactionProcessor.DataTransferObjects.Responses.Merchant;
 using TransactionProcessor.IntegrationTesting.Helpers;
 using ClientDetails = CallbackHandler.IntegrationTests.Common.ClientDetails;
-using ReqnrollTableHelper = Shared.IntegrationTesting.ReqnrollTableHelper;
 
 namespace CallbackHandler.IntegrationTests.Shared
 {
@@ -75,7 +74,7 @@ namespace CallbackHandler.IntegrationTests.Shared
                 var response = await client.SendAsync(msg);
 
                 var content = await response.Content.ReadAsStringAsync();
-                response.StatusCode.ShouldBe(HttpStatusCode.OK, content);
+                response.StatusCode.ShouldBe(HttpStatusCode.Created, content);
                 
                 CallbackResponse responseData =
                     StringSerialiser.Deserialise<CallbackResponse>(content);
@@ -94,7 +93,7 @@ namespace CallbackHandler.IntegrationTests.Shared
                     $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/callbacks/{sentCallback.Key}";
                 HttpRequestMessage msg = new(HttpMethod.Get, requestUri);
                 var response = await client.SendAsync(msg);
-                response.StatusCode.ShouldBe(HttpStatusCode.OK);
+                response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
                 var originalDeposit = StringSerialiser.Deserialise<Deposit>(sentCallback.Value);
 

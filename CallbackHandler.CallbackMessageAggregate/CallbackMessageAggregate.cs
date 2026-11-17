@@ -1,16 +1,15 @@
-﻿using System.Runtime.CompilerServices;
-using SimpleResults;
+﻿using CallbackHandler.Models;
+using TransactionProcessing.Shared.DomainDrivenDesign.EventSourcing;
+using TransactionProcessing.Shared.EventStore.Aggregate;
+using TransactionProcessing.UnionResults;
 
 namespace CallbackHandler.CallbackMessageAggregate;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using CallbackHandlers.Models;
 using CallbackMessage.DomainEvents;
-using Shared.DomainDrivenDesign.EventSourcing;
-using Shared.EventStore.Aggregate;
-using Shared.General;
+
     
 public record CallbackMessageAggregate : Aggregate
 {
@@ -68,13 +67,13 @@ public static class CallbackMessageAggregateExtensions {
         return aggregate.Destinations.ToArray();
     }
 
-    public static CallbackMessage GetCallbackMessage(this CallbackMessageAggregate aggregate) {
-        return new CallbackMessage {
-            Reference = aggregate.Reference,
-            Destinations = aggregate.Destinations,
-            Message = aggregate.CallbackMessage,
-            MessageFormat = aggregate.MessageFormat,
-            TypeString = aggregate.TypeString
-        };
+    public static Models.CallbackMessage GetCallbackMessage(this CallbackMessageAggregate aggregate) {
+        return new Models.CallbackMessage {
+                                              Reference = aggregate.Reference,
+                                              Destinations = aggregate.Destinations,
+                                              Message = aggregate.CallbackMessage,
+                                              MessageFormat = aggregate.MessageFormat,
+                                              TypeString = aggregate.TypeString
+                                          };
     }
 }

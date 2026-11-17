@@ -1,14 +1,16 @@
 using EventStore.Client;
 using KurrentDB.Client;
 using SecurityService.Client;
-using Shared.IntegrationTesting;
-using Shared.Serialisation;
+using SecurityService.DataTransferObjects;
 using TestHosts.Clients;
+using TransactionProcessing.Shared.IntegrationTesting;
+using TransactionProcessing.Shared.Serialisation;
+using TransactionProcessing.UnionResults;
 using TransactionProcessor.Client;
 
 namespace CallbackHandler.IntegrationTests.Common;
 
-public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.DockerHelper
+public class DockerHelper : global::TransactionProcessing.Shared.IntegrationTesting.TestContainers.DockerHelper
 {
     public DockerHelper() {
         StringSerialiser.Initialise(new SystemTextJsonSerializer(SystemTextJsonSerializer.GetDefaultJsonSerializerOptions()));
@@ -90,7 +92,7 @@ public class DockerHelper : global::Shared.IntegrationTesting.TestContainers.Doc
         this.AgencyBankingClient = new AgencyBankingClient(TestHostServiceBaseAddressResolver, httpClient, Serialise_CamelCase, this.Deserialise_CamelCase);
 
 
-        SimpleResults.Result<SecurityService.DataTransferObjects.TokenResponse> bootstrapToken = await this.SecurityServiceClient.GetToken("management-bootstrap", "management-bootstrap-secret", CancellationToken.None);
+        Result<TokenResponse> bootstrapToken = await this.SecurityServiceClient.GetToken("management-bootstrap", "management-bootstrap-secret", CancellationToken.None);
         if (bootstrapToken.IsFailed || String.IsNullOrWhiteSpace(bootstrapToken.Data?.AccessToken))
         {
             throw new InvalidOperationException("Unable to obtain the integration-test management bootstrap token.");

@@ -5,8 +5,8 @@
 		<DebugType>None</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Shared" />
-		<PackageReference Include="Shared.DomainDrivenDesign" />
+		<PackageReference Include="TransactionProcessing.Shared" />
+		<PackageReference Include="TransactionProcessing.Shared.DomainDrivenDesign" />
 		<PackageReference Include="System.Security.Cryptography.Pkcs" />
 	</ItemGroup>
 </Project>

@@ -1,4 +1,7 @@
-using SimpleResults;
+using CallbackHandler.Testing;
+using TransactionProcessing.Shared.DomainDrivenDesign.EventSourcing;
+using TransactionProcessing.Shared.EventStore.Aggregate;
+using TransactionProcessing.UnionResults;
 
 namespace CallbackHandler.BusinessLogic.Tests.RequestHandler;
 
@@ -7,14 +10,9 @@ using System.Threading;
 using BusinessLogic.RequestHandler;
 using BusinessLogic.Requests;
 using BusinessLogic.Services;
-using CallbackHander.Testing;
-using CallbackHandlers.Models;
+using CallbackHandler.Models;
 using CallbackMessageAggregate;
-using MediatR;
 using Imposter.Abstractions;
-using Services;
-using Shared.DomainDrivenDesign.EventSourcing;
-using Shared.EventStore.Aggregate;
 using Shouldly;
 using Xunit;
 
@@ -42,7 +40,7 @@ public class CallbackHandlerRequestHandlerTests
                 new();
 
             aggregateRepository.GetLatestVersion(Arg<Guid>.Any(), Arg<CancellationToken>.Any())
-                .ReturnsAsync(TestData.RecordedCallbackMessageAggregate());
+                .ReturnsAsync(Result.Success(TestData.RecordedCallbackMessageAggregate()));
 
             CallbackHandlerRequestHandler handler = new(domainService.Instance(), aggregateRepository.Instance());
 

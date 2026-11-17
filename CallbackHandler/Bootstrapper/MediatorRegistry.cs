@@ -1,12 +1,9 @@
-﻿using SimpleResults;
-
+﻿
 namespace CallbackHandler.Bootstrapper;
 
 using BusinessLogic.RequestHandler;
-using BusinessLogic.Requests;
 using BusinessLogic.Services;
 using Lamar;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 

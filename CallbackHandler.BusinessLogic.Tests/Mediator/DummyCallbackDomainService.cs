@@ -1,5 +1,5 @@
 ﻿using CallbackHandler.BusinessLogic.Requests;
-using SimpleResults;
+using TransactionProcessing.UnionResults;
 
 namespace CallbackHandler.BusinessLogic.Tests.Mediator;
 
@@ -7,10 +7,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using BusinessLogic.Services;
-using CallbackHandlers.Models;
 
 public class DummyCallbackDomainService : ICallbackDomainService
 {
-    public async Task<Result> RecordCallback(CallbackCommands.RecordCallbackCommand command,
-                                             CancellationToken cancellationToken) => Result.Success();
+    public async Task<Result<Guid>> RecordCallback(CallbackCommands.RecordCallbackCommand command,
+                                             CancellationToken cancellationToken) => Result.Success(Guid.NewGuid());
 }

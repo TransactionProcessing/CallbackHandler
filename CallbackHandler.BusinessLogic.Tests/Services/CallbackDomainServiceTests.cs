@@ -1,25 +1,21 @@
 using SecurityService.Client;
-using Shared.General;
-using SimpleResults;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Shared.Logger;
 using TransactionProcessor.Client;
 using Imposter.Abstractions;
+using Shouldly;
+using TransactionProcessing.Shared.DomainDrivenDesign.EventSourcing;
+using TransactionProcessing.Shared.EventStore.Aggregate;
+using TransactionProcessing.Shared.General;
+using TransactionProcessing.Shared.Logger;
+using TransactionProcessing.UnionResults;
 
 namespace CallbackHandler.BusinessLogic.Tests.Services;
 
 using BusinessLogic.Services;
-using CallbackHander.Testing;
-using CallbackHandlers.Models;
+using CallbackHandler.Testing;
 using CallbackMessageAggregate;
 using Microsoft.Extensions.Configuration;
-using Shared.DomainDrivenDesign.EventSourcing;
-using Shared.EventStore.Aggregate;
-using Shouldly;
 using System.Threading;
 using Xunit;
 using TransactionProcessorResult = TransactionProcessing.UnionResults.Result<TransactionProcessor.DataTransferObjects.Responses.Merchant.MerchantResponse>;
@@ -38,7 +34,7 @@ public class CallbackDomainServiceTests
         this.DomainService = new CallbackDomainService(this.AggregateRepository.Instance(), this.SecurityServiceClient.Instance(),
             this.TransactionProcessorClient.Instance());
         this.AggregateRepository.GetLatestVersion(Arg<Guid>.Any(), Arg<CancellationToken>.Any())
-            .ReturnsAsync(TestData.EmptyCallbackMessageAggregate());
+            .ReturnsAsync(Result.Success(TestData.EmptyCallbackMessageAggregate()));
         this.AggregateRepository.SaveChanges(Arg<CallbackMessageAggregate>.Any(), Arg<CancellationToken>.Any())
             .ReturnsAsync(Result.Success());
         this.SecurityServiceClient.GetToken(Arg<String>.Any(), Arg<String>.Any(), Arg<CancellationToken>.Any()).ReturnsAsync(Result.Success(TestData.TokenResponse()));
@@ -54,33 +50,34 @@ public class CallbackDomainServiceTests
 
     [Fact]
     public async Task CallbackDomainService_RecordCallback_CallbackRecorded() {
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
         result.IsSuccess.ShouldBeTrue();
+        result.Data.ShouldNotBe(Guid.Empty);
     }
 
     [Fact]
     public async Task CallbackDomainService_RecordCallback_EmptyReference_ResultFailed() {
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandEmptyReference, CancellationToken.None);
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandEmptyReference, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
     }
 
     [Fact]
     public async Task CallbackDomainService_RecordCallback_InvalidReference_ResultFailed() {
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandInvalidReference, CancellationToken.None);
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandInvalidReference, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
     }
 
     [Fact]
     public async Task CallbackDomainService_RecordCallback_EstateIdNotValidGuid_ResultFailed()
     {
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandInvalidEstateIdInReference, CancellationToken.None);
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandInvalidEstateIdInReference, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
     }
 
     [Fact]
     public async Task CallbackDomainService_RecordCallback_MerchantIdNotValidGuid_ResultFailed()
     {
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandInvalidMerchantIdInReference, CancellationToken.None);
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommandInvalidMerchantIdInReference, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
     }
 
@@ -88,8 +85,8 @@ public class CallbackDomainServiceTests
     public async Task CallbackDomainService_RecordCallback_GetTokenFailed_ResultFailed()
     {
         this.SecurityServiceClient.GetToken(Arg<String>.Any(), Arg<String>.Any(), Arg<CancellationToken>.Any())
-            .ReturnsAsync(Result.Failure());
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
+            .ReturnsAsync(Result.Failure("Token Failed"));
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
     }
 
@@ -99,17 +96,16 @@ public class CallbackDomainServiceTests
         this.TransactionProcessorClient.GetMerchant(Arg<String>.Any(), Arg<Guid>.Any(), Arg<Guid>.Any(), Arg<CancellationToken>.Any())
             .ReturnsAsync(TransactionProcessorResult.Fail(TransactionProcessing.UnionResults.Error.NotFound("Merchant not found.")));
 
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
-        result.Status.ShouldBe(ResultStatus.NotFound);
     }
 
     [Fact]
     public async Task CallbackDomainService_RecordCallback_SaveFailed_ResultFailed()
     {
         this.AggregateRepository.SaveChanges(Arg<CallbackMessageAggregate>.Any(), Arg<CancellationToken>.Any())
-            .ReturnsAsync(Result.Failure());
-        Result result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
+            .ReturnsAsync(Result.Failure("Save Failed"));
+        Result<Guid> result = await this.DomainService.RecordCallback(TestData.RecordCallbackCommand, CancellationToken.None);
         result.IsFailed.ShouldBeTrue();
     }
 }

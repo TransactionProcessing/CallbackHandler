@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace CallbackHandlers.Models;
+namespace CallbackHandler.Models;
 
 [ExcludeFromCodeCoverage]
 public class CallbackMessage

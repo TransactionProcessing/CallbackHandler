@@ -14,12 +14,11 @@
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
     <PackageReference Include="Sentry.AspNetCore" />
-    <PackageReference Include="Shared" />
-    <PackageReference Include="Shared.Results.Web" />
-    <PackageReference Include="SimpleResults.AspNetCore" />
+    <PackageReference Include="TransactionProcessing.Shared" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" />
     <PackageReference Include="TransactionProcessing.ApiDefaults" />
+    <PackageReference Include="TransactionProcessing.UnionResults.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

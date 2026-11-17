@@ -1,7 +1,8 @@
-﻿namespace CallbackHandler.CallbackMessage.DomainEvents
+﻿using TransactionProcessing.Shared.DomainDrivenDesign.EventSourcing;
+
+namespace CallbackHandler.CallbackMessage.DomainEvents
 {
     using System;
-    using Shared.DomainDrivenDesign.EventSourcing;
 
     public record CallbackReceivedEvent(Guid AggregateId,
                                         String TypeString,

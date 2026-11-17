@@ -1,4 +1,5 @@
 using System;
+using TransactionProcessing.Shared.Serialisation;
 using Xunit;
 
 namespace CallbackHandler.Tests
@@ -12,8 +13,7 @@ namespace CallbackHandler.Tests
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Shared.Serialisation;
-
+    
     [Collection("TestCollection")]
     public class BootstrapperTests
     {
