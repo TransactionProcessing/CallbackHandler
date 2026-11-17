@@ -42,5 +42,6 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.WindowsServices" Version="11.0.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="xunit.v3.extensibility.core" Version="4.0.3" />
+    <PackageVersion Include="TransactionProcessing.UnionResults.AspNetCore" Version="2026.11.5" />
   </ItemGroup>
 </Project>

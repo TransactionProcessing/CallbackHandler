@@ -74,7 +74,7 @@ namespace CallbackHandler.IntegrationTests.Shared
                 var response = await client.SendAsync(msg);
 
                 var content = await response.Content.ReadAsStringAsync();
-                response.StatusCode.ShouldBe(HttpStatusCode.OK, content);
+                response.StatusCode.ShouldBe(HttpStatusCode.Created, content);
                 
                 CallbackResponse responseData =
                     StringSerialiser.Deserialise<CallbackResponse>(content);
@@ -93,7 +93,7 @@ namespace CallbackHandler.IntegrationTests.Shared
                     $"http://localhost:{this.TestingContext.DockerHelper.GetCallbackHandlerPort()}/api/callbacks/{sentCallback.Key}";
                 HttpRequestMessage msg = new(HttpMethod.Get, requestUri);
                 var response = await client.SendAsync(msg);
-                response.StatusCode.ShouldBe(HttpStatusCode.OK);
+                response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
                 var originalDeposit = StringSerialiser.Deserialise<Deposit>(sentCallback.Value);
 

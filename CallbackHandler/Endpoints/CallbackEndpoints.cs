@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using TransactionProcessing.Shared.Middleware;
+using TransactionProcessing.UnionResults.AspNetCore;
 
 namespace CallbackHandler.Endpoints
 {
@@ -12,7 +13,7 @@ namespace CallbackHandler.Endpoints
 
         public static IEndpointRouteBuilder MapCallbackEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            RouteGroupBuilder group = endpoints.MapGroup(BaseRoute).WithTags("Callbacks");
+            RouteGroupBuilder group = endpoints.MapGroup(BaseRoute).WithTags("Callbacks").AddUnionResultFilter();
 
             group.MapPost("/", Handlers.CallbackHandlers.RecordCallback)
                 .WithName("RecordCallback")

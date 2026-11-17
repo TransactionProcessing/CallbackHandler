@@ -5,6 +5,7 @@ using TransactionProcessing.ApiDefaults;
 using TransactionProcessing.Shared.EventStore.Extensions;
 using TransactionProcessing.Shared.General;
 using TransactionProcessing.Shared.Middleware;
+using TransactionProcessing.UnionResults.AspNetCore;
 
 namespace CallbackHandler.Bootstrapper;
 
@@ -48,5 +49,6 @@ public class MiddlewareRegistry :ServiceRegistry
             options.Title = "Callback Handler";
             options.Description = "API to accept callbacks from external systems";
         });
+        this.AddUnionResults();
     }
 }

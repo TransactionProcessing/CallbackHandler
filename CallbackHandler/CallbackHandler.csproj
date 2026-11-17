@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" />
     <PackageReference Include="TransactionProcessing.ApiDefaults" />
+    <PackageReference Include="TransactionProcessing.UnionResults.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>
