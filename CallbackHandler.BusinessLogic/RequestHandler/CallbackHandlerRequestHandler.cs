@@ -36,9 +36,6 @@ public class CallbackHandlerRequestHandler : IRequestHandler<CallbackCommands.Re
     {
         Result<CallbackMessageAggregate> callbackAggregate =
             await this.CallbackAggregateRepository.GetLatestVersion(request.CallbackId, cancellationToken);
-        if (callbackAggregate.IsFailed)
-            return ResultHelpers.CreateFailure(callbackAggregate);
-
-        return Result.Success(callbackAggregate.Data.GetCallbackMessage());
+        return callbackAggregate.Map(aggregate => aggregate.GetCallbackMessage());
     }
 }

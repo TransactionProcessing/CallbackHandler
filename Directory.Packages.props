@@ -4,17 +4,17 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="EventStore.Client.Grpc.ProjectionManagement" Version="23.3.9" />
-    <PackageVersion Include="HealthMonitoring.Client" Version="2026.10.3.68" />
+    <PackageVersion Include="HealthMonitoring.Client" Version="2026.10.3.76" />
     <PackageVersion Include="Lamar" Version="16.0.0" />
     <PackageVersion Include="Lamar.Microsoft.DependencyInjection" Version="16.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="11.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="11.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
     <PackageVersion Include="Imposter" Version="1.0.13" />
-    <PackageVersion Include="SharpCompress" Version="0.50.9" />
+    <PackageVersion Include="SharpCompress" Version="0.50.10" />
     <PackageVersion Include="SSH.NET" Version="2026.0.1" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
-    <PackageVersion Include="TransactionProcessing.ApiDefaults" Version="2026.11.5" />
+    <PackageVersion Include="TransactionProcessing.ApiDefaults" Version="2026.11.7" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
     <PackageVersion Include="coverlet.collector" Version="10.1.1" />
@@ -25,16 +25,16 @@
     <PackageVersion Include="Reqnroll.NUnit" Version="3.3.4" />
     <PackageVersion Include="NUnit" Version="5.0.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.3.1" />
-    <PackageVersion Include="SecurityService.Client" Version="2026.10.3.212" />
-    <PackageVersion Include="SecurityService.IntegrationTesting.Helpers" Version="2026.10.3.212" />
-    <PackageVersion Include="TransactionProcessing.Shared" Version="2026.11.5" />
-    <PackageVersion Include="TransactionProcessing.Shared.IntegrationTesting" Version="2026.11.5" />
-    <PackageVersion Include="TransactionProcessor.Client" Version="2026.10.3.437" />
-    <PackageVersion Include="TransactionProcessor.IntegrationTesting.Helpers" Version="2026.10.3.437" />
-    <PackageVersion Include="TransactionProcessing.Shared.Logger" Version="2026.11.5" />
+    <PackageVersion Include="SecurityService.Client" Version="2026.10.3.219" />
+    <PackageVersion Include="SecurityService.IntegrationTesting.Helpers" Version="2026.10.3.219" />
+    <PackageVersion Include="TransactionProcessing.Shared" Version="2026.11.7" />
+    <PackageVersion Include="TransactionProcessing.Shared.IntegrationTesting" Version="2026.11.7" />
+    <PackageVersion Include="TransactionProcessor.Client" Version="2026.10.3.448" />
+    <PackageVersion Include="TransactionProcessor.IntegrationTesting.Helpers" Version="2026.10.3.448" />
+    <PackageVersion Include="TransactionProcessing.Shared.Logger" Version="2026.11.7" />
     <PackageVersion Include="Grpc.Net.Client" Version="2.85.0" />
-    <PackageVersion Include="TransactionProcessing.Shared.DomainDrivenDesign" Version="2026.11.5" />
-    <PackageVersion Include="TransactionProcessing.Shared.EventStore" Version="2026.11.5" />
+    <PackageVersion Include="TransactionProcessing.Shared.DomainDrivenDesign" Version="2026.11.7" />
+    <PackageVersion Include="TransactionProcessing.Shared.EventStore" Version="2026.11.7" />
     <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageVersion Include="MediatR" Version="15.0.0" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
@@ -42,6 +42,6 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.WindowsServices" Version="11.0.0" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="xunit.v3.extensibility.core" Version="4.0.3" />
-    <PackageVersion Include="TransactionProcessing.UnionResults.AspNetCore" Version="2026.11.5" />
+    <PackageVersion Include="TransactionProcessing.UnionResults.AspNetCore" Version="2026.11.7" />
   </ItemGroup>
 </Project>

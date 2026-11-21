@@ -23,7 +23,7 @@ public class CallbackMessageAggregateTests
 
         Result result = aggregate.RecordCallback(TestData.CallbackId, TestData.TypeString, MessageFormat.JSON, TestData.CallbackMessage, TestData.Destinations,
             (TestData.Reference, TestData.EstateReference, TestData.MerchantReference));
-        result.IsSuccess.ShouldBeTrue();
+        result.IsSuccess().ShouldBeTrue();
 
         aggregate.ShouldSatisfyAllConditions(() => aggregate.CallbackMessage.ShouldBe(TestData.CallbackMessage),
                                              () => aggregate.TypeString.ShouldBe(TestData.TypeString),
