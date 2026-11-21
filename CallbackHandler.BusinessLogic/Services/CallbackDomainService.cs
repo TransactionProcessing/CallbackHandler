@@ -44,36 +44,36 @@ public class CallbackDomainService : ICallbackDomainService
 
         // validate the reference
         Result<(Guid estateId, Guid merchantId)> validateResult = await ValidateReference(command.Reference, cancellationToken);
-        if (validateResult.IsFailed)
-            return ResultHelpers.CreateFailure(validateResult);
+        if (validateResult.Value is not Success<(Guid estateId, Guid merchantId)> reference)
+            return new ErrorList(validateResult.GetErrors());
         Result<CallbackMessageAggregate> getResult = await this.AggregateRepository.GetLatestVersion(callbackId, cancellationToken);
         Result<CallbackMessageAggregate> callbackMessageAggregateResult =
             DomainServiceHelper.HandleGetAggregateResult(getResult, callbackId, false);
 
-        CallbackMessageAggregate aggregate = callbackMessageAggregateResult.Data;
+        if (callbackMessageAggregateResult.Value is not Success<CallbackMessageAggregate> aggregateResult)
+            return new ErrorList(callbackMessageAggregateResult.GetErrors());
+
+        CallbackMessageAggregate aggregate = aggregateResult.Value;
         Result stateResult = aggregate.RecordCallback(callbackId, command.TypeString, command.MessageFormat, command.CallbackMessage, command.Destinations,
-            (command.Reference,validateResult.Data.estateId, validateResult.Data.merchantId));
-        if (stateResult.IsFailed)
-            return ResultHelpers.CreateFailure(stateResult);
+            (command.Reference, reference.Value.estateId, reference.Value.merchantId));
+        if (!stateResult.IsSuccess())
+            return new ErrorList(stateResult.GetErrors());
         
         Result saveResult = await this.AggregateRepository.SaveChanges(aggregate, cancellationToken);
-        if (saveResult.IsFailed)
-            return ResultHelpers.CreateFailure(saveResult);
+        if (!saveResult.IsSuccess())
+            return new ErrorList(saveResult.GetErrors());
 
-        return Result.Success(callbackId);
+        return Results.Ok(callbackId);
     }
 
     private async Task<Result<(Guid estateId, Guid merchantId)>> ValidateReference(String reference, CancellationToken cancellationToken) {
         String[] referenceData = reference?.Split(['-'], StringSplitOptions.RemoveEmptyEntries) ?? [];
 
 
-        Result result = referenceData.Length switch {
-                            0 => Result.Invalid("Reference cannot be empty."),
-                            _ when referenceData.Length != 2 => Result.Invalid("Reference must contain estate and merchant references separated by a hyphen."),
-                            _ => Result.Success()
-                        };
-        if (result.IsFailed)
-            return ResultHelpers.CreateFailure(result);
+        if (referenceData.Length == 0)
+            return new Error(ErrorType.Validation, "Reference cannot be empty.");
+        if (referenceData.Length != 2)
+            return new Error(ErrorType.Validation, "Reference must contain estate and merchant references separated by a hyphen.");
 
         // Element 0 is estate reference, Element 1 is merchant reference
         String estateReference = referenceData[0];
@@ -83,34 +83,19 @@ public class CallbackDomainService : ICallbackDomainService
         // Validate the estate and merchant references are valid GUIDs
         if (!Guid.TryParse(estateReference, out Guid estateId) || !Guid.TryParse(merchantReference, out Guid merchantId))
         {
-            return Result.Invalid("Estate or Merchant reference is not a valid GUID.");
+            return new Error(ErrorType.Validation, "Estate or Merchant reference is not a valid GUID.");
         }
 
         Result<TokenResponse> getTokenResult = await Helpers.GetToken(this.TokenResponse, this.SecurityServiceClient, cancellationToken);
-        if (getTokenResult.IsFailed)
-            return ResultHelpers.CreateFailure(getTokenResult);
-        this.TokenResponse = getTokenResult.Data;
+        if (getTokenResult.Value is not Success<TokenResponse> token)
+            return new ErrorList(getTokenResult.GetErrors());
+        this.TokenResponse = token.Value;
 
         Result<MerchantResponse> getMerchantResult = await this.TransactionProcessorClient.GetMerchant(this.TokenResponse.AccessToken, estateId, merchantId, cancellationToken);
-        if (getMerchantResult.IsFailed)
-        {
-            if (getMerchantResult.Errors.Count == 0)
-                return Result.Failure(getMerchantResult.Message);
+        if (!getMerchantResult.IsSuccess())
+            return new ErrorList(getMerchantResult.GetErrors());
 
-            Error merchantError = getMerchantResult.Errors[0];
-            return merchantError.ErrorType switch
-            {
-                TransactionProcessing.UnionResults.ErrorType.Validation => Result.Invalid(merchantError.Message),
-                TransactionProcessing.UnionResults.ErrorType.NotFound => Result.NotFound(merchantError.Message),
-                TransactionProcessing.UnionResults.ErrorType.Unauthorized => Result.Unauthorized(merchantError.Message),
-                TransactionProcessing.UnionResults.ErrorType.Forbidden => Result.Forbidden(merchantError.Message),
-                TransactionProcessing.UnionResults.ErrorType.Conflict => Result.Conflict(merchantError.Message),
-                TransactionProcessing.UnionResults.ErrorType.Critical => Result.CriticalError(merchantError.Message),
-                _ => Result.Failure(merchantError.Message)
-            };
-        }
-
-        return Result.Success((estateId,merchantId));
+        return Results.Ok((estateId, merchantId));
     }
 
     private TokenResponse TokenResponse;
@@ -125,23 +110,15 @@ public static class Helpers {
         
         if (currentToken == null)
         {
-            TransactionProcessing.UnionResults.Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
-            if (tokenResult.IsFailed)
-                return ResultHelpers.CreateFailure(tokenResult);
-            TokenResponse token = tokenResult.Data;
-            return Result.Success(token);
+            return await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
         }
 
         if (currentToken.Expires.UtcDateTime.Subtract(DateTime.UtcNow) < TimeSpan.FromMinutes(2))
         {
             Logger.LogDebug("Token is about to expire at {tokenExpiry}", currentToken.Expires.DateTime);
-            TransactionProcessing.UnionResults.Result<TokenResponse> tokenResult = await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
-            if (tokenResult.IsFailed)
-                return ResultHelpers.CreateFailure(tokenResult);
-            TokenResponse token = tokenResult.Data;
-            return Result.Success(token);
+            return await securityServiceClient.GetToken(clientId, clientSecret, cancellationToken);
         }
 
-        return Result.Success(currentToken);
+        return Results.Ok(currentToken);
     }
 }

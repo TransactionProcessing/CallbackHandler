@@ -93,11 +93,11 @@ public class DockerHelper : global::TransactionProcessing.Shared.IntegrationTest
 
 
         Result<TokenResponse> bootstrapToken = await this.SecurityServiceClient.GetToken("management-bootstrap", "management-bootstrap-secret", CancellationToken.None);
-        if (bootstrapToken.IsFailed || String.IsNullOrWhiteSpace(bootstrapToken.Data?.AccessToken))
+        if (bootstrapToken.Value is not Success<TokenResponse> token || String.IsNullOrWhiteSpace(token.Value?.AccessToken))
         {
             throw new InvalidOperationException("Unable to obtain the integration-test management bootstrap token.");
         }
-        this.AccessToken = bootstrapToken.Data.AccessToken;
+        this.AccessToken = token.Value.AccessToken;
     }
 
     String Serialise(Object arg)

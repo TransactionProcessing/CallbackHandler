@@ -1,4 +1,4 @@
-﻿using CallbackHandler.Models;
+using CallbackHandler.Models;
 using TransactionProcessing.Shared.DomainDrivenDesign.EventSourcing;
 using TransactionProcessing.Shared.EventStore.Aggregate;
 using TransactionProcessing.UnionResults;
@@ -61,7 +61,7 @@ public static class CallbackMessageAggregateExtensions {
             aggregate.ApplyAndAppend(callbackReceivedEvent);
         }
 
-        return Result.Success();
+        return Results.Ok();
     }
     public static String[] GetDestinations(this CallbackMessageAggregate aggregate) {
         return aggregate.Destinations.ToArray();

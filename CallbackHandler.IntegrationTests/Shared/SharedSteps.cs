@@ -8,6 +8,7 @@ using SecurityService.DataTransferObjects;
 using SecurityService.IntegrationTesting.Helpers;
 using Shouldly;
 using TransactionProcessing.Shared.Serialisation;
+using TransactionProcessing.UnionResults;
 using TransactionProcessor.DataTransferObjects.Requests.Estate;
 using TransactionProcessor.DataTransferObjects.Requests.Merchant;
 using TransactionProcessor.DataTransferObjects.Responses.Estate;
@@ -142,8 +143,8 @@ namespace CallbackHandler.IntegrationTests.Shared
 
             //this.TestingContext.AccessToken = await this.SecurityServiceSteps.GetClientToken(clientDetails.ClientId, clientDetails.ClientSecret, CancellationToken.None);
             var token = await this.TestingContext.DockerHelper.SecurityServiceClient.GetToken(clientDetails.ClientId, clientDetails.ClientSecret, CancellationToken.None);
-            token.IsSuccess.ShouldBeTrue();
-            this.TestingContext.AccessToken = token.Data.AccessToken;
+            token.IsSuccess().ShouldBeTrue();
+            this.TestingContext.AccessToken = ((Success<TokenResponse>)token.Value).Value.AccessToken;
 
         }
         

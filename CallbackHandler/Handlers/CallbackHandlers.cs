@@ -1,7 +1,8 @@
-﻿using CallbackHandler.BusinessLogic.Requests;
+using CallbackHandler.BusinessLogic.Requests;
 using CallbackHandler.DataTransferObjects;
 using CallbackHandler.Models;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +13,9 @@ namespace CallbackHandler.Handlers;
 
 public static class CallbackHandlers
 {
-    public static async Task<Result<CallbackResponse>> RecordCallback(Deposit depositCallback,
-                                                                      IMediator mediator,
-                                                                      CancellationToken cancellationToken)
+    public static async Task<object> RecordCallback(Deposit depositCallback,
+                                                    IMediator mediator,
+                                                    CancellationToken cancellationToken)
     {
         CallbackCommands.RecordCallbackCommand request = new(
             StringSerialiser.Serialise(depositCallback),
@@ -25,42 +26,29 @@ public static class CallbackHandlers
 
         Result<Guid> result = await mediator.Send(request, cancellationToken);
 
-        return result.Match(
-            callbackId => Result<CallbackResponse>.Created(new CallbackResponse() { CallbackId = callbackId }),
-            (callbackId, location) => Result<CallbackResponse>.Created(new CallbackResponse { CallbackId = callbackId }, location),
-            Result<CallbackResponse>.NoContent,
-            Result<CallbackResponse>.Fail,
-            Result<CallbackResponse>.Fail);
+        if (result.Value is Success<Guid> success)
+            return TypedResults.Created((String)null, new CallbackResponse { CallbackId = success.Value });
 
-
+        return result;
     }
 
-    public static async Task<Result<DataTransferObjects.CallbackMessage>> GetCallback(Guid callbackId,
-                                                  IMediator mediator,
-                                                  CancellationToken cancellationToken)
+    public static async Task<object> GetCallback(Guid callbackId,
+                                                 IMediator mediator,
+                                                 CancellationToken cancellationToken)
     {
         CallbackQueries.GetCallbackQuery query = new(callbackId);
         Result<CallbackHandler.Models.CallbackMessage> result = await mediator.Send(query, cancellationToken);
 
-        //return ResponseFactory.FromResult(result, (r) => new DataTransferObjects.CallbackMessage
-        //{
-        //    Reference = r.Reference,
-        //    TypeString = r.TypeString,
-        //    Message = r.Message
-        //});
-        return result.Match(
-            r => Result<DataTransferObjects.CallbackMessage>.Created(new DataTransferObjects.CallbackMessage() {
-                                                                                                    Reference = r.Reference,
-                                                                                                        TypeString = r.TypeString,
-                                                                                                    Message = r.Message
-            }),
-            (r ,location)=> Result<DataTransferObjects.CallbackMessage>.Created(new DataTransferObjects.CallbackMessage() {
-                                                                                                                        Reference = r.Reference,
-                                                                                                                        TypeString = r.TypeString,
-                                                                                                                        Message = r.Message
-                                                                                                                    }),
-            Result<DataTransferObjects.CallbackMessage>.NoContent,
-            Result<DataTransferObjects.CallbackMessage>.Fail,
-            Result<DataTransferObjects.CallbackMessage>.Fail);
+        if (result.Value is Success<Models.CallbackMessage> success)
+        {
+            return TypedResults.Created((String)null, new DataTransferObjects.CallbackMessage
+            {
+                Reference = success.Value.Reference,
+                TypeString = success.Value.TypeString,
+                Message = success.Value.Message
+            });
+        }
+
+        return result;
     }
 }

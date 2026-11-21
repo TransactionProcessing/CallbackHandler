@@ -40,7 +40,7 @@ public class CallbackHandlerRequestHandlerTests
                 new();
 
             aggregateRepository.GetLatestVersion(Arg<Guid>.Any(), Arg<CancellationToken>.Any())
-                .ReturnsAsync(Result.Success(TestData.RecordedCallbackMessageAggregate()));
+                .ReturnsAsync(Results.Ok(TestData.RecordedCallbackMessageAggregate()));
 
             CallbackHandlerRequestHandler handler = new(domainService.Instance(), aggregateRepository.Instance());
 
@@ -49,8 +49,8 @@ public class CallbackHandlerRequestHandlerTests
             Should.NotThrow(async () =>
             {
                 Result<CallbackMessage> callback = await handler.Handle(query, CancellationToken.None);
-                callback.IsSuccess.ShouldBeTrue();
-                callback.Data.Reference.ShouldBe(TestData.RecordedCallbackMessageAggregate().Reference);
+                callback.IsSuccess().ShouldBeTrue();
+                callback.Value.ShouldBeOfType<Success<CallbackHandler.Models.CallbackMessage>>().Value.Reference.ShouldBe(TestData.RecordedCallbackMessageAggregate().Reference);
             });
         }
     }

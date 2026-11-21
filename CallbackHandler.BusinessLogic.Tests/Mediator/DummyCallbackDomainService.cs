@@ -11,5 +11,5 @@ using BusinessLogic.Services;
 public class DummyCallbackDomainService : ICallbackDomainService
 {
     public async Task<Result<Guid>> RecordCallback(CallbackCommands.RecordCallbackCommand command,
-                                             CancellationToken cancellationToken) => Result.Success(Guid.NewGuid());
+                                             CancellationToken cancellationToken) => Results.Ok(Guid.NewGuid());
 }
