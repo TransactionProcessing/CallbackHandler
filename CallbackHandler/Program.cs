@@ -41,8 +41,9 @@ public static class Program
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.Host.UseWindowsService();
         builder.Host.UseLamar();
+        bool isIntegrationTest = builder.Environment.IsEnvironment("IntegrationTest");
         builder.WebHost.UseKestrel();
-        if (!builder.Environment.IsEnvironment("IntegrationTest"))
+        if (!isIntegrationTest)
         {
             builder.WebHost.ConfigureTransactionProcessingHttps();
         }
@@ -71,6 +72,11 @@ public static class Program
             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddJsonFile("/home/txnproc/config/appsettings.local.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
+
+        if (isIntegrationTest)
+        {
+            builder.WebHost.UseUrls("http://*:5010");
+        }
 
         ConfigurationReader.Initialise(builder.Configuration);
         ConfigureSentry(builder);
