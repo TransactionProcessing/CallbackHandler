@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using TransactionProcessing.ApiDefaults;
+using TransactionProcessing.CertificateDefaults;
 using TransactionProcessing.Shared.Extensions;
 using TransactionProcessing.Shared.General;
 using TransactionProcessing.Shared.Logger;
@@ -40,6 +41,12 @@ public static class Program
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.Host.UseWindowsService();
         builder.Host.UseLamar();
+        bool isIntegrationTest = builder.Environment.IsEnvironment("IntegrationTest");
+        builder.WebHost.UseKestrel();
+        if (!isIntegrationTest)
+        {
+            builder.WebHost.ConfigureTransactionProcessingHttps();
+        }
 
         builder.Logging.AddConsole();
         builder.Logging.AddNLog();
@@ -65,6 +72,11 @@ public static class Program
             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddJsonFile("/home/txnproc/config/appsettings.local.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
+
+        if (isIntegrationTest)
+        {
+            builder.WebHost.UseUrls($"{System.Uri.UriSchemeHttp}://*:5010");
+        }
 
         ConfigurationReader.Initialise(builder.Configuration);
         ConfigureSentry(builder);
@@ -145,3 +157,4 @@ public static class Program
         }
     }
 }
+

@@ -1,0 +1,9 @@
+{
+  "urls": "https://*:5010",
+  "ServiceOptions": {
+    "KestrelOptions": {
+      "Path": "/run/secrets/callback-handler-fullchain.pem",
+      "KeyPath": "/run/secrets/callback-handler-key.pem"
+    }
+  }
+}

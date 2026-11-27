@@ -21,6 +21,17 @@ public class DockerHelper : global::TransactionProcessing.Shared.IntegrationTest
     
     public KurrentDBProjectionManagementClient ProjectionManagementClient;
 
+    public override Dictionary<String, String> GetAdditionalVariables(ContainerType containerType)
+    {
+        Dictionary<String, String> variables = base.GetAdditionalVariables(containerType);
+        if (containerType == ContainerType.CallbackHandler)
+        {
+            variables["ASPNETCORE_ENVIRONMENT"] = "IntegrationTest";
+        }
+
+        return variables;
+    }
+
     public String AccessToken;
 
     public IAgencyBankingClient AgencyBankingClient;
