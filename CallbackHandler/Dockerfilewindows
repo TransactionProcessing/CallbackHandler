@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:11.0-windowsservercore-ltsc2025 AS base
 USER ContainerAdministrator
 WORKDIR /app
+EXPOSE 5010
 
 FROM mcr.microsoft.com/dotnet/sdk:11.0-windowsservercore-ltsc2025 AS build
 WORKDIR /src

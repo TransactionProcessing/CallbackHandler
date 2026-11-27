@@ -15,6 +15,7 @@
     <PackageVersion Include="SSH.NET" Version="2026.0.1" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
     <PackageVersion Include="TransactionProcessing.ApiDefaults" Version="2026.11.7" />
+    <PackageVersion Include="TransactionProcessing.CertificateDefaults" Version="2026.11.8" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
     <PackageVersion Include="coverlet.collector" Version="10.1.1" />

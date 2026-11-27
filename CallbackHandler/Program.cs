@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using TransactionProcessing.ApiDefaults;
+using TransactionProcessing.CertificateDefaults;
 using TransactionProcessing.Shared.Extensions;
 using TransactionProcessing.Shared.General;
 using TransactionProcessing.Shared.Logger;
@@ -40,6 +41,11 @@ public static class Program
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.Host.UseWindowsService();
         builder.Host.UseLamar();
+        builder.WebHost.UseKestrel();
+        if (!builder.Environment.IsEnvironment("IntegrationTest"))
+        {
+            builder.WebHost.ConfigureTransactionProcessingHttps();
+        }
 
         builder.Logging.AddConsole();
         builder.Logging.AddNLog();
