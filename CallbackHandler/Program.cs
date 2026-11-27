@@ -75,7 +75,7 @@ public static class Program
 
         if (isIntegrationTest)
         {
-            builder.WebHost.UseUrls($"{Uri.UriSchemeHttp}://*:5010");
+            builder.WebHost.UseUrls($"{System.Uri.UriSchemeHttp}://*:5010");
         }
 
         ConfigurationReader.Initialise(builder.Configuration);
